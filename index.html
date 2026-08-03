@@ -478,3 +478,400 @@
 <script src="js/main.js"></script>
 </body>
 </html>
+=======
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบแดชบอร์ดแสดงผลงานการให้บริการ IT Support สกมช. | IT Service Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+
+<input type="file" id="excelFileInput" accept=".xlsx,.xls,.csv" style="display:none;" onchange="handleExcelUpload(event)">
+
+<div class="app-shell">
+
+  <!-- =========================================================
+       TOP NAVIGATION BAR (Teal Pill Style)
+       ========================================================= -->
+  <nav class="top-nav">
+    <!-- Brand -->
+    <div class="nav-brand">
+      <img src="assets/logo.svg" alt="NCSA Logo" class="nav-logo">
+      <div class="nav-brand-text">
+        <span class="nav-org">สกมช. IT Support</span>
+        <span class="nav-sub">สำนักสื่อสารและเทคโนโลยีสารสนเทศ</span>
+      </div>
+    </div>
+
+    <!-- Centred pill tabs -->
+    <div class="nav-pills-center">
+      <button class="nav-pill active" data-target="view-overview">
+        <i class="fa-solid fa-chart-pie"></i> ภาพรวมผลงาน
+      </button>
+      <button class="nav-pill" data-target="view-hardware">
+        <i class="fa-solid fa-desktop"></i> ฮาร์ดแวร์
+      </button>
+      <button class="nav-pill" data-target="view-paper">
+        <i class="fa-solid fa-print"></i> ระบบพิมพ์
+      </button>
+      <button class="nav-pill" data-target="view-license">
+        <i class="fa-solid fa-key"></i> ไลเซนส์
+      </button>
+      <button class="nav-pill" data-target="view-cases">
+        <i class="fa-solid fa-headset"></i> Case IT Support
+      </button>
+      <button class="nav-pill" data-target="view-projects">
+        <i class="fa-solid fa-diagram-project"></i> โครงการ
+      </button>
+    </div>
+
+    <!-- Right actions -->
+    <div class="nav-actions">
+      <button class="btn-nav btn-solid" onclick="triggerExcelUpload()">
+        <i class="fa-solid fa-file-excel"></i> <span>นำเข้า Excel</span>
+      </button>
+      <button class="btn-nav" onclick="downloadExcelTemplate()">
+        <i class="fa-solid fa-download"></i> <span>แม่แบบ</span>
+      </button>
+      <button class="btn-nav" onclick="exportDashboardReport()">
+        <i class="fa-solid fa-print"></i> <span>พิมพ์</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- =========================================================
+       SCROLLABLE CONTENT AREA
+       ========================================================= -->
+  <div class="content-scroll">
+
+    <!-- =====================================================
+         VIEW 1 : OVERVIEW DASHBOARD
+         ===================================================== -->
+    <div id="view-overview" class="page-view active">
+
+      <!-- ROW 1 — two large cards -->
+      <div class="dash-row-top">
+
+        <!-- Card A : Monthly IT Case & Paper Bar Chart -->
+        <div class="card card-pad">
+          <div class="card-header">
+            <span class="card-title"><i class="fa-solid fa-chart-bar"></i> แนวโน้มการให้บริการ Case IT Support รายเดือน</span>
+            <span class="card-badge"><i class="fa-regular fa-calendar"></i> ปี 2569</span>
+          </div>
+          <div class="chart-wrap tall">
+            <canvas id="overviewPaperChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Card B : Doughnut + Legend (reference right panel) -->
+        <div class="card card-pad">
+          <div class="card-header">
+            <span class="card-title"><i class="fa-solid fa-chart-donut"></i> สัดส่วนอุปกรณ์ไอทีแยกสำนัก</span>
+            <div style="display:flex;gap:6px;">
+              <span class="card-badge"><i class="fa-solid fa-file-export"></i> Export</span>
+              <span class="card-badge" id="todayBadge"><i class="fa-regular fa-calendar"></i></span>
+            </div>
+          </div>
+          <div class="donut-card-inner">
+            <div class="donut-wrap">
+              <canvas id="overviewDeptChart"></canvas>
+            </div>
+            <div class="donut-legend" id="deptLegendList">
+              <!-- filled by JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROW 2 — five KPI mini-cards -->
+      <div class="dash-row-mid">
+        <div class="kpi-mini" style="--kpi-accent:#2d9d8f;">
+          <i class="kpi-mini-icon fa-solid fa-desktop"></i>
+          <div class="kpi-mini-label">ฮาร์ดแวร์ในดูแล</div>
+          <div>
+            <span class="kpi-mini-value" id="kpiHW">1,248</span>
+            <span class="kpi-mini-unit"> เครื่อง</span>
+          </div>
+          <div class="kpi-mini-sub text-green"><i class="fa-solid fa-circle-check"></i> พร้อมใช้ 94.5%</div>
+        </div>
+
+        <div class="kpi-mini" style="--kpi-accent:#f97316;">
+          <i class="kpi-mini-icon fa-solid fa-leaf"></i>
+          <div class="kpi-mini-label">กระดาษในระบบพิมพ์</div>
+          <div>
+            <span class="kpi-mini-value" id="kpiPaper">342</span>
+            <span class="kpi-mini-unit"> รีม</span>
+          </div>
+          <div class="kpi-mini-sub text-red"><i class="fa-solid fa-arrow-down"></i> ลด 12.4% จากเดือนก่อน</div>
+        </div>
+
+        <div class="kpi-mini" style="--kpi-accent:#059669;">
+          <i class="kpi-mini-icon fa-solid fa-key"></i>
+          <div class="kpi-mini-label">ไลเซนส์ที่จัดสรร</div>
+          <div>
+            <span class="kpi-mini-value" id="kpiLic">6,703</span>
+            <span class="kpi-mini-unit"> สิทธิ์</span>
+          </div>
+          <div class="kpi-mini-sub text-teal"><i class="fa-solid fa-check"></i> ใช้งาน 91.1%</div>
+        </div>
+
+        <div class="kpi-mini" style="--kpi-accent:#d97706;">
+          <i class="kpi-mini-icon fa-solid fa-headset"></i>
+          <div class="kpi-mini-label">Case รับใหม่</div>
+          <div>
+            <span class="kpi-mini-value" id="kpiCase">18</span>
+            <span class="kpi-mini-unit"> Cases</span>
+          </div>
+          <div class="kpi-mini-sub text-green"><i class="fa-solid fa-clock-check"></i> SLA 98.2%</div>
+        </div>
+
+        <div class="kpi-mini" style="--kpi-accent:#7c3aed;">
+          <i class="kpi-mini-icon fa-solid fa-bars-progress"></i>
+          <div class="kpi-mini-label">โครงการพัฒนาไอที</div>
+          <div>
+            <span class="kpi-mini-value" id="kpiProj">8</span> 
+            <span class="kpi-mini-unit"> โครงการ</span>
+          </div>
+          <div class="kpi-mini-sub text-blue"><i class="fa-solid fa-chart-line"></i> คืบหน้า 85%</div>
+        </div>
+      </div>
+
+      <!-- ROW 3 — four-column: bar + two sparkline metrics + activity list -->
+      <div class="dash-row-bottom">
+
+        <!-- Col 1: Medium bar chart -->
+        <div class="card card-pad">
+          <div class="card-header">
+            <span class="card-title"><i class="fa-solid fa-chart-column"></i> กระดาษ/Case รายเดือน</span>
+            <span class="card-badge"><i class="fa-regular fa-calendar"></i> 7 เดือน</span>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="overviewBarMini"></canvas>
+          </div>
+        </div>
+
+        <!-- Col 2: Doughnut mini + small data activity -->
+        <div class="card card-pad">
+          <div class="card-header">
+            <span class="card-title"><i class="fa-solid fa-chart-pie"></i> สัดส่วน Digital</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="width:90px;height:90px;flex-shrink:0;position:relative;">
+              <canvas id="miniDonutDigital"></canvas>
+              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:800;color:#1e293b;" id="miniDonutLabel">67%</div>
+            </div>
+            <div id="dataActivityList" style="flex:1;font-size:0.74rem;">
+              <!-- filled by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Col 3: Sparkline metric — Cases SLA -->
+        <div class="metric-card">
+          <div class="metric-label">Case เสร็จสิ้นใน SLA</div>
+          <div class="metric-value" id="slaValue">98.2%</div>
+          <div class="metric-sparkline">
+            <canvas id="sparklineSLA"></canvas>
+          </div>
+        </div>
+
+        <!-- Col 4: Activity / recent cases list -->
+        <div class="card card-pad" style="overflow:hidden;">
+          <div class="card-header">
+            <span class="card-title"><i class="fa-solid fa-list-check"></i> Case ล่าสุด</span>
+          </div>
+          <div class="activity-list" id="recentCaseList">
+            <!-- filled by JS -->
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /view-overview -->
+
+    <!-- =====================================================
+         VIEW 2 : HARDWARE
+         ===================================================== -->
+    <div id="view-hardware" class="page-view">
+      <div class="view-header">
+        <div class="view-title-group">
+          <h2><i class="fa-solid fa-laptop-code"></i> รายการอุปกรณ์ฮาร์ดแวร์ที่สำนักจัดสรรและดูแลรักษา</h2>
+          <p>รายละเอียดอุปกรณ์, ผู้ถือครอง, ผู้รับมอบ, IP Address, MAC Address แยกตามสำนักผู้ใช้งาน</p>
+        </div>
+        <div class="filter-bar">
+          <button class="btn-action btn-green" onclick="triggerExcelUpload()"><i class="fa-solid fa-file-excel"></i> นำเข้า Excel</button>
+          <div class="search-input-wrapper">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="hwSearchInput" class="search-input" placeholder="ค้นหา..." onkeyup="filterHardware()">
+          </div>
+          <select id="hwTypeSelect" class="select-filter" onchange="filterHardware()">
+            <option value="all">ทุกประเภท</option>
+            <option value="คอมพิวเตอร์ตั้งโต๊ะ">คอมพิวเตอร์ตั้งโต๊ะ</option>
+            <option value="โน๊ตบุ๊ค">โน๊ตบุ๊ค</option>
+            <option value="เครื่องพิมพ์">เครื่องพิมพ์</option>
+            <option value="เซิร์ฟเวอร์">เซิร์ฟเวอร์</option>
+            <option value="อุปกรณ์เครือข่าย">อุปกรณ์เครือข่าย</option>
+          </select>
+          <select id="hwStatusSelect" class="select-filter" onchange="filterHardware()">
+            <option value="all">ทุกสถานะ</option>
+            <option value="ใช้งานปกติ">ใช้งานปกติ</option>
+            <option value="ส่งซ่อม">ส่งซ่อม</option>
+            <option value="สำรอง">สำรอง</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-card">
+        <div class="table-responsive">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>รหัสสินทรัพย์</th>
+                <th>ชื่ออุปกรณ์ / สเปค</th>
+                <th>ชื่อผู้ถือครอง</th>
+                <th>ชื่อผู้รับ / ผู้ใช้จริง</th>
+                <th>IP / MAC Address</th>
+                <th>สำนักผู้ใช้</th>
+                <th>สถานะ</th>
+                <th>สถานที่</th>
+                <th>จัดการ</th>
+              </tr>
+            </thead>
+            <tbody id="hardwareTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================
+         VIEW 3 : PAPER
+         ===================================================== -->
+    <div id="view-paper" class="page-view">
+      <div class="view-header">
+        <div class="view-title-group">
+          <h2><i class="fa-solid fa-file-invoice"></i> รายงานการให้บริการระบบพิมพ์งานและกระดาษองค์กร</h2>
+          <p>สถิติเครื่องพิมพ์ศูนย์กลาง ปริมาณกระดาษ และการผลักดันระบบ e-Document</p>
+        </div>
+      </div>
+      <div class="charts-grid-2">
+        <div class="chart-card">
+          <div class="card-title-v2"><i class="fa-solid fa-chart-line"></i> ค่าใช้จ่ายระบบพิมพ์งานรายเดือน</div>
+          <div class="chart-container-v2">
+            <canvas id="paperMonthlyChart"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="card-title-v2"><i class="fa-solid fa-chart-pie"></i> สัดส่วน Digital vs Paper Document</div>
+          <div class="chart-container-v2">
+            <canvas id="paperRatioChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================
+         VIEW 4 : LICENSE
+         ===================================================== -->
+    <div id="view-license" class="page-view">
+      <div class="view-header">
+        <div class="view-title-group">
+          <h2><i class="fa-solid fa-key"></i> การจัดสรรสิทธิ์ซอฟต์แวร์ลิขสิทธิ์องค์กร</h2>
+          <p>ซอฟต์แวร์ที่สำนักจัดหาและบริหารสิทธิ์แจกจ่ายให้หน่วยงานต่างๆ ภายใน สกมช.</p>
+        </div>
+      </div>
+      <div class="licenses-grid" id="licensesContainer"></div>
+    </div>
+
+    <!-- =====================================================
+         VIEW 5 : CASES
+         ===================================================== -->
+    <div id="view-cases" class="page-view">
+      <div class="view-header">
+        <div class="view-title-group">
+          <h2><i class="fa-solid fa-headset"></i> รายการ Case คำขอรับบริการแจ้งซ่อมและสนับสนุน IT Support</h2>
+          <p>บันทึก Case แจ้งซ่อม อุปกรณ์ไอที และปัญหาระบบที่สำนักได้รับ (Helpdesk Tickets)</p>
+        </div>
+        <div class="filter-bar">
+          <button class="btn-action btn-green" onclick="triggerExcelUpload()"><i class="fa-solid fa-file-excel"></i> นำเข้า Excel</button>
+          <div class="search-input-wrapper">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="caseSearchInput" class="search-input" placeholder="ค้นหา Case..." onkeyup="filterCases()">
+          </div>
+          <select id="caseSeveritySelect" class="select-filter" onchange="filterCases()">
+            <option value="all">ทุกระดับความด่วน</option>
+            <option value="Critical">Critical</option>
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-card">
+        <div class="table-responsive">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>Case ID</th>
+                <th>หัวข้อคำขอรับบริการ</th>
+                <th>ความด่วน</th>
+                <th>สำนักที่ส่งเรื่อง</th>
+                <th>ช่าง IT รับผิดชอบ</th>
+                <th>สถานะ</th>
+                <th>รายละเอียด</th>
+              </tr>
+            </thead>
+            <tbody id="caseTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================
+         VIEW 6 : PROJECTS
+         ===================================================== -->
+    <div id="view-projects" class="page-view">
+      <div class="view-header">
+        <div class="view-title-group">
+          <h2><i class="fa-solid fa-diagram-project"></i> รายการโครงการพัฒนาระบบเทคโนโลยีสารสนเทศ</h2>
+          <p>ติดตามโครงการ งบประมาณ ผู้จัดการ และความคืบหน้า (Progress %)</p>
+        </div>
+      </div>
+      <div class="projects-grid" id="projectsContainer"></div>
+    </div>
+
+  </div><!-- /content-scroll -->
+
+  <!-- Footer -->
+  <div class="footer-bar">
+    © 2026 สำนักสื่อสารและเทคโนโลยีสารสนเทศ (IT Support) · สำนักงานคณะกรรมการการรักษาความมั่นคงปลอดภัยไซเบอร์แห่งชาติ (สกมช.)
+  </div>
+
+</div><!-- /app-shell -->
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="modalTitle">รายละเอียด</h3>
+      <button class="modal-close-btn" id="modalCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toastNotification" class="toast-notification"></div>
+
+<script src="js/data.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
+>>>>>>> 32fc0b5702d85a0ad7ac90a2b34ff51fca7826b9

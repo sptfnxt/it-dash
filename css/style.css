@@ -259,6 +259,18 @@ body {
   padding: 10px 16px 8px;
   min-height: 0;
   background: var(--bg-page);
+<<<<<<< HEAD
+=======
+  display: flex;
+  flex-direction: column;
+}
+
+/* When overview dashboard is active on large displays, lock scrolling so everything fits 100% in viewport */
+@media (min-width: 901px) and (min-height: 800px) {
+  .content-scroll:has(#view-overview.active) {
+    overflow: hidden;
+  }
+>>>>>>> 32fc0b5702d85a0ad7ac90a2b34ff51fca7826b9
 }
 
 /* ===========================================================================
@@ -1037,8 +1049,15 @@ body {
 .card-title-v2 i { color: var(--accent-teal); }
 
 /* ===========================================================================
-   RESPONSIVE — Auto-scale for different window sizes
+   RESPONSIVE — Auto-scale & Mobile Scrollable View
    =========================================================================== */
+
+/* Sticky Top Navigation Bar */
+.top-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
 
 /* Large screens ≤ 1400px */
 @media (max-width: 1400px) {
@@ -1070,7 +1089,6 @@ body {
     font-size: 0.72rem;
     gap: 4px;
   }
-  .nav-pill i { display: none; } /* hide icons to save space */
   .btn-nav { padding: 6px 11px; font-size: 0.74rem; }
 
   .content-scroll { padding: 10px 14px 8px 14px; }
@@ -1089,14 +1107,58 @@ body {
   .chart-wrap.tall { height: 200px; }
 }
 
-/* Tablet / small-laptop ≤ 900px */
+/* Mobile & Small screens trigger ≤ 900px */
 @media (max-width: 900px) {
+  /* Enable full vertical scrolling on mobile */
+  html, body {
+    height: auto !important;
+    min-height: 100% !important;
+    max-height: none !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+
+  .app-shell {
+    height: auto !important;
+    min-height: 100vh;
+    overflow: visible !important;
+  }
+
+  .content-scroll,
+  .content-scroll:has(#view-overview.active) {
+    overflow-y: visible !important;
+    overflow-x: hidden !important;
+    height: auto !important;
+    flex: none !important;
+    padding: 10px 12px 24px 12px;
+  }
+
+  #view-overview.page-view.active {
+    height: auto !important;
+    min-height: auto !important;
+    flex: none !important;
+    gap: 12px;
+  }
+
   .top-nav {
     flex-wrap: wrap;
     height: auto;
-    padding: 10px 16px;
+    padding: 10px 14px;
     gap: 8px;
   }
+
+  .nav-brand {
+    gap: 8px;
+  }
+
+  .nav-logo {
+    height: 38px;
+  }
+
+  .nav-org {
+    font-size: 0.92rem;
+  }
+
   .nav-pills-center {
     position: static;
     transform: none;
@@ -1106,63 +1168,169 @@ body {
     overflow-x: auto;
     flex-wrap: nowrap;
     justify-content: flex-start;
+    padding: 4px;
+    gap: 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    scroll-snap-type: x mandatory;
   }
-  .nav-actions { order: 2; }
-  .btn-nav span { display: none; } /* hide button text, keep icon */
 
-  .content-scroll { padding: 8px 10px 6px 10px; }
+  .nav-pills-center::-webkit-scrollbar {
+    display: none;
+  }
 
-  /* Stack rows vertically */
+  .nav-pill {
+    flex: 0 0 calc((100% - 8px) / 3);
+    min-width: calc((100% - 8px) / 3);
+    max-width: calc((100% - 8px) / 3);
+    justify-content: center;
+    text-align: center;
+    padding: 6px 4px;
+    font-size: 0.72rem;
+    white-space: nowrap;
+    scroll-snap-align: start;
+    flex-shrink: 0;
+  }
+
+  .nav-actions {
+    order: 2;
+    gap: 6px;
+  }
+
+  .btn-nav {
+    padding: 6px 10px;
+    font-size: 0.74rem;
+  }
+
+  /* Stack rows vertically on mobile */
   .dash-row-top {
     grid-template-columns: 1fr;
-    gap: 8px;
+    gap: 12px;
+    flex: none;
   }
+
   .dash-row-mid {
     grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
+    gap: 10px;
+    flex: none;
   }
+
   .dash-row-bottom {
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    flex: none;
   }
 
-  .chart-wrap { height: 150px; }
-  .chart-wrap.tall { height: 180px; }
-  .donut-wrap { width: 100px; height: 100px; }
+  .chart-wrap,
+  .dash-row-top .chart-wrap,
+  .dash-row-top .chart-wrap.tall,
+  .dash-row-bottom .chart-wrap {
+    height: 220px !important;
+    min-height: 220px !important;
+  }
 
-  .table-card { height: auto; max-height: calc(100vh - 200px); }
+  .table-card {
+    height: auto;
+    max-height: none;
+  }
+
   .charts-grid-2 {
     grid-template-columns: 1fr;
     height: auto;
-    gap: 10px;
+    gap: 12px;
   }
-  .chart-card { min-height: 280px; }
+
+  .chart-card {
+    min-height: 300px;
+  }
 
   .licenses-grid, .projects-grid {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   }
 }
 
-/* Small screens / mobile ≤ 640px */
+/* Phone scale ≤ 640px */
 @media (max-width: 640px) {
-  .top-nav { padding: 8px 12px; }
-  .nav-brand-text .nav-sub { display: none; }
-  .nav-pill { padding: 5px 8px; font-size: 0.68rem; }
+  .top-nav {
+    padding: 8px 10px;
+  }
 
-  .dash-row-mid { grid-template-columns: repeat(2, 1fr); }
-  .dash-row-bottom { grid-template-columns: 1fr; }
+  .nav-pill {
+    padding: 5px 2px;
+    font-size: 0.68rem;
+    gap: 3px;
+  }
 
-  .kpi-mini-value { font-size: 1.1rem; }
+  .nav-pill i {
+    font-size: 0.72rem;
+  }
 
-  .filter-bar { flex-direction: column; align-items: flex-start; gap: 6px; }
-  .search-input { min-width: 100%; }
+  .nav-brand-text .nav-sub {
+    display: none;
+  }
 
-  .view-header { flex-direction: column; align-items: flex-start; gap: 8px; }
-  .view-title-group h2 { font-size: 0.88rem; }
+  .btn-nav span {
+    display: none;
+  }
+
+  .btn-nav {
+    padding: 6px 8px;
+  }
+
+  .dash-row-mid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .dash-row-bottom {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .donut-card-inner {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .donut-legend {
+    width: 100%;
+  }
+
+  .kpi-mini {
+    padding: 10px 12px;
+  }
+
+  .kpi-mini-value {
+    font-size: 1.25rem;
+  }
+
+  .filter-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .search-input {
+    min-width: 100%;
+  }
+
+  .view-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .view-title-group h2 {
+    font-size: 0.88rem;
+  }
 
   .licenses-grid, .projects-grid {
     grid-template-columns: 1fr;
   }
 
-  .footer-bar { font-size: 0.6rem; }
+  .footer-bar {
+    font-size: 0.62rem;
+    padding: 12px 0 8px 0;
+  }
 }
