@@ -372,6 +372,20 @@ function filterHardware() { renderHardwareTable(); }
 // --------------------------------------------------------------------------
 // LICENSE CARDS RENDER
 // --------------------------------------------------------------------------
+function getLicenseLogoSrc(licenseName) {
+  const logoMap = {
+    'Microsoft 365 Enterprise E5': 'assets/offi.png',
+    'CrowdStrike Falcon Complete EDR': 'assets/crow.png',
+    'Adobe Creative Cloud All Apps': 'assets/adobe.jpg',
+    'Palo Alto Cortex XSOAR Enterprise': 'assets/cortex.jpg',
+    'VMware vSphere 8 Enterprise Plus': 'assets/vm.png',
+    'Tableau Enterprise Creator & Server': 'assets/Tableau-Server-Icon-1.png',
+    'Windows 11 Pro Enterprise Volume': 'assets/window.jpg',
+    'Kaspersky Endpoint Security Enterprise': 'assets/kas.png'
+  };
+  return logoMap[licenseName] || 'assets/logo.png';
+}
+
 function renderLicenseCards() {
   const container = document.getElementById('licensesContainer');
   if (!container) return;
@@ -382,25 +396,29 @@ function renderLicenseCards() {
     const barC = pct > 95 ? 'bg-red' : pct > 85 ? 'bg-gold' : 'bg-blue';
     const card = document.createElement('div');
     card.className = 'license-card';
+    const logoSrc = getLicenseLogoSrc(lic.name);
     card.innerHTML = `
       <div class="license-header">
-        <div class="license-icon-box"><i class="fa-solid fa-key"></i></div>
+        <img src="${logoSrc}" alt="${lic.name} logo" class="license-card-logo">
         <div class="license-info"><h3>${lic.name}</h3><p>${lic.category} | ${lic.vendor}</p></div>
       </div>
-      <div>
-        <div class="license-stats-row">
-          <span>เปิดใช้งาน: <strong style="color:#1e3a8a;">${lic.usedSeats}</strong> / ${lic.totalSeats}</span>
-          <span style="color:${pct>90?'#dc2626':'#059669'};">${pct}%</span>
+      <div class="license-usage-block">
+        <div>
+          <div class="license-usage-label">เปิดใช้งาน</div>
+          <div class="license-usage-value"><strong>${lic.usedSeats.toLocaleString()}</strong> / ${lic.totalSeats.toLocaleString()}</div>
         </div>
-        <div class="progress-bar-wrap"><div class="progress-bar-fill ${barC}" style="width:${pct}%"></div></div>
+        <div class="license-usage-pct">${pct}%</div>
       </div>
-      <div style="display:flex;flex-wrap:wrap;gap:4px;">
-        ${lic.assignedDepts.map(d=>`<span class="badge badge-blue">${d.dept}: ${d.seats}</span>`).join('')}
+      <div class="progress-bar-wrap"><div class="progress-bar-fill ${barC}" style="width:${pct}%"></div></div>
+      <div class="license-meta-row">
+        <div class="license-meta-item"><span>หมดอายุ</span><strong>${lic.expiryDate}</strong></div>
+        <div class="license-badge license-badge-available">ว่าง ${lic.availableSeats}</div>
       </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.78rem;border-top:1px solid #e2e8f0;padding-top:8px;">
-        <span><i class="fa-regular fa-clock"></i> หมดอายุ: <strong>${lic.expiryDate}</strong></span>
-        <span class="badge ${lic.availableSeats < 10 ? 'badge-red' : 'badge-green'}">ว่าง ${lic.availableSeats}</span>
-      </div>`;
+      <button type="button" class="btn-action btn-outline license-detail-btn"><i class="fa-solid fa-circle-info"></i> ดูรายละเอียด</button>`;
+    card.querySelector('.license-detail-btn')?.addEventListener('click', e => {
+      e.stopPropagation();
+      openLicenseModal(lic.id);
+    });
     container.appendChild(card);
   });
 }
@@ -501,6 +519,10 @@ function initModalListeners() {
 
 function closeModal() {
   document.getElementById('modalOverlay')?.classList.remove('active');
+  if (typeof chartInstances !== 'undefined' && chartInstances.modalLicenseDept) {
+    chartInstances.modalLicenseDept.destroy();
+    chartInstances.modalLicenseDept = null;
+  }
 }
 
 function openHardwareModal(hwId) {
@@ -538,6 +560,69 @@ function openCaseModal(caseId) {
       <div style="background:#f8fafc;padding:10px;border-radius:8px;font-size:0.8rem;color:#334155;">${c.description}</div>
     </div>`;
   document.getElementById('modalOverlay')?.classList.add('active');
+}
+
+function openLicenseModal(licenseId) {
+  const lic = NCSA_DATA.licenses.find(item => item.id === licenseId);
+  if (!lic) return;
+  const pct = Math.round((lic.usedSeats / lic.totalSeats) * 100);
+  const totalAssignedSeats = (lic.assignedDepts || []).reduce((sum, d) => sum + d.seats, 0);
+
+  document.getElementById('modalTitle').innerText = `รายละเอียดสิทธิ์: ${lic.name}`;
+  document.getElementById('modalBody').innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;background:#f8fafc;padding:8px 10px;border-radius:10px;border:1px solid #e2e8f0;">
+      <img src="${getLicenseLogoSrc(lic.name)}" alt="${lic.name} logo" style="width:36px;height:36px;object-fit:contain;border-radius:8px;border:1px solid #cbd5e1;background:#fff;padding:2px;box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+      <div style="flex:1;">
+        <h4 style="margin:0;font-size:0.88rem;color:#1e3a8a;font-weight:700;line-height:1.2;">${lic.name}</h4>
+        <p style="margin:2px 0 0;font-size:0.72rem;color:#64748b;">${lic.category} | ${lic.vendor}</p>
+      </div>
+    </div>
+    
+    <div class="detail-row" style="padding:3px 0;font-size:0.75rem;"><span>เปิดใช้งานแล้ว</span><strong>${lic.usedSeats.toLocaleString()} / ${lic.totalSeats.toLocaleString()} (${pct}%)</strong></div>
+    <div class="detail-row" style="padding:3px 0;font-size:0.75rem;"><span>วันหมดอายุสัญญา</span><strong>${lic.expiryDate}</strong></div>
+    <div class="detail-row" style="padding:3px 0;font-size:0.75rem;"><span>โควต้าคงเหลือว่าง</span><strong style="color:#059669;">${lic.availableSeats.toLocaleString()} Seats</strong></div>
+    
+    <div style="margin-top:10px;">
+      <div style="font-weight:700;font-size:0.8rem;color:#1e3a8a;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;">
+        <span><i class="fa-solid fa-chart-pie" style="color:#2563eb;"></i> สถิติจัดสรรสิทธิ์ตามสำนัก</span>
+        <span style="font-size:0.7rem;color:#64748b;font-weight:600;background:#eff6ff;padding:2px 6px;border-radius:10px;border:1px solid #dbeafe;">รวม ${totalAssignedSeats.toLocaleString()} Seats</span>
+      </div>
+
+      <!-- Canvas for Horizontal Bar Chart (Compact Height: 125px) -->
+      <div style="position:relative;height:125px;width:100%;background:#ffffff;padding:6px 8px;border-radius:10px;border:1px solid #e2e8f0;box-shadow:0 1px 4px rgba(15,23,42,0.03);margin-bottom:8px;">
+        <canvas id="modalLicenseDeptChart"></canvas>
+      </div>
+
+      <!-- Compact 2-Column Grid for Department Breakdown -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+        ${(lic.assignedDepts || []).map((d, i) => {
+          const deptPct = Math.round((d.seats / (totalAssignedSeats || 1)) * 100);
+          const colorList = ['#1e3a8a', '#2563eb', '#0284c7', '#059669', '#7c3aed', '#d97706', '#dc2626', '#0d9488'];
+          const color = colorList[i % colorList.length];
+          return `
+            <div style="background:#fff;padding:5px 8px;border-radius:8px;border:1px solid #f1f5f9;">
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.72rem;margin-bottom:3px;">
+                <span style="font-weight:600;color:#0f172a;display:flex;align-items:center;gap:4px;">
+                  <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${color};"></span>${d.dept}
+                </span>
+                <span style="font-weight:700;color:#1e3a8a;font-size:0.7rem;">${d.seats.toLocaleString()} <span style="font-weight:400;color:#64748b;">(${deptPct}%)</span></span>
+              </div>
+              <div style="width:100%;height:4px;background:#f1f5f9;border-radius:3px;overflow:hidden;">
+                <div style="width:${deptPct}%;height:100%;background:${color};border-radius:3px;"></div>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>`;
+
+  document.getElementById('modalOverlay')?.classList.add('active');
+
+  setTimeout(() => {
+    if (typeof renderModalLicenseDeptChart === 'function') {
+      renderModalLicenseDeptChart(lic.assignedDepts, lic.name);
+    }
+  }, 60);
 }
 
 function exportDashboardReport() { window.print(); }

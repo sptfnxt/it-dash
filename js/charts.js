@@ -345,3 +345,63 @@ function updateAllCharts() {
     chartInstances.licenseSeat.update();
   }
 }
+
+// Modal License Dept Chart (View 4 License Detail Popup)
+function renderModalLicenseDeptChart(assignedDepts, licenseName) {
+  const canvas = document.getElementById('modalLicenseDeptChart');
+  if (!canvas) return;
+
+  if (chartInstances.modalLicenseDept) {
+    chartInstances.modalLicenseDept.destroy();
+  }
+
+  const ctx = canvas.getContext('2d');
+  const labels = assignedDepts.map(d => d.dept);
+  const data = assignedDepts.map(d => d.seats);
+  const colors = [
+    '#1e3a8a', '#2563eb', '#0284c7', '#059669', '#7c3aed', '#d97706', '#dc2626', '#0d9488'
+  ];
+
+  chartInstances.modalLicenseDept = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'จำนวนสิทธิ์ที่จัดสรร (Seats)',
+        data: data,
+        backgroundColor: colors.slice(0, labels.length),
+        borderRadius: 4,
+        borderWidth: 0,
+        barPercentage: 0.65
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#0f172a',
+          padding: 6,
+          cornerRadius: 6,
+          callbacks: {
+            label: (ctx) => `  สิทธิ์ที่ได้รับ: ${ctx.parsed.x.toLocaleString()} Seats`
+          }
+        }
+      },
+      scales: {
+        x: {
+          beginAtZero: true,
+          grid: { color: 'rgba(226, 232, 240, 0.6)' },
+          ticks: { font: { size: 9 } }
+        },
+        y: {
+          grid: { display: false },
+          ticks: { font: { size: 10, weight: '700', family: "'Prompt', sans-serif" }, color: '#1e3a8a' }
+        }
+      }
+    }
+  });
+}
+

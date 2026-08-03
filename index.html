@@ -26,32 +26,32 @@
     <div class="nav-brand">
       <img src="assets/logo.png" alt="NCSA IT Support logo" class="nav-logo">
       <div class="nav-brand-text">
-        <span class="nav-org">สกมช. IT Support</span>
-        <span class="nav-sub">สำนักสื่อสารและเทคโนโลยีสารสนเทศ</span>
+        <span class="nav-org">แดชบอร์ดภาพรวมการทำงานของสำนักเทคโนโลยีสารสนเทศ (สทส.)</span>
+        <span class="nav-sub">สำนักงานคณะกรรมการการรักษาความมั่นคงปลอดภัยไซเบอร์แห่งชาติ (สกมช.)</span>
       </div>
     </div>
 
-    <!-- Centred pill tabs -->
-    <div class="nav-pills-center">
-      <button class="nav-pill active" data-target="view-overview">
-        <i class="fa-solid fa-chart-pie"></i> ภาพรวมผลงาน
-      </button>
-      <button class="nav-pill" data-target="view-hardware">
-        <i class="fa-solid fa-desktop"></i> ฮาร์ดแวร์
-      </button>
-      <button class="nav-pill" data-target="view-license">
-        <i class="fa-solid fa-key"></i> ไลเซนส์
-      </button>
-      <button class="nav-pill" data-target="view-cases">
-        <i class="fa-solid fa-headset"></i> Case IT Support
-      </button>
-      <button class="nav-pill" data-target="view-projects">
-        <i class="fa-solid fa-diagram-project"></i> โครงการ
-      </button>
-    </div>
-
-    <!-- Right actions -->
+    <!-- Right actions: nav pills + action buttons -->
     <div class="nav-actions">
+      <!-- Nav pills moved here so they don't overlap the title -->
+      <div class="nav-pills-center">
+        <button class="nav-pill active" data-target="view-overview">
+          <i class="fa-solid fa-chart-pie"></i> ภาพรวมผลงาน
+        </button>
+        <button class="nav-pill" data-target="view-hardware">
+          <i class="fa-solid fa-desktop"></i> ฮาร์ดแวร์
+        </button>
+        <button class="nav-pill" data-target="view-license">
+          <i class="fa-solid fa-key"></i> ไลเซนส์
+        </button>
+        <button class="nav-pill" data-target="view-cases">
+          <i class="fa-solid fa-headset"></i> Case IT Support
+        </button>
+        <button class="nav-pill" data-target="view-projects">
+          <i class="fa-solid fa-diagram-project"></i> โครงการ
+        </button>
+      </div>
+
       <button class="btn-nav btn-solid" onclick="triggerExcelUpload()">
         <i class="fa-solid fa-file-excel"></i> นำเข้า Excel
       </button>
@@ -454,7 +454,7 @@
 
   <!-- Footer -->
   <div class="footer-bar">
-    © 2026 สำนักสื่อสารและเทคโนโลยีสารสนเทศ (IT Support) · สำนักงานคณะกรรมการการรักษาความมั่นคงปลอดภัยไซเบอร์แห่งชาติ (สกมช.)
+    © 2026 สำนักเทคโนโลยีสารสนเทศ (สทส.) · สำนักงานคณะกรรมการการรักษาความมั่นคงปลอดภัยไซเบอร์แห่งชาติ (สกมช.)
   </div>
 
 </div><!-- /app-shell -->
@@ -478,4 +478,3 @@
 <script src="js/main.js"></script>
 </body>
 </html>
-
