@@ -77,16 +77,16 @@ html, body {
    =========================================================================== */
 .top-nav {
   background: var(--nav-bg);
-  height: 88px;
+  height: 72px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 40px;
-  box-shadow: 0 6px 28px rgba(15,31,92,0.32);
+  padding: 0 32px;
+  box-shadow: 0 4px 20px rgba(15,31,92,0.28);
   position: relative;
   z-index: 20;
-  border-bottom: 4px solid rgba(220,38,38,0.65);
+  border-bottom: 3px solid rgba(220,38,38,0.65);
 }
 
 .nav-brand {
@@ -97,10 +97,15 @@ html, body {
 }
 
 .nav-logo {
-  height: 50px;
+  height: 52px;
   width: auto;
-  filter: brightness(0) invert(1);
-  opacity: 0.95;
+  display: block;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.35));
+  transition: var(--transition);
+}
+
+.nav-logo:hover {
+  transform: scale(1.03);
 }
 
 /* Red accent divider after logo */
@@ -255,9 +260,16 @@ html, body {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 14px 20px 10px 20px;
+  padding: 8px 16px 4px 16px;
   min-height: 0;
   background: var(--bg-page);
+  display: flex;
+  flex-direction: column;
+}
+
+/* When overview dashboard is active, lock scrolling so everything fits 100% in viewport */
+.content-scroll:has(#view-overview.active) {
+  overflow: hidden;
 }
 
 /* ===========================================================================
@@ -272,36 +284,92 @@ html, body {
   animation: fadeInUp 0.3s ease;
 }
 
+#view-overview.page-view.active {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  gap: 8px;
+  flex: 1;
+}
+
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 /* ===========================================================================
-   DASHBOARD GRID — mirrors reference image layout
+   DASHBOARD GRID — scale-to-fit flex layout
    =========================================================================== */
 
 /* Row 1: two large cards side-by-side */
 .dash-row-top {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  margin-bottom: 14px;
+  gap: 10px;
+  flex: 1.2;
+  min-height: 0;
+  margin-bottom: 0;
 }
 
-/* Row 2: three metric mini-cards */
+.dash-row-top .card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.dash-row-top .chart-wrap,
+.dash-row-top .chart-wrap.tall {
+  flex: 1;
+  height: 100% !important;
+  min-height: 0;
+}
+
+.dash-row-top .donut-card-inner {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Row 2: five metric mini-cards */
 .dash-row-mid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 12px;
-  margin-bottom: 14px;
+  gap: 10px;
+  flex: 0 0 auto;
+  margin-bottom: 0;
 }
 
 /* Row 3: four-column layout */
 .dash-row-bottom {
   display: grid;
   grid-template-columns: 1.2fr 1fr 1fr 1fr;
-  gap: 14px;
+  gap: 10px;
+  flex: 1;
+  min-height: 0;
+}
+
+.dash-row-bottom .card,
+.dash-row-bottom .metric-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.dash-row-bottom .chart-wrap {
+  flex: 1;
+  height: 100% !important;
+  min-height: 0;
+}
+
+.dash-row-bottom .activity-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 /* ===========================================================================
@@ -322,32 +390,33 @@ html, body {
 }
 
 .card-pad {
-  padding: 16px 18px;
+  padding: 10px 14px;
 }
 
 .card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
+  margin-bottom: 6px;
+  flex-shrink: 0;
 }
 
 .card-title {
-  font-size: 0.88rem;
+  font-size: 0.84rem;
   font-weight: 700;
   color: var(--text-main);
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 6px;
 }
 
-.card-title i { color: var(--accent-teal); font-size: 0.95rem; }
+.card-title i { color: var(--accent-teal); font-size: 0.9rem; }
 
 .card-badge {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 600;
-  padding: 3px 9px;
-  border-radius: 10px;
+  padding: 2px 8px;
+  border-radius: 8px;
   background: #f1f5f9;
   color: var(--text-muted);
   display: flex;
@@ -363,10 +432,11 @@ html, body {
   border-radius: var(--radius-card);
   border: 1px solid var(--border-light);
   box-shadow: var(--shadow-card);
-  padding: 14px 16px;
+  padding: 8px 12px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  justify-content: center;
+  gap: 3px;
   transition: var(--transition);
   position: relative;
   overflow: hidden;
@@ -387,26 +457,26 @@ html, body {
 }
 
 .kpi-mini-label {
-  font-size: 0.74rem;
+  font-size: 0.7rem;
   color: var(--text-muted);
   font-weight: 600;
 }
 
 .kpi-mini-value {
-  font-size: 1.6rem;
+  font-size: 1.35rem;
   font-weight: 800;
   color: var(--text-main);
   line-height: 1;
 }
 
 .kpi-mini-unit {
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 600;
   color: var(--text-muted);
 }
 
 .kpi-mini-sub {
-  font-size: 0.7rem;
+  font-size: 0.66rem;
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -415,10 +485,10 @@ html, body {
 
 .kpi-mini-icon {
   position: absolute;
-  right: 14px;
+  right: 12px;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   opacity: 0.1;
   color: var(--kpi-accent, var(--accent-teal));
 }
@@ -435,11 +505,12 @@ html, body {
 .chart-wrap {
   position: relative;
   width: 100%;
-  height: 200px;
+  height: 100%;
+  min-height: 0;
 }
 
-.chart-wrap.tall { height: 240px; }
-.chart-wrap.short { height: 140px; }
+.chart-wrap.tall { height: 100%; }
+.chart-wrap.short { height: 100%; }
 
 /* ===========================================================================
    DONUT CARD (reference image right-top panel)
@@ -521,11 +592,13 @@ html, body {
   border-radius: var(--radius-card);
   border: 1px solid var(--border-light);
   box-shadow: var(--shadow-card);
-  padding: 14px 16px;
+  padding: 10px 14px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  justify-content: space-between;
+  gap: 4px;
   transition: var(--transition);
+  height: 100%;
 }
 
 .metric-card:hover {
@@ -534,20 +607,21 @@ html, body {
 }
 
 .metric-label {
-  font-size: 0.76rem;
+  font-size: 0.74rem;
   color: var(--text-muted);
   font-weight: 600;
 }
 
 .metric-value {
-  font-size: 1.4rem;
+  font-size: 1.35rem;
   font-weight: 800;
   color: var(--text-main);
   line-height: 1;
 }
 
 .metric-sparkline {
-  height: 48px;
+  flex: 1;
+  min-height: 0;
   position: relative;
 }
 
