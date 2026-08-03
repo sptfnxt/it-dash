@@ -197,24 +197,51 @@ function initPaperCharts() {
   const ctxMonthly = document.getElementById('paperMonthlyChart');
   if (ctxMonthly) {
     const ctx2d = ctxMonthly.getContext('2d');
+    const fillGradient = createGradient(ctx2d, 'rgba(59,130,246,0.48)', 'rgba(59,130,246,0.05)', 220);
     chartInstances.paperMonthly = new Chart(ctxMonthly, {
-      type: 'bar',
+      type: 'line',
       data: {
         labels: NCSA_DATA.paperUsage.monthlyTrend.map(d => d.month),
         datasets: [{
           label: 'ค่าบริการพิมพ์ (บาท)',
           data: NCSA_DATA.paperUsage.monthlyTrend.map(d => d.cost),
-          backgroundColor: createGradient(ctx2d, '#dc2626', '#ef4444'),
-          borderRadius: 8,
-          hoverBorderWidth: 3,
-          hoverBorderColor: '#fff'
+          fill: true,
+          backgroundColor: fillGradient,
+          borderColor: '#2563eb',
+          borderWidth: 3,
+          tension: 0.4,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          pointBackgroundColor: '#2563eb',
+          pointBorderColor: '#ffffff',
+          pointBorderWidth: 2,
+          cubicInterpolationMode: 'monotone'
         }]
       },
       options: {
-        responsive: true, maintainAspectRatio: false,
+        responsive: true,
+        maintainAspectRatio: false,
         animation: { duration: 1200 },
-        plugins: { legend: { display: false } },
-        scales: { y: { beginAtZero: true, grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } }
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#1e3a8a',
+            padding: 10,
+            cornerRadius: 8,
+            titleFont: { size: 12, weight: '700' }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: { color: '#eff6ff' },
+            ticks: { font: { size: 11, weight: '600' }, color: '#475569' }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { font: { size: 11, weight: '600' }, color: '#475569' }
+          }
+        }
       }
     });
   }

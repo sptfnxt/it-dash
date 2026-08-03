@@ -1,37 +1,41 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 210" width="360" height="210">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 210" role="img" aria-labelledby="logoTitle logoDesc">
+  <title id="logoTitle">NCSA IT Support logo</title>
+  <desc id="logoDesc">NCSA letters in white, blue, and red with Thai สกมช below.</desc>
   <defs>
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@600;700;800;900&amp;display=swap');
-      
-      .logo-n { font-family: 'Prompt', 'Inter', sans-serif; font-weight: 800; font-size: 130px; fill: #ffffff; }
-      .logo-c { font-family: 'Prompt', 'Inter', sans-serif; font-weight: 800; font-size: 130px; fill: #60a5fa; }
-      .logo-s { font-family: 'Prompt', 'Inter', sans-serif; font-weight: 800; font-size: 130px; fill: #f87171; }
-      .logo-a { font-family: 'Prompt', 'Inter', sans-serif; font-weight: 800; font-size: 130px; fill: #ffffff; }
-      
-      .logo-th-s { font-family: 'Prompt', sans-serif; font-weight: 700; font-size: 48px; fill: #ffffff; }
-      .logo-th-k { font-family: 'Prompt', sans-serif; font-weight: 700; font-size: 48px; fill: #60a5fa; }
-      .logo-th-m { font-family: 'Prompt', sans-serif; font-weight: 700; font-size: 48px; fill: #f87171; }
-      .logo-th-ch { font-family: 'Prompt', sans-serif; font-weight: 700; font-size: 48px; fill: #cbd5e1; }
+      .logo-n, .logo-c, .logo-s, .logo-a {
+        font-family: Inter, Arial, sans-serif;
+        font-weight: 800;
+        font-size: 130px;
+      }
+      .logo-n { fill: #ffffff; }
+      .logo-c { fill: #60a5fa; }
+      .logo-s { fill: #f87171; }
+      .logo-a { fill: #ffffff; }
+      .logo-th-s, .logo-th-k, .logo-th-m, .logo-th-ch {
+        font-family: Inter, Arial, sans-serif;
+        font-weight: 700;
+        font-size: 48px;
+      }
+      .logo-th-s { fill: #ffffff; }
+      .logo-th-k { fill: #60a5fa; }
+      .logo-th-m { fill: #f87171; }
+      .logo-th-ch { fill: #cbd5e1; }
     </style>
   </defs>
 
   <!-- Shield emblem background behind letter 'A' -->
   <g transform="translate(244, 4)">
-    <!-- Translucent Metallic Shield Body -->
     <path d="M 4 4 L 92 4 L 92 64 Q 92 132 48 150 Q 4 132 4 64 Z" fill="rgba(255, 255, 255, 0.16)" stroke="rgba(255, 255, 255, 0.65)" stroke-width="2.5"/>
-    
-    <!-- White Grid Divider Cross Lines -->
     <line x1="48" y1="4" x2="48" y2="150" stroke="rgba(255, 255, 255, 0.65)" stroke-width="3"/>
     <line x1="4" y1="64" x2="92" y2="64" stroke="rgba(255, 255, 255, 0.65)" stroke-width="3"/>
   </g>
 
-  <!-- English Main Letters: N C S A -->
   <text x="0" y="126" class="logo-n">N</text>
   <text x="82" y="126" class="logo-c">C</text>
   <text x="166" y="126" class="logo-s">S</text>
   <text x="246" y="126" class="logo-a">A</text>
 
-  <!-- Thai Subtext: สกมช -->
   <g transform="translate(172, 186)">
     <text x="0" y="0" class="logo-th-s">ส</text>
     <text x="32" y="0" class="logo-th-k">ก</text>

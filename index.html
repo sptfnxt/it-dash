@@ -24,7 +24,7 @@
   <nav class="top-nav">
     <!-- Brand -->
     <div class="nav-brand">
-      <img src="assets/logo.svg" alt="NCSA Logo" class="nav-logo">
+      <img src="assets/logo.svg" alt="NCSA IT Support logo" class="nav-logo">
       <div class="nav-brand-text">
         <span class="nav-org">สกมช. IT Support</span>
         <span class="nav-sub">สำนักสื่อสารและเทคโนโลยีสารสนเทศ</span>
@@ -38,9 +38,6 @@
       </button>
       <button class="nav-pill" data-target="view-hardware">
         <i class="fa-solid fa-desktop"></i> ฮาร์ดแวร์
-      </button>
-      <button class="nav-pill" data-target="view-paper">
-        <i class="fa-solid fa-print"></i> ระบบพิมพ์
       </button>
       <button class="nav-pill" data-target="view-license">
         <i class="fa-solid fa-key"></i> ไลเซนส์
@@ -221,30 +218,38 @@
          ===================================================== -->
     <div id="view-hardware" class="page-view">
       <div class="view-header">
-        <div class="view-title-group">
-          <h2><i class="fa-solid fa-laptop-code"></i> รายการอุปกรณ์ฮาร์ดแวร์ที่สำนักจัดสรรและดูแลรักษา</h2>
-          <p>รายละเอียดอุปกรณ์, ผู้ถือครอง, ผู้รับมอบ, IP Address, MAC Address แยกตามสำนักผู้ใช้งาน</p>
-        </div>
-        <div class="filter-bar">
-          <button class="btn-action btn-green" onclick="triggerExcelUpload()"><i class="fa-solid fa-file-excel"></i> นำเข้า Excel</button>
-          <div class="search-input-wrapper">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="hwSearchInput" class="search-input" placeholder="ค้นหา..." onkeyup="filterHardware()">
+        <div class="view-header-top">
+          <div class="view-header-left">
+            <div class="hardware-tab-row">
+              <button class="hardware-sub-tab active" data-target="view-hardware" onclick="switchToView('view-hardware')"><i class="fa-solid fa-desktop"></i> ฮาร์ดแวร์</button>
+              <button class="hardware-sub-tab" data-target="view-paper" onclick="switchToView('view-paper')"><i class="fa-solid fa-print"></i> เครื่องพิมพ์</button>
+            </div>
+            <div class="view-title-group">
+              <h2><i class="fa-solid fa-laptop-code"></i> รายการอุปกรณ์ฮาร์ดแวร์ที่สำนักจัดสรรและดูแลรักษา</h2>
+              <p>รายละเอียดอุปกรณ์, ผู้ถือครอง, ผู้รับมอบ, IP Address, MAC Address แยกตามสำนักผู้ใช้งาน</p>
+            </div>
           </div>
-          <select id="hwTypeSelect" class="select-filter" onchange="filterHardware()">
-            <option value="all">ทุกประเภท</option>
-            <option value="คอมพิวเตอร์ตั้งโต๊ะ">คอมพิวเตอร์ตั้งโต๊ะ</option>
-            <option value="โน๊ตบุ๊ค">โน๊ตบุ๊ค</option>
-            <option value="เครื่องพิมพ์">เครื่องพิมพ์</option>
-            <option value="เซิร์ฟเวอร์">เซิร์ฟเวอร์</option>
-            <option value="อุปกรณ์เครือข่าย">อุปกรณ์เครือข่าย</option>
-          </select>
-          <select id="hwStatusSelect" class="select-filter" onchange="filterHardware()">
-            <option value="all">ทุกสถานะ</option>
-            <option value="ใช้งานปกติ">ใช้งานปกติ</option>
-            <option value="ส่งซ่อม">ส่งซ่อม</option>
-            <option value="สำรอง">สำรอง</option>
-          </select>
+          <div class="view-header-actions">
+            <button class="btn-action btn-green" onclick="triggerExcelUpload()"><i class="fa-solid fa-file-excel"></i> นำเข้า Excel</button>
+            <div class="search-input-wrapper">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="hwSearchInput" class="search-input" placeholder="ค้นหา..." onkeyup="filterHardware()">
+            </div>
+            <select id="hwTypeSelect" class="select-filter" onchange="filterHardware()">
+              <option value="all">ทุกประเภท</option>
+              <option value="คอมพิวเตอร์ตั้งโต๊ะ">คอมพิวเตอร์ตั้งโต๊ะ</option>
+              <option value="โน๊ตบุ๊ค">โน๊ตบุ๊ค</option>
+              <option value="เครื่องพิมพ์">เครื่องพิมพ์</option>
+              <option value="เซิร์ฟเวอร์">เซิร์ฟเวอร์</option>
+              <option value="อุปกรณ์เครือข่าย">อุปกรณ์เครือข่าย</option>
+            </select>
+            <select id="hwStatusSelect" class="select-filter" onchange="filterHardware()">
+              <option value="all">ทุกสถานะ</option>
+              <option value="ใช้งานปกติ">ใช้งานปกติ</option>
+              <option value="ส่งซ่อม">ส่งซ่อม</option>
+              <option value="สำรอง">สำรอง</option>
+            </select>
+          </div>
         </div>
       </div>
       <div class="table-card">
@@ -274,22 +279,102 @@
          ===================================================== -->
     <div id="view-paper" class="page-view">
       <div class="view-header">
-        <div class="view-title-group">
-          <h2><i class="fa-solid fa-file-invoice"></i> รายงานการให้บริการระบบพิมพ์งานและกระดาษองค์กร</h2>
-          <p>สถิติเครื่องพิมพ์ศูนย์กลาง ปริมาณกระดาษ และการผลักดันระบบ e-Document</p>
-        </div>
-      </div>
-      <div class="charts-grid-2">
-        <div class="chart-card">
-          <div class="card-title-v2"><i class="fa-solid fa-chart-line"></i> ค่าใช้จ่ายระบบพิมพ์งานรายเดือน</div>
-          <div class="chart-container-v2">
-            <canvas id="paperMonthlyChart"></canvas>
+        <div class="view-header-top">
+          <div class="view-header-left">
+            <div class="hardware-tab-row">
+              <button class="hardware-sub-tab" data-target="view-hardware" onclick="switchToView('view-hardware')"><i class="fa-solid fa-desktop"></i> ฮาร์ดแวร์</button>
+              <button class="hardware-sub-tab active" data-target="view-paper" onclick="switchToView('view-paper')"><i class="fa-solid fa-print"></i> เครื่องพิมพ์</button>
+            </div>
+            <div class="view-title-group">
+              <h2><i class="fa-solid fa-file-invoice"></i> รายงานการให้บริการระบบพิมพ์งานและกระดาษองค์กร</h2>
+              <p>สถิติเครื่องพิมพ์ศูนย์กลาง ปริมาณกระดาษ และการผลักดันระบบ e-Document</p>
+            </div>
+          </div>
+          <div class="view-header-actions">
+            <button class="btn-action btn-green" onclick="triggerExcelUpload()"><i class="fa-solid fa-file-excel"></i> นำเข้า Excel</button>
           </div>
         </div>
-        <div class="chart-card">
-          <div class="card-title-v2"><i class="fa-solid fa-chart-pie"></i> สัดส่วน Digital vs Paper Document</div>
-          <div class="chart-container-v2">
-            <canvas id="paperRatioChart"></canvas>
+      </div>
+      <div class="paper-layout-grid">
+        <div class="paper-charts-column">
+          <div class="chart-card">
+            <div class="card-title-v2"><i class="fa-solid fa-chart-line"></i> ค่าใช้จ่ายระบบพิมพ์งานรายเดือน</div>
+            <div class="chart-container-v2">
+              <canvas id="paperMonthlyChart"></canvas>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="card-title-v2"><i class="fa-solid fa-chart-pie"></i> สัดส่วน Digital vs Paper Document</div>
+            <div class="chart-container-v2">
+              <canvas id="paperRatioChart"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="paper-info-column">
+          <div class="table-card paper-table-card">
+            <div class="card-title-v2"><i class="fa-solid fa-print"></i> ทะเบียนเครื่องพิมพ์และปริมาณการใช้กระดาษสะสม</div>
+            <div class="table-responsive paper-table-scroll">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>ชื่อเครื่องพิมพ์</th>
+                    <th>สังกัดแผนก/สำนัก</th>
+                    <th>IP Address</th>
+                    <th>ยี่ห้อ / รุ่น</th>
+                    <th>มิเตอร์เริ่มต้น (แผ่น)</th>
+                    <th>มิเตอร์ล่าสุด (แผ่น)</th>
+                    <th>ปริมาณการพิมพ์จริงสะสม</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Network Printer 01</td>
+                    <td>สำนักที่ 1</td>
+                    <td>10.0.100.11</td>
+                    <td>HP LaserJet Pro M404dn</td>
+                    <td>5,000</td>
+                    <td>48,920</td>
+                    <td class="text-success">43,920</td>
+                  </tr>
+                  <tr>
+                    <td>Color Printer 02</td>
+                    <td>สำนักที่ 2</td>
+                    <td>10.0.100.12</td>
+                    <td>Canon LBP623Cdw</td>
+                    <td>1,200</td>
+                    <td>18,450</td>
+                    <td class="text-success">17,250</td>
+                  </tr>
+                  <tr>
+                    <td>Copier Machine 01</td>
+                    <td>สำนักที่ 3</td>
+                    <td>10.0.100.13</td>
+                    <td>Xerox Altalink C8045</td>
+                    <td>25,000</td>
+                    <td>142,300</td>
+                    <td class="text-success">117,300</td>
+                  </tr>
+                  <tr>
+                    <td>Fast Printer 03</td>
+                    <td>สำนักที่ 4</td>
+                    <td>10.0.100.14</td>
+                    <td>Brother HL-L5200DW</td>
+                    <td>800</td>
+                    <td>35,120</td>
+                    <td class="text-success">34,320</td>
+                  </tr>
+                  <tr>
+                    <td>Printer Multi-function 04</td>
+                    <td>สำนักที่ 5</td>
+                    <td>10.0.100.15</td>
+                    <td>Epson EcoTank L15150</td>
+                    <td>4,500</td>
+                    <td>28,990</td>
+                    <td class="text-success">24,490</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>

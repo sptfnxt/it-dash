@@ -35,17 +35,22 @@ function initTabNavigation() {
   pills.forEach(pill => {
     pill.addEventListener('click', () => {
       const targetId = pill.getAttribute('data-target');
-
-      pills.forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
-
-      views.forEach(v => {
-        v.classList.toggle('active', v.id === targetId);
-      });
-
-      window.dispatchEvent(new Event('resize'));
+      switchToView(targetId);
     });
   });
+}
+
+function switchToView(targetId) {
+  const pills = document.querySelectorAll('.nav-pill');
+  const views = document.querySelectorAll('.page-view');
+  const subTabs = document.querySelectorAll('.hardware-sub-tab');
+  const topTargetId = targetId === 'view-paper' ? 'view-hardware' : targetId;
+
+  pills.forEach(p => p.classList.toggle('active', p.getAttribute('data-target') === topTargetId));
+  views.forEach(v => v.classList.toggle('active', v.id === targetId));
+  subTabs.forEach(tab => tab.classList.toggle('active', tab.getAttribute('data-target') === targetId));
+
+  window.dispatchEvent(new Event('resize'));
 }
 
 // --------------------------------------------------------------------------
