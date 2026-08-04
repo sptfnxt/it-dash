@@ -326,6 +326,17 @@ function showToast(message) {
 // --------------------------------------------------------------------------
 // HARDWARE TABLE RENDER
 // --------------------------------------------------------------------------
+function getHardwareLogoSrc(hwName) {
+  const name = (hwName || '').toLowerCase();
+  if (name.includes('dell')) return 'assets/dell.png';
+  if (name.includes('lenovo')) return 'assets/lenovo.png';
+  if (name.includes('hp')) return 'assets/hp.png';
+  if (name.includes('apple') || name.includes('macbook')) return 'assets/apple.png';
+  if (name.includes('canon')) return 'assets/canon.png';
+  if (name.includes('cisco')) return 'assets/cisco.png';
+  return 'assets/logo.png';
+}
+
 function renderHardwareTable() {
   const tbody = document.getElementById('hardwareTableBody');
   if (!tbody) return;
@@ -351,10 +362,19 @@ function renderHardwareTable() {
 
   filtered.forEach(hw => {
     let sc = hw.status === 'ส่งซ่อม' ? 'badge-red' : hw.status === 'สำรอง' ? 'badge-yellow' : 'badge-green';
+    const logoSrc = getHardwareLogoSrc(hw.name);
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td><strong>${hw.id}</strong></td>
-      <td><div style="font-weight:600;color:#1e3a8a;">${hw.name}</div><div style="font-size:0.74rem;color:#64748b;">${hw.type} | S/N: ${hw.serial}</div></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <img src="${logoSrc}" alt="${hw.name} logo" style="width:32px;height:32px;object-fit:contain;border-radius:6px;border:1px solid #cbd5e1;background:#fff;padding:2px;flex-shrink:0;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+          <div>
+            <div style="font-weight:600;color:#1e3a8a;">${hw.name}</div>
+            <div style="font-size:0.74rem;color:#64748b;">${hw.type} | S/N: ${hw.serial}</div>
+          </div>
+        </div>
+      </td>
       <td><i class="fa-solid fa-user" style="color:#1e3a8a;margin-right:4px;"></i>${hw.holder}</td>
       <td><i class="fa-regular fa-handshake" style="color:#dc2626;margin-right:4px;"></i>${hw.recipient}</td>
       <td><div style="font-family:monospace;font-weight:600;">${hw.ip}</div><div style="font-size:0.72rem;color:#64748b;font-family:monospace;">${hw.mac}</div></td>
@@ -528,13 +548,14 @@ function closeModal() {
 function openHardwareModal(hwId) {
   const hw = NCSA_DATA.hardware.find(h => h.id === hwId);
   if (!hw) return;
+  const logoSrc = getHardwareLogoSrc(hw.name);
   document.getElementById('modalTitle').innerText = `รายละเอียดอุปกรณ์: ${hw.id}`;
   document.getElementById('modalBody').innerHTML = `
     <div style="text-align:center;margin-bottom:14px;">
-      <div style="width:48px;height:48px;background:#eff6ff;color:#1e3a8a;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:1.4rem;">
-        <i class="fa-solid ${hw.type.includes('เครื่องพิมพ์')?'fa-print':hw.type.includes('โน๊ตบุ๊ค')?'fa-laptop':hw.type.includes('เซิร์ฟเวอร์')?'fa-server':'fa-desktop'}"></i>
+      <div style="width:64px;height:64px;margin:0 auto;background:#ffffff;border-radius:12px;border:1px solid #cbd5e1;display:flex;align-items:center;justify-content:center;padding:6px;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+        <img src="${logoSrc}" alt="${hw.name} logo" style="width:100%;height:100%;object-fit:contain;">
       </div>
-      <h4 style="font-size:1rem;color:#1e3a8a;margin-top:6px;">${hw.name}</h4>
+      <h4 style="font-size:1rem;color:#1e3a8a;margin-top:10px;font-weight:700;">${hw.name}</h4>
       <p style="color:#64748b;font-size:0.8rem;">${hw.type} | ${hw.dept}</p>
     </div>
     ${[['รหัสสินทรัพย์',hw.id],['ผู้ถือครอง',hw.holder],['ผู้รับ/ผู้ใช้จริง',hw.recipient],
