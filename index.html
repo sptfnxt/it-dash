@@ -22,8 +22,8 @@
        TOP NAVIGATION BAR (Teal Pill Style)
        ========================================================= -->
   <nav class="top-nav">
-    <!-- Brand -->
-    <div class="nav-brand">
+    <!-- Brand (Click to navigate to Overview view) -->
+    <div class="nav-brand" onclick="switchToView('view-overview')" role="button" tabindex="0" title="กลับไปหน้าภาพรวมผลงาน">
       <img src="assets/logo.png" alt="NCSA IT Support logo" class="nav-logo">
       <div class="nav-brand-text">
         <span class="nav-org">แดชบอร์ดภาพรวมการทำงานของสำนักเทคโนโลยีสารสนเทศ (สทส.)</span>
@@ -463,7 +463,10 @@
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal-content">
     <div class="modal-header">
-      <h3 id="modalTitle">รายละเอียด</h3>
+      <div class="modal-title-wrap">
+        <img src="assets/logo.png" alt="NCSA Logo" class="modal-logo">
+        <h3 id="modalTitle">รายละเอียด</h3>
+      </div>
       <button class="modal-close-btn" id="modalCloseBtn"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="modal-body" id="modalBody"></div>

@@ -179,6 +179,19 @@ function initSparklineSLA() {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      onClick: (event, activeElements) => {
+        if (activeElements && activeElements.length > 0) {
+          const idx = activeElements[0].index;
+          if (typeof openChartDetailModal === 'function') {
+            openChartDetailModal('slaTrend', idx);
+          }
+        }
+      },
+      onHover: (event, chartElements) => {
+        if (event.native && event.native.target) {
+          event.native.target.style.cursor = chartElements.length ? 'pointer' : 'default';
+        }
+      },
       plugins: { legend: {display:false}, tooltip: {enabled:false} },
       scales: { x: {display:false}, y: {display:false, min:85, max:100} },
       animation: { duration: 1200, easing: 'easeOutQuart' }
@@ -647,3 +660,252 @@ function openLicenseModal(licenseId) {
 }
 
 function exportDashboardReport() { window.print(); }
+
+// --------------------------------------------------------------------------
+// GENERIC DYNAMIC CHART POPUP DETAIL MODAL
+// --------------------------------------------------------------------------
+function openChartDetailModal(chartType, index, datasetIndex) {
+  const modalTitle = document.getElementById('modalTitle');
+  const modalBody = document.getElementById('modalBody');
+  const modalOverlay = document.getElementById('modalOverlay');
+  if (!modalTitle || !modalBody || !modalOverlay) return;
+
+  if (chartType === 'overviewPaper') {
+    const months = NCSA_DATA.paperUsage.monthlyTrend.map(d => d.month);
+    const month = months[index] || `เดือนที่ ${index + 1}`;
+    const casesCount = [18, 24, 15, 29, 22, 19, 26][index] || 20;
+    const paperInfo = NCSA_DATA.paperUsage.monthlyTrend[index] || { reams: 350, pages: 175000, cost: 42000 };
+
+    modalTitle.innerHTML = `<i class="fa-solid fa-chart-bar" style="color:#3b82f6;"></i> รายละเอียด Case IT Support — เดือน ${month}`;
+    modalBody.innerHTML = `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+        <div style="background:#eff6ff;padding:10px;border-radius:10px;border:1px solid #bfdbfe;text-align:center;">
+          <div style="font-size:0.72rem;color:#1e40af;font-weight:600;">Case IT Support ที่รับเรื่อง</div>
+          <div style="font-size:1.4rem;font-weight:800;color:#1e3a8a;">${casesCount} <span style="font-size:0.75rem;">รายการ</span></div>
+          <div style="font-size:0.68rem;color:#059669;font-weight:600;"><i class="fa-solid fa-check"></i> SLA Resolution 98.2%</div>
+        </div>
+        <div style="background:#f0fdf4;padding:10px;border-radius:10px;border:1px solid #bbf7d0;text-align:center;">
+          <div style="font-size:0.72rem;color:#166534;font-weight:600;">ปริมาณการใช้กระดาษ</div>
+          <div style="font-size:1.4rem;font-weight:800;color:#15803d;">${paperInfo.reams} <span style="font-size:0.75rem;">รีม</span></div>
+          <div style="font-size:0.68rem;color:#64748b;">(${paperInfo.pages.toLocaleString()} แผ่น | ฿${paperInfo.cost.toLocaleString()})</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:8px;font-weight:700;font-size:0.82rem;color:#1e3a8a;display:flex;align-items:center;justify-content:space-between;">
+        <span><i class="fa-solid fa-list-check"></i> รายการ Case ตัวอย่างประจำเดือน ${month}</span>
+        <span class="badge badge-blue" style="font-size:0.68rem;">รวม ${NCSA_DATA.cases.length} Cases</span>
+      </div>
+
+      <div style="max-height:220px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;">
+        <table class="custom-table" style="font-size:0.75rem;">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>หัวข้อปัญหา</th>
+              <th>ความด่วน</th>
+              <th>สถานะ</th>
+              <th>จัดการ</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${NCSA_DATA.cases.map(c => `
+              <tr>
+                <td><strong>${c.id}</strong></td>
+                <td><div style="font-weight:600;color:#1e3a8a;">${c.title.slice(0,30)}...</div><div style="font-size:0.68rem;color:#64748b;">${c.deptCode} | ${c.reporter}</div></td>
+                <td><span class="badge ${c.severity==='Critical'?'badge-red':c.severity==='High'?'badge-yellow':'badge-blue'}" style="font-size:0.65rem;">${c.severity}</span></td>
+                <td><span class="badge ${c.status==='กำลังดำเนินการ'?'badge-yellow':'badge-green'}" style="font-size:0.65rem;">${c.status}</span></td>
+                <td><button class="btn-action" style="padding:2px 6px;font-size:0.68rem;" onclick="openCaseModal('${c.id}')">ดูเคส</button></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+
+  } else if (chartType === 'overviewDept') {
+    const depts = ['สบก.', 'สปซ.', 'สยป.', 'สวบ.', 'สกส.', 'สสท.'];
+    const deptFullNames = {
+      'สบก.': 'สำนักบริหารงานกลาง',
+      'สปซ.': 'สำนักปฏิบัติการทางไซเบอร์',
+      'สยป.': 'สำนักยุทธศาสตร์และการวางแผน',
+      'สวบ.': 'สำนักวิชาการและการพัฒนาบุคลากร',
+      'สกส.': 'สำนักกำกับดูแลและส่งเสริมความปลอดภัยไซเบอร์',
+      'สสท.': 'สำนักสื่อสารและเทคโนโลยีสารสนเทศ (IT Support)'
+    };
+    const deptCode = depts[index] || 'สบก.';
+    const deptName = deptFullNames[deptCode] || deptCode;
+    const items = NCSA_DATA.hardware.filter(h => h.deptCode === deptCode || h.dept.includes(deptCode));
+
+    const pcCount = items.filter(h => h.type.includes('คอมพิวเตอร์')).length;
+    const nbCount = items.filter(h => h.type.includes('โน๊ตบุ๊ค')).length;
+    const prCount = items.filter(h => h.type.includes('เครื่องพิมพ์')).length;
+    const svCount = items.filter(h => h.type.includes('เซิร์ฟเวอร์') || h.type.includes('เครือข่าย')).length;
+
+    modalTitle.innerHTML = `<i class="fa-solid fa-desktop" style="color:#1e3a8a;"></i> รายละเอียดอุปกรณ์ไอที — ${deptCode}`;
+    modalBody.innerHTML = `
+      <div style="background:#f8fafc;padding:10px;border-radius:10px;border:1px solid #e2e8f0;margin-bottom:12px;">
+        <h4 style="margin:0 0 6px 0;font-size:0.88rem;color:#1e3a8a;font-weight:700;">${deptName}</h4>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;font-size:0.72rem;">
+          <span class="badge badge-blue"><i class="fa-solid fa-desktop"></i> PC: ${pcCount}</span>
+          <span class="badge badge-teal"><i class="fa-solid fa-laptop"></i> โน๊ตบุ๊ค: ${nbCount}</span>
+          <span class="badge badge-green"><i class="fa-solid fa-print"></i> เครื่องพิมพ์: ${prCount}</span>
+          <span class="badge badge-yellow"><i class="fa-solid fa-server"></i> Server/NW: ${svCount}</span>
+        </div>
+      </div>
+
+      <div style="margin-bottom:6px;font-weight:700;font-size:0.8rem;color:#1e3a8a;display:flex;justify-content:space-between;align-items:center;">
+        <span><i class="fa-solid fa-list"></i> รายชื่ออุปกรณ์ที่จัดสรร (${items.length} รายการ)</span>
+      </div>
+
+      <div style="max-height:240px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;">
+        <table class="custom-table" style="font-size:0.74rem;">
+          <thead>
+            <tr>
+              <th>รหัส / อุปกรณ์</th>
+              <th>ผู้ถือครอง</th>
+              <th>IP Address</th>
+              <th>สถานะ</th>
+              <th>รายละเอียด</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${items.length === 0 ? '<tr><td colspan="5" style="text-align:center;padding:14px;color:#64748b;">ไม่พบข้อมูลอุปกรณ์สังกัดนี้</td></tr>' : 
+              items.map(hw => {
+                const logoSrc = getHardwareLogoSrc(hw.name);
+                return `
+              <tr>
+                <td>
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <img src="${logoSrc}" alt="${hw.name} logo" style="width:28px;height:28px;object-fit:contain;border-radius:6px;border:1px solid #cbd5e1;background:#fff;padding:2px;flex-shrink:0;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+                    <div>
+                      <div style="font-weight:700;color:#1e3a8a;line-height:1.2;">${hw.id}</div>
+                      <div style="font-size:0.68rem;color:#64748b;">${hw.name}</div>
+                    </div>
+                  </div>
+                </td>
+                <td><i class="fa-solid fa-user" style="color:#3b82f6;margin-right:2px;"></i>${hw.holder}</td>
+                <td><code style="font-size:0.7rem;background:#f1f5f9;padding:1px 4px;border-radius:4px;">${hw.ip}</code></td>
+                <td><span class="badge ${hw.status==='ส่งซ่อม'?'badge-red':hw.status==='สำรอง'?'badge-yellow':'badge-green'}" style="font-size:0.65rem;">${hw.status}</span></td>
+                <td><button class="btn-action" style="padding:2px 6px;font-size:0.68rem;" onclick="openHardwareModal('${hw.id}')">ดูข้อมูล</button></td>
+              </tr>
+            `;}).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+
+  } else if (chartType === 'overviewBarMini' || chartType === 'paperMonthly') {
+    const item = NCSA_DATA.paperUsage.monthlyTrend[index] || NCSA_DATA.paperUsage.monthlyTrend[0];
+    modalTitle.innerHTML = `<i class="fa-solid fa-print" style="color:#0d9488;"></i> สถิติการใช้กระดาษและงบประมาณ — เดือน ${item.month}`;
+    modalBody.innerHTML = `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+        <div style="background:#f0fdf4;padding:10px;border-radius:10px;border:1px solid #bbf7d0;">
+          <div style="font-size:0.72rem;color:#166534;font-weight:600;">ปริมาณพิมพ์กระดาษ</div>
+          <div style="font-size:1.3rem;font-weight:800;color:#15803d;">${item.reams} <span style="font-size:0.75rem;">รีม</span></div>
+          <div style="font-size:0.68rem;color:#64748b;">คิดเป็น ${item.pages.toLocaleString()} แผ่น</div>
+        </div>
+        <div style="background:#fff7ed;padding:10px;border-radius:10px;border:1px solid #ffedd5;">
+          <div style="font-size:0.72rem;color:#c2410c;font-weight:600;">ค่าใช้จ่ายรวมระบบพิมพ์</div>
+          <div style="font-size:1.3rem;font-weight:800;color:#ea580c;">฿${item.cost.toLocaleString()}</div>
+          <div style="font-size:0.68rem;color:#059669;font-weight:600;"><i class="fa-solid fa-leaf"></i> ลดลง 12.4% YoY</div>
+        </div>
+      </div>
+
+      <div style="font-weight:700;font-size:0.8rem;color:#1e3a8a;margin-bottom:6px;">
+        <i class="fa-solid fa-building-user"></i> โควต้าและการใช้งานกระดาษแยกสำนัก
+      </div>
+      <div style="max-height:220px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;">
+        <table class="custom-table" style="font-size:0.74rem;">
+          <thead>
+            <tr>
+              <th>สำนัก</th>
+              <th>ปริมาณที่ใช้</th>
+              <th>โควต้าเต็ม</th>
+              <th>สถานะ</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${NCSA_DATA.paperUsage.departmentBreakdown.map(d => `
+              <tr>
+                <td><strong>${d.dept.split(' ')[0]}</strong></td>
+                <td>${d.reams} รีม</td>
+                <td>${d.quota} รีม</td>
+                <td><span class="badge ${d.percent > 90 ? 'badge-red' : d.percent < 60 ? 'badge-green' : 'badge-blue'}" style="font-size:0.65rem;">${d.percent}% (${d.status})</span></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+
+  } else if (chartType === 'digitalVsPaper' || chartType === 'paperRatio') {
+    const isDigital = index === 0;
+    const digPct = NCSA_DATA.paperUsage?.printVsDigitalRatio?.digitalDocPercent ?? 78.4;
+    const papPct = NCSA_DATA.paperUsage?.printVsDigitalRatio?.paperDocPercent ?? 21.6;
+
+    modalTitle.innerHTML = `<i class="fa-solid fa-file-contract" style="color:${isDigital?'#10b981':'#dc2626'};"></i> สถิติเอกสาร ${isDigital ? 'e-Document (ดิจิทัล)' : 'กระดาษพิมพ์ (Paper)'}`;
+    modalBody.innerHTML = `
+      <div style="background:${isDigital?'#f0fdf4':'#fef2f2'};padding:12px;border-radius:10px;border:1px solid ${isDigital?'#bbf7d0':'#fecaca'};margin-bottom:12px;text-align:center;">
+        <div style="font-size:0.78rem;color:${isDigital?'#166534':'#991b1b'};font-weight:600;">สัดส่วนการใช้อิเล็กทรอนิกส์เทียบกับกระดาษ</div>
+        <div style="font-size:2rem;font-weight:800;color:${isDigital?'#15803d':'#dc2626'};">${isDigital ? digPct : papPct}%</div>
+        <div style="font-size:0.72rem;color:#475569;margin-top:2px;">
+          ${isDigital ? '<i class="fa-solid fa-leaf" style="color:#10b981;"></i> ประหยัดกระดาษสะสมได้กว่า 184 ต้นในปีนี้' : '<i class="fa-solid fa-triangle-exclamation" style="color:#dc2626;"></i> มีเป้าหมายลดการใช้กระดาษอีก 15% ในไตรมาสถัดไป'}
+        </div>
+      </div>
+
+      <div style="font-weight:700;font-size:0.8rem;color:#1e3a8a;margin-bottom:6px;">
+        <i class="fa-solid fa-print"></i> เครื่องพิมพ์ที่มีปริมาณการใช้งานสูงสุดในองค์กร
+      </div>
+      <div style="max-height:200px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;">
+        <table class="custom-table" style="font-size:0.74rem;">
+          <thead>
+            <tr>
+              <th>ชื่อเครื่องพิมพ์</th>
+              <th>สถานที่ติดตั้ง</th>
+              <th>ปริมาณแผ่นเดือนนี้</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${NCSA_DATA.paperUsage.topPrinters.map(p => {
+              const logoSrc = getHardwareLogoSrc(p.name);
+              return `
+              <tr>
+                <td>
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <img src="${logoSrc}" alt="${p.name} logo" style="width:24px;height:24px;object-fit:contain;border-radius:5px;border:1px solid #cbd5e1;background:#fff;padding:2px;flex-shrink:0;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+                    <strong style="color:#1e3a8a;">${p.name}</strong>
+                  </div>
+                </td>
+                <td>${p.location}</td>
+                <td><span style="font-weight:700;color:#059669;">${p.pagesThisMonth.toLocaleString()} แผ่น</span></td>
+              </tr>
+            `;}).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+
+  } else if (chartType === 'slaTrend') {
+    const months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.'];
+    const month = months[index] || 'ก.ค.';
+    const slaVal = [92, 94, 96, 95, 97, 98, 98.2][index] || 98.2;
+
+    modalTitle.innerHTML = `<i class="fa-solid fa-square-poll-vertical" style="color:#0d9488;"></i> ประสิทธิภาพการให้บริการตาม SLA — เดือน ${month}`;
+    modalBody.innerHTML = `
+      <div style="background:#f0fdf4;padding:12px;border-radius:10px;border:1px solid #bbf7d0;text-align:center;margin-bottom:12px;">
+        <div style="font-size:0.78rem;color:#166534;font-weight:600;">อัตราการแก้ไข Case สำเร็จตาม SLA</div>
+        <div style="font-size:2rem;font-weight:800;color:#0d9488;">${slaVal}%</div>
+        <div style="font-size:0.72rem;color:#059669;font-weight:600;"><i class="fa-solid fa-circle-check"></i> ผ่านเกณฑ์มาตรฐานขั้นต่ำ (95.0%)</div>
+      </div>
+      <div style="font-size:0.78rem;color:#475569;line-height:1.6;">
+        <strong>สรุปผลงาน IT Support:</strong><br>
+        • ระยะเวลาเฉลี่ยในการเข้าแก้ไขปัญหา: <strong>1.5 ชั่วโมง</strong><br>
+        • จำนวนทีมช่างประจำศูนย์: <strong>8 ท่าน</strong><br>
+        • คะแนนความพึงพอใจผู้ใช้งาน (CSAT): <strong>4.85 / 5.0</strong>
+      </div>
+    `;
+  }
+
+  modalOverlay.classList.add('active');
+}
+

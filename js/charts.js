@@ -51,6 +51,19 @@ function initOverviewCharts() {
         responsive: true,
         maintainAspectRatio: false,
         animation: { duration: 1200, easing: 'easeOutBack' },
+        onClick: (event, activeElements) => {
+          if (activeElements && activeElements.length > 0) {
+            const idx = activeElements[0].index;
+            if (typeof openChartDetailModal === 'function') {
+              openChartDetailModal('overviewPaper', idx);
+            }
+          }
+        },
+        onHover: (event, chartElements) => {
+          if (event.native && event.native.target) {
+            event.native.target.style.cursor = chartElements.length ? 'pointer' : 'default';
+          }
+        },
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -96,6 +109,19 @@ function initOverviewCharts() {
         responsive: true,
         maintainAspectRatio: false,
         animation: { animateScale: true, animateRotate: true, duration: 1400, easing: 'easeOutQuart' },
+        onClick: (event, activeElements) => {
+          if (activeElements && activeElements.length > 0) {
+            const idx = activeElements[0].index;
+            if (typeof openChartDetailModal === 'function') {
+              openChartDetailModal('overviewDept', idx);
+            }
+          }
+        },
+        onHover: (event, chartElements) => {
+          if (event.native && event.native.target) {
+            event.native.target.style.cursor = chartElements.length ? 'pointer' : 'default';
+          }
+        },
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -141,6 +167,19 @@ function initOverviewCharts() {
         responsive: true,
         maintainAspectRatio: false,
         animation: { duration: 1000 },
+        onClick: (event, activeElements) => {
+          if (activeElements && activeElements.length > 0) {
+            const idx = activeElements[0].index;
+            if (typeof openChartDetailModal === 'function') {
+              openChartDetailModal('overviewBarMini', idx);
+            }
+          }
+        },
+        onHover: (event, chartElements) => {
+          if (event.native && event.native.target) {
+            event.native.target.style.cursor = chartElements.length ? 'pointer' : 'default';
+          }
+        },
         plugins: {
           legend: {
             position: 'bottom',
@@ -177,6 +216,19 @@ function initOverviewCharts() {
         responsive: true,
         maintainAspectRatio: false,
         animation: { animateScale: true, duration: 1200 },
+        onClick: (event, activeElements) => {
+          if (activeElements && activeElements.length > 0) {
+            const idx = activeElements[0].index;
+            if (typeof openChartDetailModal === 'function') {
+              openChartDetailModal('digitalVsPaper', idx);
+            }
+          }
+        },
+        onHover: (event, chartElements) => {
+          if (event.native && event.native.target) {
+            event.native.target.style.cursor = chartElements.length ? 'pointer' : 'default';
+          }
+        },
         plugins: { legend: { display: false }, tooltip: { enabled: false } },
         cutout: '68%'
       }
@@ -222,6 +274,19 @@ function initPaperCharts() {
         responsive: true,
         maintainAspectRatio: false,
         animation: { duration: 1200 },
+        onClick: (event, activeElements) => {
+          if (activeElements && activeElements.length > 0) {
+            const idx = activeElements[0].index;
+            if (typeof openChartDetailModal === 'function') {
+              openChartDetailModal('paperMonthly', idx);
+            }
+          }
+        },
+        onHover: (event, chartElements) => {
+          if (event.native && event.native.target) {
+            event.native.target.style.cursor = chartElements.length ? 'pointer' : 'default';
+          }
+        },
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -265,6 +330,19 @@ function initPaperCharts() {
       options: {
         responsive: true, maintainAspectRatio: false,
         animation: { animateScale: true, duration: 1400 },
+        onClick: (event, activeElements) => {
+          if (activeElements && activeElements.length > 0) {
+            const idx = activeElements[0].index;
+            if (typeof openChartDetailModal === 'function') {
+              openChartDetailModal('digitalVsPaper', idx);
+            }
+          }
+        },
+        onHover: (event, chartElements) => {
+          if (event.native && event.native.target) {
+            event.native.target.style.cursor = chartElements.length ? 'pointer' : 'default';
+          }
+        },
         plugins: { legend: { position: 'bottom', labels: { padding: 14, usePointStyle: true } } }
       }
     });
@@ -300,6 +378,20 @@ function initLicenseCharts() {
       options: {
         responsive: true, maintainAspectRatio: false,
         animation: { duration: 1300 },
+        onClick: (event, activeElements) => {
+          if (activeElements && activeElements.length > 0) {
+            const idx = activeElements[0].index;
+            const lic = NCSA_DATA.licenses[idx];
+            if (lic && typeof openLicenseModal === 'function') {
+              openLicenseModal(lic.id);
+            }
+          }
+        },
+        onHover: (event, chartElements) => {
+          if (event.native && event.native.target) {
+            event.native.target.style.cursor = chartElements.length ? 'pointer' : 'default';
+          }
+        },
         scales: {
           x: { stacked: true, grid: { display: false } },
           y: { stacked: true, beginAtZero: true }
