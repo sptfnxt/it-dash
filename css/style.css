@@ -468,6 +468,8 @@ body {
   transition: var(--transition);
   position: relative;
   overflow: hidden;
+  cursor: pointer;
+  user-select: none;
 }
 
 .kpi-mini::before {
@@ -481,7 +483,7 @@ body {
 
 .kpi-mini:hover {
   box-shadow: var(--shadow-card-hover);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
 }
 
 .kpi-mini-label {

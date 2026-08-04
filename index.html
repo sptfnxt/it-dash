@@ -110,7 +110,7 @@
 
       <!-- ROW 2 — five KPI mini-cards -->
       <div class="dash-row-mid">
-        <div class="kpi-mini" style="--kpi-accent:#2d9d8f;">
+        <div class="kpi-mini" style="--kpi-accent:#2d9d8f;" onclick="openKpiDetailModal('hardware')" title="คลิกดูข้อมูลย่อฮาร์ดแวร์">
           <i class="kpi-mini-icon fa-solid fa-desktop"></i>
           <div class="kpi-mini-label">ฮาร์ดแวร์ในดูแล</div>
           <div>
@@ -120,7 +120,7 @@
           <div class="kpi-mini-sub text-green"><i class="fa-solid fa-circle-check"></i> พร้อมใช้ 94.5%</div>
         </div>
 
-        <div class="kpi-mini" style="--kpi-accent:#f97316;">
+        <div class="kpi-mini" style="--kpi-accent:#f97316;" onclick="openKpiDetailModal('paper')" title="คลิกดูข้อมูลย่อระบบพิมพ์">
           <i class="kpi-mini-icon fa-solid fa-leaf"></i>
           <div class="kpi-mini-label">กระดาษในระบบพิมพ์</div>
           <div>
@@ -130,7 +130,7 @@
           <div class="kpi-mini-sub text-red"><i class="fa-solid fa-arrow-down"></i> ลด 12.4% จากเดือนก่อน</div>
         </div>
 
-        <div class="kpi-mini" style="--kpi-accent:#059669;">
+        <div class="kpi-mini" style="--kpi-accent:#059669;" onclick="openKpiDetailModal('license')" title="คลิกดูข้อมูลย่อไลเซนส์">
           <i class="kpi-mini-icon fa-solid fa-key"></i>
           <div class="kpi-mini-label">ไลเซนส์ที่จัดสรร</div>
           <div>
@@ -140,7 +140,7 @@
           <div class="kpi-mini-sub text-teal"><i class="fa-solid fa-check"></i> ใช้งาน 91.1%</div>
         </div>
 
-        <div class="kpi-mini" style="--kpi-accent:#d97706;">
+        <div class="kpi-mini" style="--kpi-accent:#d97706;" onclick="openKpiDetailModal('cases')" title="คลิกดูข้อมูลย่อ Case IT Support">
           <i class="kpi-mini-icon fa-solid fa-headset"></i>
           <div class="kpi-mini-label">Case รับใหม่</div>
           <div>
@@ -150,7 +150,7 @@
           <div class="kpi-mini-sub text-green"><i class="fa-solid fa-clock-check"></i> SLA 98.2%</div>
         </div>
 
-        <div class="kpi-mini" style="--kpi-accent:#7c3aed;">
+        <div class="kpi-mini" style="--kpi-accent:#7c3aed;" onclick="openKpiDetailModal('projects')" title="คลิกดูข้อมูลย่อโครงการพัฒนาไอที">
           <i class="kpi-mini-icon fa-solid fa-bars-progress"></i>
           <div class="kpi-mini-label">โครงการพัฒนาไอที</div>
           <div>
@@ -167,7 +167,7 @@
         <!-- Col 1: Medium bar chart -->
         <div class="card card-pad">
           <div class="card-header">
-            <span class="card-title"><i class="fa-solid fa-chart-column"></i> กระดาษ/Case รายเดือน</span>
+            <span class="card-title"><i class="fa-solid fa-chart-column"></i> กระดาษ/Cost รายเดือน</span>
             <span class="card-badge"><i class="fa-regular fa-calendar"></i> 7 เดือน</span>
           </div>
           <div class="chart-wrap">
