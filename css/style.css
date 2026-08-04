@@ -251,19 +251,101 @@ body {
    =========================================================================== */
 .content-scroll {
   flex: 1;
-  height: calc(100vh - 88px);
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding: 10px 16px 8px;
   min-height: 0;
   background: var(--bg-page);
-  display: flex;
-  flex-direction: column;
+  display: block;
 }
 
 /* When overview dashboard is active on large displays, lock scrolling so everything fits 100% in viewport */
-@media (min-width: 901px) and (min-height: 800px) {
-  .content-scroll:has(#view-overview.active) {
+@media (min-width: 901px) {
+  .content-scroll {
+    overflow: hidden !important;
+  }
+  .page-view.active {
+    display: flex !important;
+    flex-direction: column;
+    height: 100%;
     overflow: hidden;
+    gap: 10px;
+  }
+  
+  /* Overview Dashboard */
+  .dash-row-top {
+    flex: 1.25;
+    margin-bottom: 0;
+    min-height: 0;
+  }
+  .dash-row-mid {
+    flex: 0 0 auto;
+    margin-bottom: 0;
+  }
+  .dash-row-bottom {
+    flex: 1;
+    margin-bottom: 0;
+    min-height: 0;
+  }
+  .dash-row-top .card,
+  .dash-row-bottom .card,
+  .metric-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .chart-wrap,
+  .chart-wrap.tall {
+    flex: 1;
+    height: auto !important;
+    min-height: 0;
+  }
+  .donut-card-inner {
+    flex: 1;
+    min-height: 0;
+    align-items: center;
+  }
+  .metric-sparkline {
+    flex: 1;
+    height: auto !important;
+    min-height: 0;
+  }
+  .activity-list {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+  }
+  
+  /* Shared across views */
+  .view-header {
+    flex: 0 0 auto;
+    margin-bottom: 0;
+  }
+  
+  /* Table Cards */
+  .table-card {
+    flex: 1;
+    height: auto !important;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0;
+  }
+  .table-responsive {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+  }
+  
+  /* Grid Views */
+  .licenses-grid,
+  .projects-grid {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+    padding-bottom: 10px;
+    align-content: start;
   }
 }
 
@@ -277,8 +359,7 @@ body {
 .page-view.active {
   display: block;
   animation: fadeInUp 0.3s ease;
-  height: 100%;
-  overflow: hidden;
+  min-height: 100%;
 }
 
 @keyframes fadeInUp {
@@ -535,6 +616,8 @@ body {
   flex-direction: column;
   gap: 6px;
   transition: var(--transition);
+  height: 100%;
+  justify-content: space-between;
 }
 
 .metric-card:hover {
@@ -1339,6 +1422,11 @@ body {
     flex: none;
   }
 
+  .paper-layout-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
   .chart-wrap,
   .dash-row-top .chart-wrap,
   .dash-row-top .chart-wrap.tall,
@@ -1425,18 +1513,57 @@ body {
 
   .filter-bar {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
+    align-items: stretch;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .filter-bar .search-input-wrapper,
+  .filter-bar .select-filter,
+  .filter-bar .btn-action {
+    width: 100%;
   }
 
   .search-input {
     min-width: 100%;
+    width: 100%;
+  }
+
+  .view-header-actions {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .view-header-actions .search-input-wrapper,
+  .view-header-actions .select-filter,
+  .view-header-actions .btn-action {
+    width: 100%;
+  }
+
+  .hardware-tab-row {
+    width: 100%;
+    display: flex;
+  }
+
+  .hardware-sub-tab {
+    flex: 1;
+    justify-content: center;
+    padding: 8px 12px;
+    font-size: 0.85rem;
   }
 
   .view-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 8px;
+    width: 100%;
+    gap: 12px;
+  }
+
+  .view-header-top,
+  .view-header-left {
+    width: 100%;
   }
 
   .view-title-group h2 {

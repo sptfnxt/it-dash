@@ -37,7 +37,7 @@ function initOverviewCharts() {
         labels: NCSA_DATA.paperUsage.monthlyTrend.map(d => d.month),
         datasets: [{
           label: 'Case IT Support รายเดือน',
-          data: NCSA_DATA.paperUsage.monthlyTrend.map((d,i) => NCSA_DATA.cases.length > 0 ? Math.round(NCSA_DATA.cases.length * [0.08,0.12,0.09,0.14,0.11,0.15,0.13][i%7]) : d.reams),
+          data: [18, 24, 15, 29, 22, 19, 26],
           backgroundColor: barGrad,
           hoverBackgroundColor: createGradient(ctx2d, '#0d9488', '#2dd4bf'),
           borderRadius: 8,
