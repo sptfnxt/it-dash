@@ -37,7 +37,7 @@ function initOverviewCharts() {
         labels: NCSA_DATA.paperUsage.monthlyTrend.map(d => d.month),
         datasets: [{
           label: 'Case IT Support รายเดือน',
-          data: NCSA_DATA.paperUsage.monthlyTrend.map((d,i) => NCSA_DATA.cases.length > 0 ? Math.round(NCSA_DATA.cases.length * [0.08,0.12,0.09,0.14,0.11,0.15,0.13][i%7]) : d.reams),
+          data: [18, 24, 15, 29, 22, 19, 26],
           backgroundColor: barGrad,
           hoverBackgroundColor: createGradient(ctx2d, '#0d9488', '#2dd4bf'),
           borderRadius: 8,
@@ -51,6 +51,19 @@ function initOverviewCharts() {
         responsive: true,
         maintainAspectRatio: false,
         animation: { duration: 1200, easing: 'easeOutBack' },
+        onClick: (event, activeElements) => {
+          if (activeElements && activeElements.length > 0) {
+            const idx = activeElements[0].index;
+            if (typeof openChartDetailModal === 'function') {
+              openChartDetailModal('overviewPaper', idx);
+            }
+          }
+        },
+        onHover: (event, chartElements) => {
+          if (event.native && event.native.target) {
+            event.native.target.style.cursor = chartElements.length ? 'pointer' : 'default';
+          }
+        },
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -96,6 +109,19 @@ function initOverviewCharts() {
         responsive: true,
         maintainAspectRatio: false,
         animation: { animateScale: true, animateRotate: true, duration: 1400, easing: 'easeOutQuart' },
+        onClick: (event, activeElements) => {
+          if (activeElements && activeElements.length > 0) {
+            const idx = activeElements[0].index;
+            if (typeof openChartDetailModal === 'function') {
+              openChartDetailModal('overviewDept', idx);
+            }
+          }
+        },
+        onHover: (event, chartElements) => {
+          if (event.native && event.native.target) {
+            event.native.target.style.cursor = chartElements.length ? 'pointer' : 'default';
+          }
+        },
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -141,6 +167,19 @@ function initOverviewCharts() {
         responsive: true,
         maintainAspectRatio: false,
         animation: { duration: 1000 },
+        onClick: (event, activeElements) => {
+          if (activeElements && activeElements.length > 0) {
+            const idx = activeElements[0].index;
+            if (typeof openChartDetailModal === 'function') {
+              openChartDetailModal('overviewBarMini', idx);
+            }
+          }
+        },
+        onHover: (event, chartElements) => {
+          if (event.native && event.native.target) {
+            event.native.target.style.cursor = chartElements.length ? 'pointer' : 'default';
+          }
+        },
         plugins: {
           legend: {
             position: 'bottom',
@@ -177,6 +216,19 @@ function initOverviewCharts() {
         responsive: true,
         maintainAspectRatio: false,
         animation: { animateScale: true, duration: 1200 },
+        onClick: (event, activeElements) => {
+          if (activeElements && activeElements.length > 0) {
+            const idx = activeElements[0].index;
+            if (typeof openChartDetailModal === 'function') {
+              openChartDetailModal('digitalVsPaper', idx);
+            }
+          }
+        },
+        onHover: (event, chartElements) => {
+          if (event.native && event.native.target) {
+            event.native.target.style.cursor = chartElements.length ? 'pointer' : 'default';
+          }
+        },
         plugins: { legend: { display: false }, tooltip: { enabled: false } },
         cutout: '68%'
       }
@@ -222,6 +274,19 @@ function initPaperCharts() {
         responsive: true,
         maintainAspectRatio: false,
         animation: { duration: 1200 },
+        onClick: (event, activeElements) => {
+          if (activeElements && activeElements.length > 0) {
+            const idx = activeElements[0].index;
+            if (typeof openChartDetailModal === 'function') {
+              openChartDetailModal('paperMonthly', idx);
+            }
+          }
+        },
+        onHover: (event, chartElements) => {
+          if (event.native && event.native.target) {
+            event.native.target.style.cursor = chartElements.length ? 'pointer' : 'default';
+          }
+        },
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -265,6 +330,19 @@ function initPaperCharts() {
       options: {
         responsive: true, maintainAspectRatio: false,
         animation: { animateScale: true, duration: 1400 },
+        onClick: (event, activeElements) => {
+          if (activeElements && activeElements.length > 0) {
+            const idx = activeElements[0].index;
+            if (typeof openChartDetailModal === 'function') {
+              openChartDetailModal('digitalVsPaper', idx);
+            }
+          }
+        },
+        onHover: (event, chartElements) => {
+          if (event.native && event.native.target) {
+            event.native.target.style.cursor = chartElements.length ? 'pointer' : 'default';
+          }
+        },
         plugins: { legend: { position: 'bottom', labels: { padding: 14, usePointStyle: true } } }
       }
     });
@@ -300,6 +378,20 @@ function initLicenseCharts() {
       options: {
         responsive: true, maintainAspectRatio: false,
         animation: { duration: 1300 },
+        onClick: (event, activeElements) => {
+          if (activeElements && activeElements.length > 0) {
+            const idx = activeElements[0].index;
+            const lic = NCSA_DATA.licenses[idx];
+            if (lic && typeof openLicenseModal === 'function') {
+              openLicenseModal(lic.id);
+            }
+          }
+        },
+        onHover: (event, chartElements) => {
+          if (event.native && event.native.target) {
+            event.native.target.style.cursor = chartElements.length ? 'pointer' : 'default';
+          }
+        },
         scales: {
           x: { stacked: true, grid: { display: false } },
           y: { stacked: true, beginAtZero: true }
@@ -345,3 +437,63 @@ function updateAllCharts() {
     chartInstances.licenseSeat.update();
   }
 }
+
+// Modal License Dept Chart (View 4 License Detail Popup)
+function renderModalLicenseDeptChart(assignedDepts, licenseName) {
+  const canvas = document.getElementById('modalLicenseDeptChart');
+  if (!canvas) return;
+
+  if (chartInstances.modalLicenseDept) {
+    chartInstances.modalLicenseDept.destroy();
+  }
+
+  const ctx = canvas.getContext('2d');
+  const labels = assignedDepts.map(d => d.dept);
+  const data = assignedDepts.map(d => d.seats);
+  const colors = [
+    '#1e3a8a', '#2563eb', '#0284c7', '#059669', '#7c3aed', '#d97706', '#dc2626', '#0d9488'
+  ];
+
+  chartInstances.modalLicenseDept = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'จำนวนสิทธิ์ที่จัดสรร (Seats)',
+        data: data,
+        backgroundColor: colors.slice(0, labels.length),
+        borderRadius: 4,
+        borderWidth: 0,
+        barPercentage: 0.65
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#0f172a',
+          padding: 6,
+          cornerRadius: 6,
+          callbacks: {
+            label: (ctx) => `  สิทธิ์ที่ได้รับ: ${ctx.parsed.x.toLocaleString()} Seats`
+          }
+        }
+      },
+      scales: {
+        x: {
+          beginAtZero: true,
+          grid: { color: 'rgba(226, 232, 240, 0.6)' },
+          ticks: { font: { size: 9 } }
+        },
+        y: {
+          grid: { display: false },
+          ticks: { font: { size: 10, weight: '700', family: "'Prompt', sans-serif" }, color: '#1e3a8a' }
+        }
+      }
+    }
+  });
+}
+
