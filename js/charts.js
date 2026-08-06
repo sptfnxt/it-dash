@@ -138,54 +138,97 @@ function initOverviewCharts() {
     });
   }
 
-  // --- C. Small Bar (Row 3 Col 1) ---
-  const ctxMini = document.getElementById('overviewBarMini');
-  if (ctxMini) {
-    const ctx2d = ctxMini.getContext('2d');
-    chartInstances.overviewBarMini = new Chart(ctxMini, {
+  // --- Row 3 Col 1: Hardware Assets Breakdown ---
+  const ctxHw = document.getElementById('overviewHwChart');
+  if (ctxHw) {
+    const ctx2d = ctxHw.getContext('2d');
+    chartInstances.overviewHw = new Chart(ctxHw, {
       type: 'bar',
       data: {
-        labels: NCSA_DATA.paperUsage.monthlyTrend.map(d => d.month),
-        datasets: [
-          {
-            label: 'กระดาษ (รีม)',
-            data: NCSA_DATA.paperUsage.monthlyTrend.map(d => d.reams),
-            backgroundColor: createGradient(ctx2d, '#0d9488', '#5eead4'),
-            borderRadius: 6,
-            borderSkipped: false
-          },
-          {
-            label: 'Cost (×100฿)',
-            data: NCSA_DATA.paperUsage.monthlyTrend.map(d => Math.round(d.cost / 100)),
-            backgroundColor: createGradient(ctx2d, '#f97316', '#fdba74'),
-            borderRadius: 6,
-            borderSkipped: false
-          }
-        ]
+        labels: ['ใช้งานปกติ', 'ส่งซ่อม/บำรุง', 'สำรองพร้อมใช้'],
+        datasets: [{
+          label: 'จำนวน (เครื่อง)',
+          data: [1180, 45, 23],
+          backgroundColor: ['#10b981', '#f59e0b', '#3b82f6'],
+          borderRadius: 6,
+          borderSkipped: false
+        }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         animation: { duration: 1000 },
-        onClick: (event, activeElements) => {
-          if (activeElements && activeElements.length > 0) {
-            const idx = activeElements[0].index;
-            if (typeof openChartDetailModal === 'function') {
-              openChartDetailModal('overviewBarMini', idx);
-            }
-          }
-        },
-        onHover: (event, chartElements) => {
-          if (event.native && event.native.target) {
-            event.native.target.style.cursor = chartElements.length ? 'pointer' : 'default';
-          }
-        },
         plugins: {
-          legend: {
-            position: 'bottom',
-            labels: { font: { size: 9 }, padding: 8, usePointStyle: true }
-          },
-          tooltip: { padding: 8, cornerRadius: 8 }
+          legend: { display: false },
+          tooltip: {
+            padding: 8,
+            cornerRadius: 8,
+            callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw} เครื่อง` }
+          }
+        },
+        scales: {
+          y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { font: { size: 9 } } },
+          x: { grid: { display: false }, ticks: { font: { size: 9, weight: '600' } } }
+        }
+      }
+    });
+  }
+
+  // --- Row 3 Col 2: Software License Allocation ---
+  const ctxLic = document.getElementById('overviewLicChart');
+  if (ctxLic) {
+    chartInstances.overviewLic = new Chart(ctxLic, {
+      type: 'doughnut',
+      data: {
+        labels: ['M365', 'Windows 11', 'Kaspersky', 'Adobe', 'VMware', 'อื่นๆ'],
+        datasets: [{
+          data: [1140, 1420, 270, 280, 28, 3565],
+          backgroundColor: ['#3b82f6', '#1e3a8a', '#059669', '#dc2626', '#d97706', '#94a3b8'],
+          borderWidth: 2,
+          borderColor: '#fff',
+          hoverOffset: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { animateScale: true, duration: 1200 },
+        plugins: {
+          legend: { position: 'bottom', labels: { font: { size: 9 }, padding: 6, usePointStyle: true } },
+          tooltip: {
+            callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw.toLocaleString()} สิทธิ์` }
+          }
+        },
+        cutout: '62%'
+      }
+    });
+  }
+
+  // --- Row 3 Col 3: Paper Usage Monthly Trend ---
+  const ctxPaperMini = document.getElementById('overviewPaperMiniChart');
+  if (ctxPaperMini) {
+    const ctx2d = ctxPaperMini.getContext('2d');
+    chartInstances.overviewPaperMini = new Chart(ctxPaperMini, {
+      type: 'bar',
+      data: {
+        labels: NCSA_DATA.paperUsage.monthlyTrend.map(d => d.month),
+        datasets: [{
+          label: 'การใช้กระดาษ (รีม)',
+          data: NCSA_DATA.paperUsage.monthlyTrend.map(d => d.reams),
+          backgroundColor: createGradient(ctx2d, '#0d9488', '#5eead4'),
+          borderRadius: 6,
+          borderSkipped: false
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 1000 },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: { label: ctx => ` การใช้กระดาษ: ${ctx.raw} รีม` }
+          }
         },
         scales: {
           y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { font: { size: 9 } } },
@@ -195,42 +238,32 @@ function initOverviewCharts() {
     });
   }
 
-  // --- D. Mini Donut (Digital vs Paper) Row 3 Col 2 ---
-  const ctxMiniDonut = document.getElementById('miniDonutDigital');
-  if (ctxMiniDonut) {
-    const dig = NCSA_DATA.paperUsage?.printVsDigitalRatio?.digitalDocPercent ?? 67;
-    const pap = NCSA_DATA.paperUsage?.printVsDigitalRatio?.paperDocPercent ?? 33;
-    chartInstances.miniDonutDigital = new Chart(ctxMiniDonut, {
+  // --- Row 3 Col 4: IT Projects Status Breakdown ---
+  const ctxProj = document.getElementById('overviewProjChart');
+  if (ctxProj) {
+    chartInstances.overviewProj = new Chart(ctxProj, {
       type: 'doughnut',
       data: {
-        labels: ['e-Document', 'Paper'],
+        labels: ['เร็วกว่าแผน', 'เป็นไปตามแผน'],
         datasets: [{
-          data: [dig, pap],
-          backgroundColor: ['#10b981', '#dc2626'],
+          data: [2, 1],
+          backgroundColor: ['#059669', '#3b82f6'],
           borderWidth: 2,
           borderColor: '#fff',
-          hoverOffset: 8
+          hoverOffset: 6
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         animation: { animateScale: true, duration: 1200 },
-        onClick: (event, activeElements) => {
-          if (activeElements && activeElements.length > 0) {
-            const idx = activeElements[0].index;
-            if (typeof openChartDetailModal === 'function') {
-              openChartDetailModal('digitalVsPaper', idx);
-            }
+        plugins: {
+          legend: { position: 'bottom', labels: { font: { size: 9 }, padding: 6, usePointStyle: true } },
+          tooltip: {
+            callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw} โครงการ` }
           }
         },
-        onHover: (event, chartElements) => {
-          if (event.native && event.native.target) {
-            event.native.target.style.cursor = chartElements.length ? 'pointer' : 'default';
-          }
-        },
-        plugins: { legend: { display: false }, tooltip: { enabled: false } },
-        cutout: '68%'
+        cutout: '62%'
       }
     });
   }
