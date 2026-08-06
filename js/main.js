@@ -496,48 +496,514 @@ function renderCaseTable() {
 function filterCases() { renderCaseTable(); }
 
 // --------------------------------------------------------------------------
-// PROJECT CARDS RENDER
+// PROJECT CARDS & STRATEGIC DASHBOARD RENDER
 // --------------------------------------------------------------------------
-function renderProjectCards() {
-  const container = document.getElementById('projectsContainer');
-  if (!container) return;
-  container.innerHTML = '';
+let currentStrategyFilter = 'all';
+let currentProjectViewMode = 'cards';
 
-  NCSA_DATA.projects.forEach(p => {
-    const statusMap = {'มีความเสี่ยงล่าช้า':'badge-red','เสร็จสิ้น':'badge-green'};
-    const sc = statusMap[p.status] || 'badge-blue';
-    const fillC = p.progressPercent === 100 ? 'bg-green' : p.progressPercent < 50 ? 'bg-red' : 'bg-blue';
-    const card = document.createElement('div');
-    card.className = 'project-card';
-    card.innerHTML = `
-      <div class="project-header">
-        <div class="project-title-box">
-          <h3>${p.name}</h3>
-          <div class="project-dept"><i class="fa-solid fa-building-flag"></i> ${p.dept}</div>
-        </div>
-        <span class="badge ${sc}">${p.status}</span>
-      </div>
-      <div class="project-meta-row">
-        <div class="project-meta-item"><span>ผู้จัดการ:</span><strong>${p.manager}</strong></div>
-        <div class="project-meta-item"><span>งบประมาณ:</span><strong style="color:#1e3a8a;">${(p.budgetTHB/1000000).toFixed(1)} ล้านบาท</strong></div>
-      </div>
-      <div>
-        <div style="display:flex;justify-content:space-between;font-size:0.8rem;font-weight:600;margin-bottom:2px;">
-          <span>ความคืบหน้า:</span><span style="color:#1e3a8a;">${p.progressPercent}%</span>
-        </div>
-        <div class="progress-bar-wrap"><div class="progress-bar-fill ${fillC}" style="width:${p.progressPercent}%"></div></div>
-      </div>
-      <div style="font-size:0.76rem;background:#f8fafc;padding:8px;border-radius:8px;">
-        <div style="font-weight:600;color:#64748b;margin-bottom:4px;">Milestones:</div>
-        ${p.milestones.map(m=>`
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
-            <i class="fa-solid ${m.done?'fa-circle-check':'fa-circle-notch'}" style="color:${m.done?'#059669':'#94a3b8'};"></i>
-            <span style="color:${m.done?'#0f172a':'#64748b'};">${m.title}</span>
-          </div>`).join('')}
-      </div>
-      <div style="font-size:0.74rem;color:#64748b;text-align:right;">ระยะเวลา: ${p.startDate} ถึง ${p.endDate}</div>`;
-    container.appendChild(card);
+function filterStrategy(stratId) {
+  currentStrategyFilter = stratId;
+  const tabs = document.querySelectorAll('.strategy-tab');
+  tabs.forEach(tab => {
+    tab.classList.toggle('active', tab.getAttribute('data-strategy') === String(stratId));
   });
+  renderProjectView();
+}
+
+function setProjectViewMode(mode) {
+  currentProjectViewMode = mode;
+  const btnCards = document.getElementById('viewToggleCards');
+  const btnTable = document.getElementById('viewToggleTable');
+  const cardsCont = document.getElementById('projectsContainer');
+  const tableCont = document.getElementById('projectsTableContainer');
+
+  if (btnCards) btnCards.classList.toggle('active', mode === 'cards');
+  if (btnTable) btnTable.classList.toggle('active', mode === 'table');
+
+  if (cardsCont) cardsCont.style.display = mode === 'cards' ? 'block' : 'none';
+  if (tableCont) tableCont.style.display = mode === 'table' ? 'block' : 'none';
+
+  renderProjectView();
+}
+
+function filterProjects() {
+  renderProjectView();
+}
+
+function renderProjectCards() {
+  renderProjectView();
+}
+
+let projStratBudgetChartInstance = null;
+let projStatusRatioChartInstance = null;
+
+function renderProjectView() {
+  const cardsCont = document.getElementById('projectsContainer');
+  const tbody = document.getElementById('projectsTableBody');
+  if (!cardsCont && !tbody) return;
+
+  const search = document.getElementById('projSearchInput')?.value.toLowerCase().trim() || '';
+  const deptF  = document.getElementById('projDeptSelect')?.value || 'all';
+  const statF  = document.getElementById('projStatusSelect')?.value || 'all';
+  const budgF  = document.getElementById('projBudgetSelect')?.value || 'all';
+
+  const filtered = NCSA_DATA.projects.filter(p => {
+    const matchStrat = currentStrategyFilter === 'all' || String(p.strategyId) === currentStrategyFilter;
+    const matchSearch = [p.name, p.dept, p.code, p.deptCode, p.strategyName].some(v => (v || '').toLowerCase().includes(search));
+    const matchDept = deptF === 'all' || p.deptCode === deptF || p.dept.includes(deptF);
+    const matchStat = statF === 'all' || p.status === statF;
+    const matchBudg = budgF === 'all' || (budgF === 'zerobudget' ? p.isZeroBudget : !p.isZeroBudget);
+
+    return matchStrat && matchSearch && matchDept && matchStat && matchBudg;
+  });
+
+  // Update KPI Cards Summary
+  const totalCount = filtered.length;
+  const totalBudgVal = filtered.reduce((sum, item) => sum + (item.budgetTHB || 0), 0);
+  const onTrackCount = filtered.filter(item => item.status === 'เป็นไปตามแผน').length;
+  const aheadCount   = filtered.filter(item => item.status === 'เร็วกว่าแผน').length;
+  const delayedCount = filtered.filter(item => item.status === 'ล่าช้ากว่าแผน').length;
+
+  setEl('projKpiTotal', totalCount);
+  setEl('projKpiBudget', (totalBudgVal / 1000000).toFixed(2) + 'M');
+  setEl('projKpiOnTrack', onTrackCount);
+  setEl('projKpiAhead', aheadCount);
+  setEl('projKpiDelayed', delayedCount);
+
+  const getStatusBadge = (status) => {
+    if (status === 'เป็นไปตามแผน') return '<span class="badge badge-green"><i class="fa-solid fa-check"></i> เป็นไปตามแผน</span>';
+    if (status === 'เร็วกว่าแผน') return '<span class="badge badge-blue"><i class="fa-solid fa-bolt"></i> เร็วกว่าแผน</span>';
+    if (status === 'ล่าช้ากว่าแผน') return '<span class="badge badge-red"><i class="fa-solid fa-clock"></i> ล่าช้ากว่าแผน</span>';
+    return `<span class="badge badge-blue">${status}</span>`;
+  };
+
+  const getBudgetBadge = (p) => {
+    if (p.isZeroBudget) {
+      return '<span class="proj-budget-chip zero"><i class="fa-solid fa-leaf"></i> ดำเนินการโดยไม่ใช้งบประมาณ</span>';
+    }
+    return `<span class="proj-budget-chip money"><i class="fa-solid fa-coins"></i> ${p.budgetTHB.toLocaleString()} บาท</span>`;
+  };
+
+  // Render Cards View
+  if (cardsCont) {
+    cardsCont.innerHTML = '';
+    if (filtered.length === 0) {
+      cardsCont.innerHTML = `<div class="empty-state-box"><i class="fa-solid fa-folder-open"></i><p>ไม่พบรายการกิจกรรม/โครงการที่ตรงกับเงื่อนไข</p></div>`;
+    } else {
+      // Check if viewing "all" strategy in cards view without specific search filter: Render Strategic Executive Dashboard!
+      const isDashboardMode = currentStrategyFilter === 'all' && !search && deptF === 'all' && statF === 'all' && budgF === 'all';
+
+      if (isDashboardMode) {
+        // Build watchlist HTML separately to avoid nested backtick issues
+        const delayedProjects = NCSA_DATA.projects.filter(p => p.status === 'ล่าช้ากว่าแผน');
+        const watchlistHTML = delayedProjects.map(p => {
+          const shortName = p.name.length > 36 ? p.name.slice(0, 36) + '...' : p.name;
+          return '<div class="watchlist-item" onclick="openProjectModal(\'' + p.id + '\')">' +
+            '<span class="proj-code-badge" style="font-size:0.68rem;padding:2px 5px;">' + p.code + '</span>' +
+            '<div class="watchlist-info">' +
+              '<div class="watchlist-title">' + shortName + '</div>' +
+              '<div class="watchlist-sub">' + p.deptCode + ' | คืบหน้า ' + p.progressPercent + '%</div>' +
+            '</div>' +
+            '<span class="badge badge-red" style="font-size:0.65rem;padding:2px 6px;">' + p.progressPercent + '%</span>' +
+          '</div>';
+        }).join('');
+
+        const dashBlock = document.createElement('div');
+        dashBlock.className = 'exec-strat-dashboard-container';
+        dashBlock.innerHTML =
+          // === ASYMMETRIC EXECUTIVE KPI OVERVIEW PANEL ===
+          '<div class="dash-kpi-asymmetric-panel">' +
+            // Left Featured Hero Card: Total Projects & Total Budget
+            '<div class="dk-hero-card">' +
+              '<div class="dk-hero-header"><i class="fa-solid fa-chart-line"></i> ภาพรวมยุทธศาสตร์ สกมช.</div>' +
+              '<div class="dk-hero-metrics">' +
+                '<div class="dk-metric-main">' +
+                  '<span class="dk-m-val">' + totalCount + '</span>' +
+                  '<span class="dk-m-lbl">โครงการ/กิจกรรมทั้งหมด</span>' +
+                '</div>' +
+                '<div class="dk-metric-divider"></div>' +
+                '<div class="dk-metric-main">' +
+                  '<span class="dk-m-val gold">' + (totalBudgVal/1000000).toFixed(2) + '<small>M</small></span>' +
+                  '<span class="dk-m-lbl">งบประมาณรวม (19 โครงการ)</span>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+
+            // Right Status Breakdown Panel
+            '<div class="dk-status-panel">' +
+              '<div class="dk-status-title"><i class="fa-solid fa-list-check"></i> สถานะการดำเนินงาน 46 กิจกรรม</div>' +
+              '<div class="dk-status-row">' +
+                '<div class="dk-status-card ontrack">' +
+                  '<div class="dk-sc-icon"><i class="fa-solid fa-circle-check"></i></div>' +
+                  '<div class="dk-sc-info"><span class="dk-sc-val">' + onTrackCount + '</span><span class="dk-sc-lbl">เป็นไปตามแผน (67%)</span></div>' +
+                '</div>' +
+                '<div class="dk-status-card ahead">' +
+                  '<div class="dk-sc-icon"><i class="fa-solid fa-bolt"></i></div>' +
+                  '<div class="dk-sc-info"><span class="dk-sc-val">' + aheadCount + '</span><span class="dk-sc-lbl">เร็วกว่าแผน (15%)</span></div>' +
+                '</div>' +
+                '<div class="dk-status-card delayed">' +
+                  '<div class="dk-sc-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>' +
+                  '<div class="dk-sc-info"><span class="dk-sc-val">' + delayedCount + '</span><span class="dk-sc-lbl">ล่าช้ากว่าแผน (17%)</span></div>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="dash-section-header">' +
+            '<h3><i class="fa-solid fa-layer-group" style="color:#2563eb;"></i> 4 ยุทธศาสตร์หลักขับเคลื่อนความมั่นคงไซเบอร์</h3>' +
+            '<span class="dash-subtitle">เจาะลึก 4 เสาหลัก จำแนกตามพันธกิจ งบประมาณ และความคืบหน้าเชิงยุทธศาสตร์</span>' +
+          '</div>' +
+
+          // === 4 DISTINCT HERO STRATEGIC PILLAR CARDS ===
+          '<div class="hero-strat-grid">' +
+            // Pillar 1: Human Capital & Competency (Blue Theme)
+            '<div class="hero-strat-card st1" onclick="filterStrategy(\'1\')">' +
+              '<div class="hero-card-banner">' +
+                '<div class="h-banner-badge"><i class="fa-solid fa-shield-halved"></i> ยุทธศาสตร์ที่ 1</div>' +
+                '<h4>สร้างความตระหนักรู้ &amp; พัฒนาบุคลากร</h4>' +
+              '</div>' +
+              '<div class="hero-card-body">' +
+                '<div class="pillar-highlight-box blue">' +
+                  '<div class="phb-metric"><strong>14</strong><span>กิจกรรม</span></div>' +
+                  '<div class="phb-metric"><strong>63.47M</strong><span>บาท</span></div>' +
+                  '<div class="phb-metric-ring"><span class="ring-val">72%</span><span>คืบหน้า</span></div>' +
+                '</div>' +
+                '<div class="pillar-feature-tags">' +
+                  '<span><i class="fa-solid fa-award"></i> Cyber Top Talent</span>' +
+                  '<span><i class="fa-solid fa-person-military-pointing"></i> National Cyber Exercise</span>' +
+                '</div>' +
+              '</div>' +
+              '<div class="hero-card-footer"><span>เจาะลึก 14 กิจกรรม <i class="fa-solid fa-arrow-right"></i></span></div>' +
+            '</div>' +
+
+            // Pillar 2: Collaboration & International (Teal Theme)
+            '<div class="hero-strat-card st2" onclick="filterStrategy(\'2\')">' +
+              '<div class="hero-card-banner">' +
+                '<div class="h-banner-badge"><i class="fa-solid fa-handshake"></i> ยุทธศาสตร์ที่ 2</div>' +
+                '<h4>บูรณาการความร่วมมือภายใน &amp; นานาชาติ</h4>' +
+              '</div>' +
+              '<div class="hero-card-body">' +
+                '<div class="pillar-highlight-box teal">' +
+                  '<div class="phb-metric"><strong>5</strong><span>กิจกรรม</span></div>' +
+                  '<div class="phb-metric"><strong>2.27M</strong><span>บาท</span></div>' +
+                  '<div class="phb-metric-ring"><span class="ring-val">64%</span><span>คืบหน้า</span></div>' +
+                '</div>' +
+                '<div class="pillar-feature-tags">' +
+                  '<span><i class="fa-solid fa-handshake-angle"></i> สกมช.-สคส. ข้อมูลบุคคล</span>' +
+                  '<span><i class="fa-solid fa-globe"></i> Thailand Cyber Week</span>' +
+                '</div>' +
+              '</div>' +
+              '<div class="hero-card-footer"><span>เจาะลึก 5 กิจกรรม <i class="fa-solid fa-arrow-right"></i></span></div>' +
+            '</div>' +
+
+            // Pillar 3: Research & Quantum Future (Purple Theme)
+            '<div class="hero-strat-card st3" onclick="filterStrategy(\'3\')">' +
+              '<div class="hero-card-banner">' +
+                '<div class="h-banner-badge"><i class="fa-solid fa-atom"></i> ยุทธศาสตร์ที่ 3</div>' +
+                '<h4>วิจัย พัฒนาเทคโนโลยี &amp; ยุคควอนตัม</h4>' +
+              '</div>' +
+              '<div class="hero-card-body">' +
+                '<div class="pillar-highlight-box purple">' +
+                  '<div class="phb-metric"><strong>2</strong><span>กิจกรรม</span></div>' +
+                  '<div class="phb-metric"><strong>3.68M</strong><span>บาท</span></div>' +
+                  '<div class="phb-metric-ring"><span class="ring-val">38%</span><span>คืบหน้า</span></div>' +
+                '</div>' +
+                '<div class="pillar-feature-tags">' +
+                  '<span><i class="fa-solid fa-microchip"></i> ไอทียุคควอนตัม</span>' +
+                  '<span><i class="fa-solid fa-certificate"></i> Lead Auditor Standards</span>' +
+                '</div>' +
+              '</div>' +
+              '<div class="hero-card-footer"><span>เจาะลึก 2 กิจกรรม <i class="fa-solid fa-arrow-right"></i></span></div>' +
+            '</div>' +
+
+            // Pillar 4: Flagship Infrastructure & NSOC (Amber Anchor Theme - 82% Budget!)
+            '<div class="hero-strat-card st4 flagship" onclick="filterStrategy(\'4\')">' +
+              '<div class="hero-card-banner">' +
+                '<div class="h-banner-badge anchor"><i class="fa-solid fa-crown"></i> เสาหลักงบประมาณ 82%</div>' +
+                '<h4>โครงสร้างพื้นฐาน ThaiCERT/NSOC &amp; องค์กร</h4>' +
+              '</div>' +
+              '<div class="hero-card-body">' +
+                '<div class="pillar-highlight-box amber">' +
+                  '<div class="phb-metric"><strong>25</strong><span>กิจกรรม</span></div>' +
+                  '<div class="phb-metric highlight"><strong>331.44M</strong><span>บาท</span></div>' +
+                  '<div class="phb-metric-ring"><span class="ring-val">75%</span><span>คืบหน้า</span></div>' +
+                '</div>' +
+                '<div class="pillar-feature-tags">' +
+                  '<span><i class="fa-solid fa-server"></i> Thai CERT (86.8M)</span>' +
+                  '<span><i class="fa-solid fa-network-wired"></i> Sectoral CERT (80.1M)</span>' +
+                '</div>' +
+              '</div>' +
+              '<div class="hero-card-footer"><span>เจาะลึก 25 กิจกรรม <i class="fa-solid fa-arrow-right"></i></span></div>' +
+            '</div>' +
+          '</div>' +
+
+          '<div class="strat-charts-grid">' +
+            '<div class="card card-pad">' +
+              '<div class="card-header"><span class="card-title"><i class="fa-solid fa-chart-pie" style="color:#2563eb;"></i> สัดส่วนงบประมาณจำแนกตามยุทธศาสตร์</span><span style="font-size:0.74rem;color:#64748b;"><i class="fa-solid fa-coins"></i> 400.86M บาท</span></div>' +
+              '<div style="position:relative;height:185px;width:100%;"><canvas id="projStratBudgetCanvas"></canvas></div>' +
+            '</div>' +
+            '<div class="card card-pad">' +
+              '<div class="card-header"><span class="card-title"><i class="fa-solid fa-chart-simple" style="color:#059669;"></i> สัดส่วนสถานะการดำเนินงาน (46 กิจกรรม)</span><span style="font-size:0.74rem;color:#64748b;"><i class="fa-solid fa-percent"></i> 100% Total</span></div>' +
+              '<div style="position:relative;height:185px;width:100%;"><canvas id="projStatusRatioCanvas"></canvas></div>' +
+            '</div>' +
+            '<div class="card card-pad" style="overflow:hidden;">' +
+              '<div class="card-header"><span class="card-title" style="color:#dc2626;"><i class="fa-solid fa-triangle-exclamation"></i> เฝ้าระวัง ' + delayedProjects.length + ' กิจกรรมล่าช้ากว่าแผน</span><span class="badge badge-red" style="font-size:0.68rem;">Action Needed</span></div>' +
+              '<div class="delayed-watchlist-scroll">' + watchlistHTML + '</div>' +
+            '</div>' +
+          '</div>';
+
+        cardsCont.appendChild(dashBlock);
+
+        // Render Charts after DOM insert
+        setTimeout(function() {
+          renderProjectDashboardCharts();
+        }, 50);
+
+        return; // Stop here: Only render Executive Dashboard on "ทั้งหมด" view
+      }
+
+      // Group & render project cards grid
+      const strategies = [
+        { id: 1, name: 'ยุทธศาสตร์ที่ 1: การสร้างความตระหนักรู้และพัฒนาศักยภาพบุคลากรด้านความมั่นคงปลอดภัยไซเบอร์', icon: 'fa-shield-halved', color: '#2563eb' },
+        { id: 2, name: 'ยุทธศาสตร์ที่ 2: การบูรณาการความร่วมมือกับหน่วยงานภายในและระหว่างประเทศ', icon: 'fa-handshake', color: '#0d9488' },
+        { id: 3, name: 'ยุทธศาสตร์ที่ 3: การวิจัย พัฒนาเทคโนโลยี และเตรียมความพร้อมเพื่ออนาคต', icon: 'fa-atom', color: '#7c3aed' },
+        { id: 4, name: 'ยุทธศาสตร์ที่ 4: การยกระดับโครงสร้างพื้นฐาน ศูนย์ปฏิบัติการ (ThaiCERT / NSOC) และการบริหารจัดการองค์กร', icon: 'fa-building-user', color: '#d97706' }
+      ];
+
+      strategies.forEach(strat => {
+        const items = filtered.filter(item => item.strategyId === strat.id);
+        if (items.length === 0) return;
+
+        const stratTotal = items.length;
+        const stratBudgVal = items.reduce((sum, item) => sum + (item.budgetTHB || 0), 0);
+        const stratBudgStr = stratBudgVal > 0 ? (stratBudgVal / 1000000).toFixed(2) + 'M' : '0M';
+        const stratOnTrack = items.filter(item => item.status === 'เป็นไปตามแผน').length;
+        const stratAhead   = items.filter(item => item.status === 'เร็วกว่าแผน').length;
+        const stratDelayed = items.filter(item => item.status === 'ล่าช้ากว่าแผน').length;
+
+        const statsStripHTML =
+          '<div class="strat-header-stats-strip">' +
+            '<span class="strat-stat-pill total" title="จำนวนกิจกรรมทั้งหมด">' +
+              '<i class="fa-solid fa-list-check"></i> <strong>' + stratTotal + '</strong> กิจกรรม' +
+            '</span>' +
+            '<span class="strat-stat-pill budget" title="งบประมาณรวม">' +
+              '<i class="fa-solid fa-coins"></i> <strong>' + stratBudgStr + '</strong> บาท' +
+            '</span>' +
+            '<span class="strat-stat-pill ontrack" title="เป็นไปตามแผน">' +
+              '<i class="fa-solid fa-circle-check"></i> <strong>' + stratOnTrack + '</strong> ตามแผน' +
+            '</span>' +
+            (stratAhead > 0 ?
+              '<span class="strat-stat-pill ahead" title="เร็วกว่าแผน">' +
+                '<i class="fa-solid fa-bolt"></i> <strong>' + stratAhead + '</strong> เร็วกว่า' +
+              '</span>' : '') +
+            (stratDelayed > 0 ?
+              '<span class="strat-stat-pill delayed" title="ล่าช้ากว่าแผน">' +
+                '<i class="fa-solid fa-triangle-exclamation"></i> <strong>' + stratDelayed + '</strong> ล่าช้า' +
+              '</span>' : '') +
+          '</div>';
+
+        const stratBlock = document.createElement('div');
+        stratBlock.className = 'strategy-section-block';
+        stratBlock.innerHTML = `
+          <div class="strategy-section-header" style="--strat-color:${strat.color};">
+            <div class="strat-header-title">
+              <i class="fa-solid ${strat.icon}"></i> ${strat.name}
+            </div>
+            ${statsStripHTML}
+          </div>
+          <div class="projects-grid">
+            ${items.map(p => {
+              const fillC = p.progressPercent === 100 ? 'bg-green' : p.status === 'ล่าช้ากว่าแผน' ? 'bg-red' : 'bg-blue';
+              return `
+                <div class="project-card-v2" onclick="openProjectModal('${p.id}')">
+                  <div class="proj-card-top">
+                    <span class="proj-code-badge">${p.code}</span>
+                    <span class="proj-dept-chip"><i class="fa-solid fa-building-flag"></i> ${p.deptCode}</span>
+                    <div style="margin-left:auto;">${getStatusBadge(p.status)}</div>
+                  </div>
+                  <h3 class="proj-card-title">${p.name}</h3>
+                  <div class="proj-card-dept-full">${p.dept}</div>
+                  
+                  <div class="proj-card-budget-row">
+                    ${getBudgetBadge(p)}
+                  </div>
+
+                  <div class="proj-card-progress-box">
+                    <div class="proj-progress-header">
+                      <span>ความคืบหน้าการดำเนินงาน</span>
+                      <strong style="color:${p.status === 'ล่าช้ากว่าแผน'?'#dc2626':'#1e3a8a'}">${p.progressPercent}%</strong>
+                    </div>
+                    <div class="progress-bar-wrap">
+                      <div class="progress-bar-fill ${fillC}" style="width:${p.progressPercent}%"></div>
+                    </div>
+                  </div>
+
+                  <div class="proj-card-footer">
+                    <span class="proj-click-hint"><i class="fa-solid fa-circle-info"></i> คลิกดูรายละเอียด</span>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+        cardsCont.appendChild(stratBlock);
+      });
+    }
+  }
+
+  // Render Table View
+  if (tbody) {
+    tbody.innerHTML = '';
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:24px;color:#64748b;">ไม่พบรายการที่ตรงกับเงื่อนไข</td></tr>`;
+    } else {
+      filtered.forEach(p => {
+        const fillC = p.progressPercent === 100 ? 'bg-green' : p.status === 'ล่าช้ากว่าแผน' ? 'bg-red' : 'bg-blue';
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${p.code}</strong></td>
+          <td>
+            <div style="font-weight:600;color:#1e3a8a;line-height:1.3;">${p.name}</div>
+            <div style="font-size:0.72rem;color:#64748b;">${p.strategyName}</div>
+          </td>
+          <td><span class="badge badge-blue">${p.strategyName}</span></td>
+          <td><span class="badge badge-teal">${p.deptCode}</span> <span style="font-size:0.72rem;color:#475569;">${p.dept}</span></td>
+          <td>${getBudgetBadge(p)}</td>
+          <td style="min-width:110px;">
+            <div style="font-weight:700;font-size:0.78rem;color:#1e3a8a;margin-bottom:2px;">${p.progressPercent}%</div>
+            <div class="progress-bar-wrap"><div class="progress-bar-fill ${fillC}" style="width:${p.progressPercent}%"></div></div>
+          </td>
+          <td>${getStatusBadge(p.status)}</td>
+          <td><button class="btn-action" style="padding:4px 10px;font-size:0.74rem;" onclick="openProjectModal('${p.id}')"><i class="fa-solid fa-eye"></i> รายละเอียด</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+  }
+}
+
+// Function to render Chart.js charts for "ทั้งหมด" Strategic Executive Dashboard
+function renderProjectDashboardCharts() {
+  // Chart 1: Strategic Budget Allocation
+  const canvas1 = document.getElementById('projStratBudgetCanvas');
+  if (canvas1) {
+    if (projStratBudgetChartInstance) projStratBudgetChartInstance.destroy();
+    
+    const b1 = NCSA_DATA.projects.filter(p=>p.strategyId===1).reduce((s,i)=>s+i.budgetTHB,0)/1000000;
+    const b2 = NCSA_DATA.projects.filter(p=>p.strategyId===2).reduce((s,i)=>s+i.budgetTHB,0)/1000000;
+    const b3 = NCSA_DATA.projects.filter(p=>p.strategyId===3).reduce((s,i)=>s+i.budgetTHB,0)/1000000;
+    const b4 = NCSA_DATA.projects.filter(p=>p.strategyId===4).reduce((s,i)=>s+i.budgetTHB,0)/1000000;
+
+    projStratBudgetChartInstance = new Chart(canvas1, {
+      type: 'doughnut',
+      data: {
+        labels: ['ยุทธศาสตร์ 1', 'ยุทธศาสตร์ 2', 'ยุทธศาสตร์ 3', 'ยุทธศาสตร์ 4'],
+        datasets: [{
+          data: [Number(b1.toFixed(1)), Number(b2.toFixed(1)), Number(b3.toFixed(1)), Number(b4.toFixed(1))],
+          backgroundColor: ['#2563eb', '#0d9488', '#7c3aed', '#d97706'],
+          borderWidth: 2,
+          borderColor: '#ffffff'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'right', labels: { font: { family: 'Prompt', size: 10 }, boxWidth: 10 } },
+          tooltip: {
+            callbacks: {
+              label: (context) => `${context.label}: ${context.raw} ล้านบาท`
+            }
+          }
+        },
+        cutout: '64%'
+      }
+    });
+  }
+
+  // Chart 2: Execution Status Ratio
+  const canvas2 = document.getElementById('projStatusRatioCanvas');
+  if (canvas2) {
+    if (projStatusRatioChartInstance) projStatusRatioChartInstance.destroy();
+
+    const onTrack = NCSA_DATA.projects.filter(p=>p.status==='เป็นไปตามแผน').length;
+    const ahead   = NCSA_DATA.projects.filter(p=>p.status==='เร็วกว่าแผน').length;
+    const delayed = NCSA_DATA.projects.filter(p=>p.status==='ล่าช้ากว่าแผน').length;
+
+    projStatusRatioChartInstance = new Chart(canvas2, {
+      type: 'doughnut',
+      data: {
+        labels: ['เป็นไปตามแผน', 'เร็วกว่าแผน', 'ล่าช้ากว่าแผน'],
+        datasets: [{
+          data: [onTrack, ahead, delayed],
+          backgroundColor: ['#10b981', '#0284c7', '#dc2626'],
+          borderWidth: 2,
+          borderColor: '#ffffff'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'right', labels: { font: { family: 'Prompt', size: 10 }, boxWidth: 10 } },
+          tooltip: {
+            callbacks: {
+              label: (context) => `${context.label}: ${context.raw} กิจกรรม (${Math.round(context.raw/46*100)}%)`
+            }
+          }
+        },
+        cutout: '64%'
+      }
+    });
+  }
+} // end renderProjectDashboardCharts
+
+function openProjectModal(projId) {
+  const p = NCSA_DATA.projects.find(item => item.id === projId);
+  if (!p) return;
+
+  const modalTitle = document.getElementById('modalTitle');
+  const modalBody = document.getElementById('modalBody');
+  if (!modalTitle || !modalBody) return;
+
+  const getStatusBadge = (status) => {
+    if (status === 'เป็นไปตามแผน') return '<span class="badge badge-green"><i class="fa-solid fa-check"></i> เป็นไปตามแผน</span>';
+    if (status === 'เร็วกว่าแผน') return '<span class="badge badge-blue"><i class="fa-solid fa-bolt"></i> เร็วกว่าแผน</span>';
+    if (status === 'ล่าช้ากว่าแผน') return '<span class="badge badge-red"><i class="fa-solid fa-clock"></i> ล่าช้ากว่าแผน</span>';
+    return `<span class="badge badge-blue">${status}</span>`;
+  };
+
+  modalTitle.innerText = `รายละเอียดกิจกรรม: ${p.code}`;
+  modalBody.innerHTML = `
+    <div style="background:#eff6ff;border-left:4px solid #1e3a8a;padding:12px;border-radius:10px;margin-bottom:14px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <span class="proj-code-badge">${p.code}</span>
+        <span class="badge badge-blue">${p.strategyName}</span>
+        <div style="margin-left:auto;">${getStatusBadge(p.status)}</div>
+      </div>
+      <h4 style="color:#1e3a8a;font-size:0.96rem;font-weight:700;line-height:1.4;">${p.name}</h4>
+    </div>
+
+    ${[
+      ['สำนักผู้รับผิดชอบ', `${p.dept} (${p.deptCode})`],
+      ['งบประมาณ', p.isZeroBudget ? 'ดำเนินการโดยไม่ใช้งบประมาณ' : `${p.budgetTHB.toLocaleString()} บาท`],
+      ['ยุทธศาสตร์', p.strategyName],
+      ['สถานะการดำเนินงาน', p.status],
+      ['ความคืบหน้าสะสม', `${p.progressPercent}%`]
+    ].map(([k, v]) => `<div class="detail-row" style="padding:6px 0;"><span>${k}:</span><strong>${v}</strong></div>`).join('')}
+
+    <div style="margin-top:14px;background:#f8fafc;padding:12px;border-radius:10px;border:1px solid #e2e8f0;">
+      <div style="display:flex;justify-content:space-between;font-weight:700;font-size:0.84rem;color:#1e3a8a;margin-bottom:6px;">
+        <span>ความคืบหน้าโครงการ</span>
+        <span>${p.progressPercent}%</span>
+      </div>
+      <div class="progress-bar-wrap" style="height:10px;">
+        <div class="progress-bar-fill ${p.progressPercent===100?'bg-green':p.status==='ล่าช้ากว่าแผน'?'bg-red':'bg-blue'}" style="width:${p.progressPercent}%"></div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('modalOverlay')?.classList.add('active');
 }
 
 // --------------------------------------------------------------------------
@@ -1178,11 +1644,11 @@ function openKpiDetailModal(kpiType) {
         <div style="background:#f3e8ff;padding:10px;border-radius:10px;border:1px solid #d8b4fe;">
           <div style="font-size:0.68rem;color:#6b21a8;font-weight:600;">จำนวนโครงการทั้งหมด</div>
           <div style="font-size:1.3rem;font-weight:800;color:#7c3aed;">${total} <span style="font-size:0.7rem;">โครงการ</span></div>
-          <div style="font-size:0.68rem;color:#059669;font-weight:600;">ความคืบหน้าภาพรวม 83.3%</div>
+          <div style="font-size:0.68rem;color:#059669;font-weight:600;">ความคืบหน้าภาพรวม 85%</div>
         </div>
         <div style="background:#eff6ff;padding:10px;border-radius:10px;border:1px solid #bfdbfe;">
           <div style="font-size:0.68rem;color:#1e40af;font-weight:600;">งบประมาณรวมโครงการ</div>
-          <div style="font-size:1.3rem;font-weight:800;color:#1e3a8a;">${totalBudget === 0 ? 'ไม่ใช้งบประมาณ' : '฿' + (totalBudget/1000000).toFixed(1) + ' ล้านบาท'}</div>
+          <div style="font-size:1.3rem;font-weight:800;color:#1e3a8a;">฿${(totalBudget/1000000).toFixed(1)} <span style="font-size:0.7rem;">ล้านบาท</span></div>
           <div style="font-size:0.68rem;color:#64748b;">(ปีงบประมาณ 2569)</div>
         </div>
       </div>
@@ -1199,7 +1665,7 @@ function openKpiDetailModal(kpiType) {
           <thead>
             <tr>
               <th>ชื่อโครงการ</th>
-              <th>หน่วยงาน</th>
+              <th>ผู้จัดการ</th>
               <th>งบประมาณ</th>
               <th>ความคืบหน้า</th>
               <th>สถานะ</th>
@@ -1208,16 +1674,16 @@ function openKpiDetailModal(kpiType) {
           <tbody>
             ${NCSA_DATA.projects.map(p => `
               <tr>
-                <td><strong style="color:#1e3a8a;">${p.name.slice(0, 38)}...</strong></td>
-                <td>${p.dept}</td>
-                <td>${p.budgetTHB === 0 ? 'ไม่ใช้งบประมาณ' : '฿' + (p.budgetTHB/1000000).toFixed(1) + 'M'}</td>
+                <td><strong style="color:#1e3a8a;">${p.name.slice(0, 32)}...</strong></td>
+                <td>${p.manager}</td>
+                <td>฿${(p.budgetTHB/1000000).toFixed(1)}M</td>
                 <td>
                   <div style="display:flex;align-items:center;gap:6px;">
                     <div class="progress-bar-wrap" style="width:60px;height:4px;"><div class="progress-bar-fill bg-blue" style="width:${p.progressPercent}%"></div></div>
                     <strong>${p.progressPercent}%</strong>
                   </div>
                 </td>
-                <td><span class="badge ${p.progressPercent===100?'badge-green':p.status==='เร็วกว่าแผน'?'badge-teal':'badge-blue'}" style="font-size:0.65rem;">${p.status}</span></td>
+                <td><span class="badge ${p.status==='เสร็จสิ้น'?'badge-green':p.status==='มีความเสี่ยงล่าช้า'?'badge-red':'badge-blue'}" style="font-size:0.65rem;">${p.status}</span></td>
               </tr>
             `).join('')}
           </tbody>

@@ -161,50 +161,52 @@
         </div>
       </div>
 
-      <!-- ROW 3 — four-column executive overview: Hardware + License + Paper + Projects -->
+      <!-- ROW 3 — four-column: bar + two sparkline metrics + activity list -->
       <div class="dash-row-bottom">
 
-        <!-- Col 1: Hardware Status Breakdown -->
+        <!-- Col 1: Medium bar chart -->
         <div class="card card-pad">
           <div class="card-header">
-            <span class="card-title"><i class="fa-solid fa-desktop"></i> 1. สถานะสินทรัพย์ Hardware</span>
-            <span class="card-badge"><i class="fa-solid fa-cubes"></i> 1,248 เครื่อง</span>
+            <span class="card-title"><i class="fa-solid fa-chart-column"></i> กระดาษ/Cost รายเดือน</span>
+            <span class="card-badge"><i class="fa-regular fa-calendar"></i> 7 เดือน</span>
           </div>
           <div class="chart-wrap">
-            <canvas id="overviewHwChart"></canvas>
+            <canvas id="overviewBarMini"></canvas>
           </div>
         </div>
 
-        <!-- Col 2: Software License Allocation -->
+        <!-- Col 2: Doughnut mini + small data activity -->
         <div class="card card-pad">
           <div class="card-header">
-            <span class="card-title"><i class="fa-solid fa-key"></i> 2. การจัดสรร Software License</span>
-            <span class="card-badge"><i class="fa-solid fa-check-double"></i> ใช้แล้ว 91.1%</span>
+            <span class="card-title"><i class="fa-solid fa-chart-pie"></i> สัดส่วน Digital</span>
           </div>
-          <div class="chart-wrap">
-            <canvas id="overviewLicChart"></canvas>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="width:90px;height:90px;flex-shrink:0;position:relative;">
+              <canvas id="miniDonutDigital"></canvas>
+              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:800;color:#1e293b;" id="miniDonutLabel">67%</div>
+            </div>
+            <div id="dataActivityList" style="flex:1;font-size:0.74rem;">
+              <!-- filled by JS -->
+            </div>
           </div>
         </div>
 
-        <!-- Col 3: Paper & Printing Overview -->
-        <div class="card card-pad">
-          <div class="card-header">
-            <span class="card-title"><i class="fa-solid fa-print"></i> 3. การใช้งานระบบพิมพ์ & กระดาษ</span>
-            <span class="card-badge"><i class="fa-solid fa-leaf"></i> e-Doc 78.4%</span>
-          </div>
-          <div class="chart-wrap">
-            <canvas id="overviewPaperMiniChart"></canvas>
+        <!-- Col 3: Sparkline metric — Cases SLA -->
+        <div class="metric-card">
+          <div class="metric-label">Case เสร็จสิ้นใน SLA</div>
+          <div class="metric-value" id="slaValue">98.2%</div>
+          <div class="metric-sparkline">
+            <canvas id="sparklineSLA"></canvas>
           </div>
         </div>
 
-        <!-- Col 4: IT Projects Overview -->
-        <div class="card card-pad">
+        <!-- Col 4: Activity / recent cases list -->
+        <div class="card card-pad" style="overflow:hidden;">
           <div class="card-header">
-            <span class="card-title"><i class="fa-solid fa-bars-progress"></i> 4. โครงการพัฒนาไอที</span>
-            <span class="card-badge"><i class="fa-solid fa-chart-line"></i> คืบหน้า 85%</span>
+            <span class="card-title"><i class="fa-solid fa-list-check"></i> Case ล่าสุด</span>
           </div>
-          <div class="chart-wrap">
-            <canvas id="overviewProjChart"></canvas>
+          <div class="activity-list" id="recentCaseList">
+            <!-- filled by JS -->
           </div>
         </div>
 
@@ -439,13 +441,103 @@
          VIEW 6 : PROJECTS
          ===================================================== -->
     <div id="view-projects" class="page-view">
-      <div class="view-header">
-        <div class="view-title-group">
-          <h2><i class="fa-solid fa-diagram-project"></i> รายการโครงการพัฒนาระบบเทคโนโลยีสารสนเทศ</h2>
-          <p>ติดตามโครงการ งบประมาณ ผู้จัดการ และความคืบหน้า (Progress %)</p>
+      <div class="view-header compact-proj-header">
+
+        <!-- Single Control Row: Title | Strategy Tabs (1-4 only) + View Toggle | Search & Filters -->
+        <div class="proj-header-top-row">
+          <div class="proj-title-inline">
+            <h2><i class="fa-solid fa-diagram-project"></i> รายงานติดตามโครงการและกิจกรรมตามแผนยุทธศาสตร์</h2>
+          </div>
+
+          <!-- Strategy Tabs (1–4) + View Toggle on same row -->
+          <div class="proj-tabs-and-toggle">
+            <div class="strategy-tabs-bar compact" id="strategyTabsBar">
+              <button class="strategy-tab active" data-strategy="all" onclick="filterStrategy('all')">
+                <i class="fa-solid fa-layer-group"></i> ทั้งหมด <span class="strategy-badge-count">46</span>
+              </button>
+              <button class="strategy-tab" data-strategy="1" onclick="filterStrategy('1')">
+                <i class="fa-solid fa-shield-halved"></i> ยุทธศาสตร์ที่ 1 <span class="strategy-badge-count">14</span>
+              </button>
+              <button class="strategy-tab" data-strategy="2" onclick="filterStrategy('2')">
+                <i class="fa-solid fa-handshake"></i> ยุทธศาสตร์ที่ 2 <span class="strategy-badge-count">5</span>
+              </button>
+              <button class="strategy-tab" data-strategy="3" onclick="filterStrategy('3')">
+                <i class="fa-solid fa-atom"></i> ยุทธศาสตร์ที่ 3 <span class="strategy-badge-count">2</span>
+              </button>
+              <button class="strategy-tab" data-strategy="4" onclick="filterStrategy('4')">
+                <i class="fa-solid fa-building-user"></i> ยุทธศาสตร์ที่ 4 <span class="strategy-badge-count">25</span>
+              </button>
+            </div>
+
+            <div class="view-mode-toggle mini">
+              <button class="view-toggle-btn active" id="viewToggleCards" onclick="setProjectViewMode('cards')" title="มุมมองการ์ด"><i class="fa-solid fa-grip"></i> การ์ด</button>
+              <button class="view-toggle-btn" id="viewToggleTable" onclick="setProjectViewMode('table')" title="มุมมองตาราง"><i class="fa-solid fa-table-list"></i> ตาราง</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search & Dropdown Filters Row -->
+        <div class="proj-control-bar">
+          <div class="proj-right-filters" style="width:100%;">
+            <div class="search-input-wrapper mini-search" style="flex:1;">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="projSearchInput" class="search-input" placeholder="ค้นหากิจกรรม, รหัส หรือสำนัก..." onkeyup="filterProjects()">
+            </div>
+            <select id="projDeptSelect" class="select-filter mini-select" onchange="filterProjects()">
+              <option value="all">ทุกสำนัก/ศูนย์</option>
+              <option value="สวบ.">สวบ.</option>
+              <option value="สปซ.">สปซ.</option>
+              <option value="สสอ.">สสอ.</option>
+              <option value="สยป.">สยป.</option>
+              <option value="ศวจ.">ศวจ.</option>
+              <option value="สปง.">สปง.</option>
+              <option value="สทส.">สทส.</option>
+              <option value="สบก.">สบก.</option>
+            </select>
+            <select id="projStatusSelect" class="select-filter mini-select" onchange="filterProjects()">
+              <option value="all">ทุกสถานะ</option>
+              <option value="เป็นไปตามแผน">เป็นไปตามแผน</option>
+              <option value="เร็วกว่าแผน">เร็วกว่าแผน</option>
+              <option value="ล่าช้ากว่าแผน">ล่าช้ากว่าแผน</option>
+            </select>
+            <select id="projBudgetSelect" class="select-filter mini-select" onchange="filterProjects()">
+              <option value="all">ทุกงบประมาณ</option>
+              <option value="budget">มีงบประมาณ</option>
+              <option value="zerobudget">ไม่ใช้งบประมาณ</option>
+            </select>
+          </div>
         </div>
       </div>
-      <div class="projects-grid" id="projectsContainer"></div>
+
+      <!-- Hidden KPI elements still needed for JS to update -->
+      <span id="projKpiTotal" style="display:none;">46</span>
+      <span id="projKpiBudget" style="display:none;">400.86M</span>
+      <span id="projKpiOnTrack" style="display:none;">31</span>
+      <span id="projKpiAhead" style="display:none;">7</span>
+      <span id="projKpiDelayed" style="display:none;">8</span>
+
+
+      <!-- Content Views: Cards View vs Table View (Takes Max Height) -->
+      <div id="projectsContainer" class="projects-cards-container"></div>
+      <div id="projectsTableContainer" class="table-card projects-table-container" style="display:none;">
+        <div class="table-responsive">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>รหัส</th>
+                <th>ชื่อกิจกรรม / โครงการ</th>
+                <th>ยุทธศาสตร์</th>
+                <th>สำนักผู้รับผิดชอบ</th>
+                <th>งบประมาณ</th>
+                <th>ความคืบหน้า</th>
+                <th>สถานะ</th>
+                <th>รายละเอียด</th>
+              </tr>
+            </thead>
+            <tbody id="projectsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
   </div><!-- /content-scroll -->
