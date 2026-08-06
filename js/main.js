@@ -44,7 +44,7 @@ function switchToView(targetId) {
   const pills = document.querySelectorAll('.nav-pill');
   const views = document.querySelectorAll('.page-view');
   const subTabs = document.querySelectorAll('.hardware-sub-tab');
-  const topTargetId = targetId === 'view-paper' ? 'view-hardware' : targetId;
+  const topTargetId = (targetId === 'view-paper') ? 'view-hardware' : (targetId === 'view-project-details' ? 'view-projects' : targetId);
 
   pills.forEach(p => p.classList.toggle('active', p.getAttribute('data-target') === topTargetId));
   views.forEach(v => v.classList.toggle('active', v.id === targetId));
@@ -1169,63 +1169,26 @@ function openKpiDetailModal(kpiType) {
     `;
 
   } else if (kpiType === 'projects') {
-    const total = NCSA_DATA.projects.length;
-    const totalBudget = NCSA_DATA.projects.reduce((s,p)=>s+p.budgetTHB,0);
-
-    modalTitle.innerHTML = `<i class="fa-solid fa-bars-progress" style="color:#7c3aed;"></i> สรุปภาพรวมโครงการพัฒนาไอที`;
-    modalBody.innerHTML = `
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;text-align:center;">
-        <div style="background:#f3e8ff;padding:10px;border-radius:10px;border:1px solid #d8b4fe;">
-          <div style="font-size:0.68rem;color:#6b21a8;font-weight:600;">จำนวนโครงการทั้งหมด</div>
-          <div style="font-size:1.3rem;font-weight:800;color:#7c3aed;">${total} <span style="font-size:0.7rem;">โครงการ</span></div>
-          <div style="font-size:0.68rem;color:#059669;font-weight:600;">ความคืบหน้าภาพรวม 83.3%</div>
-        </div>
-        <div style="background:#eff6ff;padding:10px;border-radius:10px;border:1px solid #bfdbfe;">
-          <div style="font-size:0.68rem;color:#1e40af;font-weight:600;">งบประมาณรวมโครงการ</div>
-          <div style="font-size:1.3rem;font-weight:800;color:#1e3a8a;">${totalBudget === 0 ? 'ไม่ใช้งบประมาณ' : '฿' + (totalBudget/1000000).toFixed(1) + ' ล้านบาท'}</div>
-          <div style="font-size:0.68rem;color:#64748b;">(ปีงบประมาณ 2569)</div>
-        </div>
-      </div>
-
-      <div style="font-weight:700;font-size:0.82rem;color:#1e3a8a;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
-        <span><i class="fa-solid fa-diagram-project"></i> รายการโครงการสำคัญ (${total} โครงการ)</span>
-        <button class="btn-action btn-green" style="padding:4px 10px;font-size:0.72rem;" onclick="closeModal();switchToView('view-projects');">
-          <i class="fa-solid fa-arrow-right"></i> ไปหน้าโครงการทั้งหมด
-        </button>
-      </div>
-
-      <div style="max-height:220px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;">
-        <table class="custom-table" style="font-size:0.74rem;">
-          <thead>
-            <tr>
-              <th>ชื่อโครงการ</th>
-              <th>หน่วยงาน</th>
-              <th>งบประมาณ</th>
-              <th>ความคืบหน้า</th>
-              <th>สถานะ</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${NCSA_DATA.projects.map(p => `
-              <tr>
-                <td><strong style="color:#1e3a8a;">${p.name.slice(0, 38)}...</strong></td>
-                <td>${p.dept}</td>
-                <td>${p.budgetTHB === 0 ? 'ไม่ใช้งบประมาณ' : '฿' + (p.budgetTHB/1000000).toFixed(1) + 'M'}</td>
-                <td>
-                  <div style="display:flex;align-items:center;gap:6px;">
-                    <div class="progress-bar-wrap" style="width:60px;height:4px;"><div class="progress-bar-fill bg-blue" style="width:${p.progressPercent}%"></div></div>
-                    <strong>${p.progressPercent}%</strong>
-                  </div>
-                </td>
-                <td><span class="badge ${p.progressPercent===100?'badge-green':p.status==='เร็วกว่าแผน'?'badge-teal':'badge-blue'}" style="font-size:0.65rem;">${p.status}</span></td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-      </div>
-    `;
+    switchToView('view-projects');
+    scrollToProjDetails();
+    return;
   }
 
   modalOverlay.classList.add('active');
+}
+
+// Inline data display view navigator and scroll function
+function scrollToProjDetails() {
+  switchToView('view-projects');
+  setTimeout(() => {
+    const el = document.getElementById('projDetailsSection');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, 100);
+}
+
+function openProjectDetailsModal() {
+  scrollToProjDetails();
 }
 
