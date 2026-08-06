@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,475 +8,665 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&family=Sarabun:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
+
 <body>
 
-<input type="file" id="excelFileInput" accept=".xlsx,.xls,.csv" style="display:none;" onchange="handleExcelUpload(event)">
+  <input type="file" id="excelFileInput" accept=".xlsx,.xls,.csv" style="display:none;"
+    onchange="handleExcelUpload(event)">
 
-<div class="app-shell">
+  <div class="app-shell">
 
-  <!-- =========================================================
+    <!-- =========================================================
        TOP NAVIGATION BAR (Teal Pill Style)
        ========================================================= -->
-  <nav class="top-nav">
-    <!-- Brand (Click to navigate to Overview view) -->
-    <div class="nav-brand" onclick="switchToView('view-overview')" role="button" tabindex="0" title="กลับไปหน้าภาพรวมผลงาน">
-      <img src="assets/logo.png" alt="NCSA IT Support logo" class="nav-logo">
-      <div class="nav-brand-text">
-        <span class="nav-org">แดชบอร์ดภาพรวมการทำงานของสำนักเทคโนโลยีสารสนเทศ (สทส.)</span>
-        <span class="nav-sub">สำนักงานคณะกรรมการการรักษาความมั่นคงปลอดภัยไซเบอร์แห่งชาติ (สกมช.)</span>
-      </div>
-    </div>
-
-    <!-- Right actions: nav pills + action buttons -->
-    <div class="nav-actions">
-      <!-- Nav pills moved here so they don't overlap the title -->
-      <div class="nav-pills-center">
-        <button class="nav-pill active" data-target="view-overview">
-          <i class="fa-solid fa-chart-pie"></i> ภาพรวมผลงาน
-        </button>
-        <button class="nav-pill" data-target="view-hardware">
-          <i class="fa-solid fa-desktop"></i> ฮาร์ดแวร์
-        </button>
-        <button class="nav-pill" data-target="view-license">
-          <i class="fa-solid fa-key"></i> ไลเซนส์
-        </button>
-        <button class="nav-pill" data-target="view-cases">
-          <i class="fa-solid fa-headset"></i> Report Case IT Support
-        </button>
-        <button class="nav-pill" data-target="view-projects">
-          <i class="fa-solid fa-diagram-project"></i> โครงการ
-        </button>
+    <nav class="top-nav">
+      <!-- Brand (Click to navigate to Overview view) -->
+      <div class="nav-brand" onclick="switchToView('view-overview')" role="button" tabindex="0"
+        title="กลับไปหน้าภาพรวมผลงาน">
+        <img src="assets/logo.png" alt="NCSA IT Support logo" class="nav-logo">
+        <div class="nav-brand-text">
+          <span class="nav-org">แดชบอร์ดภาพรวมการทำงานของสำนักเทคโนโลยีสารสนเทศ (สทส.)</span>
+          <span class="nav-sub">สำนักงานคณะกรรมการการรักษาความมั่นคงปลอดภัยไซเบอร์แห่งชาติ (สกมช.)</span>
+        </div>
       </div>
 
-      <button class="btn-nav btn-solid" onclick="triggerExcelUpload()">
-        <i class="fa-solid fa-file-excel"></i> <span>นำเข้า Excel</span>
-      </button>
-      <button class="btn-nav" onclick="downloadExcelTemplate()">
-        <i class="fa-solid fa-download"></i> <span>แม่แบบ</span>
-      </button>
-      <button class="btn-nav" onclick="exportDashboardReport()">
-        <i class="fa-solid fa-print"></i> <span>พิมพ์</span>
-      </button>
-    </div>
-  </nav>
+      <!-- Right actions: nav pills + action buttons -->
+      <div class="nav-actions">
+        <!-- Nav pills moved here so they don't overlap the title -->
+        <div class="nav-pills-center">
+          <button class="nav-pill active" data-target="view-overview">
+            <i class="fa-solid fa-chart-pie"></i> ภาพรวมผลงาน
+          </button>
+          <button class="nav-pill" data-target="view-hardware">
+            <i class="fa-solid fa-desktop"></i> ฮาร์ดแวร์
+          </button>
+          <button class="nav-pill" data-target="view-license">
+            <i class="fa-solid fa-key"></i> ไลเซนส์
+          </button>
+          <button class="nav-pill" data-target="view-cases">
+            <i class="fa-solid fa-headset"></i> Report Case IT Support
+          </button>
+          <button class="nav-pill" data-target="view-projects">
+            <i class="fa-solid fa-diagram-project"></i> โครงการ
+          </button>
+        </div>
 
-  <!-- =========================================================
+        <button class="btn-nav btn-solid" onclick="triggerExcelUpload()">
+          <i class="fa-solid fa-file-excel"></i> <span>นำเข้า Excel</span>
+        </button>
+        <button class="btn-nav" onclick="downloadExcelTemplate()">
+          <i class="fa-solid fa-download"></i> <span>แม่แบบ</span>
+        </button>
+        <button class="btn-nav" onclick="exportDashboardReport()">
+          <i class="fa-solid fa-print"></i> <span>พิมพ์</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- =========================================================
        SCROLLABLE CONTENT AREA
        ========================================================= -->
-  <div class="content-scroll">
+    <div class="content-scroll">
 
-    <!-- =====================================================
+      <!-- =====================================================
          VIEW 1 : OVERVIEW DASHBOARD
          ===================================================== -->
-    <div id="view-overview" class="page-view active">
+      <div id="view-overview" class="page-view active">
 
-      <!-- ROW 1 — two large cards -->
-      <div class="dash-row-top">
+        <!-- ROW 1 — two large cards -->
+        <div class="dash-row-top">
 
-        <!-- Card A : Monthly IT Case & Paper Bar Chart -->
-        <div class="card card-pad">
-          <div class="card-header">
-            <span class="card-title"><i class="fa-solid fa-chart-bar"></i> แนวโน้มการให้บริการ Case IT Support รายเดือน</span>
-            <span class="card-badge"><i class="fa-regular fa-calendar"></i> ปี 2569</span>
-          </div>
-          <div class="chart-wrap tall">
-            <canvas id="overviewPaperChart"></canvas>
-          </div>
-        </div>
-
-        <!-- Card B : Doughnut + Legend (reference right panel) -->
-        <div class="card card-pad">
-          <div class="card-header">
-            <span class="card-title"><i class="fa-solid fa-chart-donut"></i> สัดส่วนอุปกรณ์ไอทีแยกสำนัก</span>
-            <div style="display:flex;gap:6px;">
-              <span class="card-badge"><i class="fa-solid fa-file-export"></i> Export</span>
-              <span class="card-badge" id="todayBadge"><i class="fa-regular fa-calendar"></i></span>
+          <!-- Card A : Monthly IT Case & Paper Bar Chart -->
+          <div class="card card-pad">
+            <div class="card-header">
+              <span class="card-title"><i class="fa-solid fa-chart-bar"></i> แนวโน้มการให้บริการ Case IT Support
+                รายเดือน</span>
+              <span class="card-badge"><i class="fa-regular fa-calendar"></i> ปี 2569</span>
+            </div>
+            <div class="chart-wrap tall">
+              <canvas id="overviewPaperChart"></canvas>
             </div>
           </div>
-          <div class="donut-card-inner">
-            <div class="donut-wrap">
-              <canvas id="overviewDeptChart"></canvas>
+
+          <!-- Card B : Doughnut + Legend (reference right panel) -->
+          <div class="card card-pad">
+            <div class="card-header">
+              <span class="card-title"><i class="fa-solid fa-chart-donut"></i> สัดส่วนอุปกรณ์ไอทีแยกสำนัก</span>
+              <div style="display:flex;gap:6px;">
+                <span class="card-badge"><i class="fa-solid fa-file-export"></i> Export</span>
+                <span class="card-badge" id="todayBadge"><i class="fa-regular fa-calendar"></i></span>
+              </div>
             </div>
-            <div class="donut-legend" id="deptLegendList">
-              <!-- filled by JS -->
+            <div class="donut-card-inner">
+              <div class="donut-wrap">
+                <canvas id="overviewDeptChart"></canvas>
+              </div>
+              <div class="donut-legend" id="deptLegendList">
+                <!-- filled by JS -->
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- ROW 2 — five KPI mini-cards -->
-      <div class="dash-row-mid">
-        <div class="kpi-mini" style="--kpi-accent:#2d9d8f;" onclick="openKpiDetailModal('hardware')" title="คลิกดูข้อมูลย่อฮาร์ดแวร์">
-          <i class="kpi-mini-icon fa-solid fa-desktop"></i>
-          <div class="kpi-mini-label">ฮาร์ดแวร์ในดูแล</div>
-          <div>
-            <span class="kpi-mini-value" id="kpiHW">1,248</span>
-            <span class="kpi-mini-unit"> เครื่อง</span>
+        <!-- ROW 2 — five KPI mini-cards -->
+        <div class="dash-row-mid">
+          <div class="kpi-mini" style="--kpi-accent:#2d9d8f;" onclick="openKpiDetailModal('hardware')"
+            title="คลิกดูข้อมูลย่อฮาร์ดแวร์">
+            <i class="kpi-mini-icon fa-solid fa-desktop"></i>
+            <div class="kpi-mini-label">ฮาร์ดแวร์ในดูแล</div>
+            <div>
+              <span class="kpi-mini-value" id="kpiHW">1,248</span>
+              <span class="kpi-mini-unit"> เครื่อง</span>
+            </div>
+            <div class="kpi-mini-sub text-green"><i class="fa-solid fa-circle-check"></i> พร้อมใช้ 94.5%</div>
           </div>
-          <div class="kpi-mini-sub text-green"><i class="fa-solid fa-circle-check"></i> พร้อมใช้ 94.5%</div>
-        </div>
 
-        <div class="kpi-mini" style="--kpi-accent:#f97316;" onclick="openKpiDetailModal('paper')" title="คลิกดูข้อมูลย่อระบบพิมพ์">
-          <i class="kpi-mini-icon fa-solid fa-leaf"></i>
-          <div class="kpi-mini-label">กระดาษในระบบพิมพ์</div>
-          <div>
-            <span class="kpi-mini-value" id="kpiPaper">342</span>
-            <span class="kpi-mini-unit"> รีม</span>
+          <div class="kpi-mini" style="--kpi-accent:#f97316;" onclick="openKpiDetailModal('paper')"
+            title="คลิกดูข้อมูลย่อระบบพิมพ์">
+            <i class="kpi-mini-icon fa-solid fa-leaf"></i>
+            <div class="kpi-mini-label">กระดาษในระบบพิมพ์</div>
+            <div>
+              <span class="kpi-mini-value" id="kpiPaper">342</span>
+              <span class="kpi-mini-unit"> รีม</span>
+            </div>
+            <div class="kpi-mini-sub text-red"><i class="fa-solid fa-arrow-down"></i> ลด 12.4% จากเดือนก่อน</div>
           </div>
-          <div class="kpi-mini-sub text-red"><i class="fa-solid fa-arrow-down"></i> ลด 12.4% จากเดือนก่อน</div>
-        </div>
 
-        <div class="kpi-mini" style="--kpi-accent:#059669;" onclick="openKpiDetailModal('license')" title="คลิกดูข้อมูลย่อไลเซนส์">
-          <i class="kpi-mini-icon fa-solid fa-key"></i>
-          <div class="kpi-mini-label">ไลเซนส์ที่จัดสรร</div>
-          <div>
-            <span class="kpi-mini-value" id="kpiLic">6,703</span>
-            <span class="kpi-mini-unit"> สิทธิ์</span>
+          <div class="kpi-mini" style="--kpi-accent:#059669;" onclick="openKpiDetailModal('license')"
+            title="คลิกดูข้อมูลย่อไลเซนส์">
+            <i class="kpi-mini-icon fa-solid fa-key"></i>
+            <div class="kpi-mini-label">ไลเซนส์ที่จัดสรร</div>
+            <div>
+              <span class="kpi-mini-value" id="kpiLic">6,703</span>
+              <span class="kpi-mini-unit"> สิทธิ์</span>
+            </div>
+            <div class="kpi-mini-sub text-teal"><i class="fa-solid fa-check"></i> ใช้งาน 91.1%</div>
           </div>
-          <div class="kpi-mini-sub text-teal"><i class="fa-solid fa-check"></i> ใช้งาน 91.1%</div>
-        </div>
 
-        <div class="kpi-mini" style="--kpi-accent:#d97706;" onclick="openKpiDetailModal('cases')" title="คลิกดูข้อมูลย่อ Case IT Support">
-          <i class="kpi-mini-icon fa-solid fa-headset"></i>
-          <div class="kpi-mini-label">Case รับใหม่</div>
-          <div>
-            <span class="kpi-mini-value" id="kpiCase">18</span>
-            <span class="kpi-mini-unit"> Cases</span>
+          <div class="kpi-mini" style="--kpi-accent:#d97706;" onclick="openKpiDetailModal('cases')"
+            title="คลิกดูข้อมูลย่อ Case IT Support">
+            <i class="kpi-mini-icon fa-solid fa-headset"></i>
+            <div class="kpi-mini-label">Case รับใหม่</div>
+            <div>
+              <span class="kpi-mini-value" id="kpiCase">18</span>
+              <span class="kpi-mini-unit"> Cases</span>
+            </div>
+            <div class="kpi-mini-sub text-green"><i class="fa-solid fa-clock-check"></i> SLA 98.2%</div>
           </div>
-          <div class="kpi-mini-sub text-green"><i class="fa-solid fa-clock-check"></i> SLA 98.2%</div>
-        </div>
 
-        <div class="kpi-mini" style="--kpi-accent:#7c3aed;" onclick="openKpiDetailModal('projects')" title="คลิกดูข้อมูลย่อโครงการพัฒนาไอที">
-          <i class="kpi-mini-icon fa-solid fa-bars-progress"></i>
-          <div class="kpi-mini-label">โครงการพัฒนาไอที</div>
-          <div>
-            <span class="kpi-mini-value" id="kpiProj">8</span> 
-            <span class="kpi-mini-unit"> โครงการ</span>
-          </div>
-          <div class="kpi-mini-sub text-blue"><i class="fa-solid fa-chart-line"></i> คืบหน้า 85%</div>
-        </div>
-      </div>
-
-      <!-- ROW 3 — four-column executive overview: Hardware + License + Paper + Projects -->
-      <div class="dash-row-bottom">
-
-        <!-- Col 1: Hardware Status Breakdown -->
-        <div class="card card-pad">
-          <div class="card-header">
-            <span class="card-title"><i class="fa-solid fa-desktop"></i> 1. สถานะสินทรัพย์ Hardware</span>
-            <span class="card-badge"><i class="fa-solid fa-cubes"></i> 1,248 เครื่อง</span>
-          </div>
-          <div class="chart-wrap">
-            <canvas id="overviewHwChart"></canvas>
+          <div class="kpi-mini" style="--kpi-accent:#7c3aed;" onclick="openKpiDetailModal('projects')"
+            title="คลิกดูข้อมูลย่อโครงการพัฒนาไอที">
+            <i class="kpi-mini-icon fa-solid fa-bars-progress"></i>
+            <div class="kpi-mini-label">โครงการพัฒนาไอที</div>
+            <div>
+              <span class="kpi-mini-value" id="kpiProj">8</span>
+              <span class="kpi-mini-unit"> โครงการ</span>
+            </div>
+            <div class="kpi-mini-sub text-blue"><i class="fa-solid fa-chart-line"></i> คืบหน้า 85%</div>
           </div>
         </div>
 
-        <!-- Col 2: Software License Allocation -->
-        <div class="card card-pad">
-          <div class="card-header">
-            <span class="card-title"><i class="fa-solid fa-key"></i> 2. การจัดสรร Software License</span>
-            <span class="card-badge"><i class="fa-solid fa-check-double"></i> ใช้แล้ว 91.1%</span>
+        <!-- ROW 3 — four-column executive overview: Hardware + License + Paper + Projects -->
+        <div class="dash-row-bottom">
+
+          <!-- Col 1: Hardware Status Breakdown -->
+          <div class="card card-pad">
+            <div class="card-header">
+              <span class="card-title"><i class="fa-solid fa-desktop"></i> 1. สถานะสินทรัพย์ Hardware</span>
+              <span class="card-badge"><i class="fa-solid fa-cubes"></i> 1,248 เครื่อง</span>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="overviewHwChart"></canvas>
+            </div>
           </div>
-          <div class="chart-wrap">
-            <canvas id="overviewLicChart"></canvas>
+
+          <!-- Col 2: Software License Allocation -->
+          <div class="card card-pad">
+            <div class="card-header">
+              <span class="card-title"><i class="fa-solid fa-key"></i> 2. การจัดสรร Software License</span>
+              <span class="card-badge"><i class="fa-solid fa-check-double"></i> ใช้แล้ว 91.1%</span>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="overviewLicChart"></canvas>
+            </div>
           </div>
+
+          <!-- Col 3: Paper & Printing Overview -->
+          <div class="card card-pad">
+            <div class="card-header">
+              <span class="card-title"><i class="fa-solid fa-print"></i> 3. การใช้งานระบบพิมพ์ & กระดาษ</span>
+              <span class="card-badge"><i class="fa-solid fa-leaf"></i> e-Doc 78.4%</span>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="overviewPaperMiniChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Col 4: IT Projects Overview -->
+          <div class="card card-pad">
+            <div class="card-header">
+              <span class="card-title"><i class="fa-solid fa-bars-progress"></i> 4. โครงการพัฒนาไอที</span>
+              <span class="card-badge"><i class="fa-solid fa-chart-line"></i> คืบหน้า 85%</span>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="overviewProjChart"></canvas>
+            </div>
+          </div>
+
         </div>
+      </div><!-- /view-overview -->
 
-        <!-- Col 3: Paper & Printing Overview -->
-        <div class="card card-pad">
-          <div class="card-header">
-            <span class="card-title"><i class="fa-solid fa-print"></i> 3. การใช้งานระบบพิมพ์ & กระดาษ</span>
-            <span class="card-badge"><i class="fa-solid fa-leaf"></i> e-Doc 78.4%</span>
-          </div>
-          <div class="chart-wrap">
-            <canvas id="overviewPaperMiniChart"></canvas>
-          </div>
-        </div>
-
-        <!-- Col 4: IT Projects Overview -->
-        <div class="card card-pad">
-          <div class="card-header">
-            <span class="card-title"><i class="fa-solid fa-bars-progress"></i> 4. โครงการพัฒนาไอที</span>
-            <span class="card-badge"><i class="fa-solid fa-chart-line"></i> คืบหน้า 85%</span>
-          </div>
-          <div class="chart-wrap">
-            <canvas id="overviewProjChart"></canvas>
-          </div>
-        </div>
-
-      </div>
-    </div><!-- /view-overview -->
-
-    <!-- =====================================================
+      <!-- =====================================================
          VIEW 2 : HARDWARE
          ===================================================== -->
-    <div id="view-hardware" class="page-view">
-      <div class="view-header">
-        <div class="view-header-top">
-          <div class="view-header-left">
-            <div class="hardware-tab-row">
-              <button class="hardware-sub-tab active" data-target="view-hardware" onclick="switchToView('view-hardware')"><i class="fa-solid fa-desktop"></i> ฮาร์ดแวร์</button>
-              <button class="hardware-sub-tab" data-target="view-paper" onclick="switchToView('view-paper')"><i class="fa-solid fa-print"></i> เครื่องพิมพ์</button>
+      <div id="view-hardware" class="page-view">
+        <div class="view-header">
+          <div class="view-header-top">
+            <div class="view-header-left">
+              <div class="hardware-tab-row">
+                <button class="hardware-sub-tab active" data-target="view-hardware"
+                  onclick="switchToView('view-hardware')"><i class="fa-solid fa-desktop"></i> ฮาร์ดแวร์</button>
+                <button class="hardware-sub-tab" data-target="view-paper" onclick="switchToView('view-paper')"><i
+                    class="fa-solid fa-print"></i> เครื่องพิมพ์</button>
+              </div>
+              <div class="view-title-group">
+                <h2><i class="fa-solid fa-laptop-code"></i> รายการอุปกรณ์ฮาร์ดแวร์ที่สำนักจัดสรรและดูแลรักษา</h2>
+                <p>รายละเอียดอุปกรณ์, ผู้ถือครอง, ผู้รับมอบ, IP Address, MAC Address แยกตามสำนักผู้ใช้งาน</p>
+              </div>
             </div>
-            <div class="view-title-group">
-              <h2><i class="fa-solid fa-laptop-code"></i> รายการอุปกรณ์ฮาร์ดแวร์ที่สำนักจัดสรรและดูแลรักษา</h2>
-              <p>รายละเอียดอุปกรณ์, ผู้ถือครอง, ผู้รับมอบ, IP Address, MAC Address แยกตามสำนักผู้ใช้งาน</p>
+            <div class="view-header-actions">
+              <button class="btn-action btn-green" onclick="triggerExcelUpload()"><i class="fa-solid fa-file-excel"></i>
+                นำเข้า Excel</button>
+              <div class="search-input-wrapper">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="hwSearchInput" class="search-input" placeholder="ค้นหา..."
+                  onkeyup="filterHardware()">
+              </div>
+              <select id="hwTypeSelect" class="select-filter" onchange="filterHardware()">
+                <option value="all">ทุกประเภท</option>
+                <option value="คอมพิวเตอร์ตั้งโต๊ะ">คอมพิวเตอร์ตั้งโต๊ะ</option>
+                <option value="โน๊ตบุ๊ค">โน๊ตบุ๊ค</option>
+                <option value="เครื่องพิมพ์">เครื่องพิมพ์</option>
+                <option value="เซิร์ฟเวอร์">เซิร์ฟเวอร์</option>
+                <option value="อุปกรณ์เครือข่าย">อุปกรณ์เครือข่าย</option>
+              </select>
+              <select id="hwStatusSelect" class="select-filter" onchange="filterHardware()">
+                <option value="all">ทุกสถานะ</option>
+                <option value="ใช้งานปกติ">ใช้งานปกติ</option>
+                <option value="ส่งซ่อม">ส่งซ่อม</option>
+                <option value="สำรอง">สำรอง</option>
+              </select>
             </div>
           </div>
-          <div class="view-header-actions">
-            <button class="btn-action btn-green" onclick="triggerExcelUpload()"><i class="fa-solid fa-file-excel"></i> นำเข้า Excel</button>
-            <div class="search-input-wrapper">
-              <i class="fa-solid fa-magnifying-glass"></i>
-              <input type="text" id="hwSearchInput" class="search-input" placeholder="ค้นหา..." onkeyup="filterHardware()">
-            </div>
-            <select id="hwTypeSelect" class="select-filter" onchange="filterHardware()">
-              <option value="all">ทุกประเภท</option>
-              <option value="คอมพิวเตอร์ตั้งโต๊ะ">คอมพิวเตอร์ตั้งโต๊ะ</option>
-              <option value="โน๊ตบุ๊ค">โน๊ตบุ๊ค</option>
-              <option value="เครื่องพิมพ์">เครื่องพิมพ์</option>
-              <option value="เซิร์ฟเวอร์">เซิร์ฟเวอร์</option>
-              <option value="อุปกรณ์เครือข่าย">อุปกรณ์เครือข่าย</option>
-            </select>
-            <select id="hwStatusSelect" class="select-filter" onchange="filterHardware()">
-              <option value="all">ทุกสถานะ</option>
-              <option value="ใช้งานปกติ">ใช้งานปกติ</option>
-              <option value="ส่งซ่อม">ส่งซ่อม</option>
-              <option value="สำรอง">สำรอง</option>
-            </select>
+        </div>
+        <div class="table-card">
+          <div class="table-responsive">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>รหัสสินทรัพย์</th>
+                  <th>ชื่ออุปกรณ์ / สเปค</th>
+                  <th>ชื่อผู้ถือครอง</th>
+                  <th>ชื่อผู้รับ / ผู้ใช้จริง</th>
+                  <th>IP / MAC Address</th>
+                  <th>สำนักผู้ใช้</th>
+                  <th>สถานะ</th>
+                  <th>สถานที่</th>
+                  <th>จัดการ</th>
+                </tr>
+              </thead>
+              <tbody id="hardwareTableBody"></tbody>
+            </table>
           </div>
         </div>
       </div>
-      <div class="table-card">
-        <div class="table-responsive">
-          <table class="custom-table">
-            <thead>
-              <tr>
-                <th>รหัสสินทรัพย์</th>
-                <th>ชื่ออุปกรณ์ / สเปค</th>
-                <th>ชื่อผู้ถือครอง</th>
-                <th>ชื่อผู้รับ / ผู้ใช้จริง</th>
-                <th>IP / MAC Address</th>
-                <th>สำนักผู้ใช้</th>
-                <th>สถานะ</th>
-                <th>สถานที่</th>
-                <th>จัดการ</th>
-              </tr>
-            </thead>
-            <tbody id="hardwareTableBody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
 
-    <!-- =====================================================
+      <!-- =====================================================
          VIEW 3 : PAPER
          ===================================================== -->
-    <div id="view-paper" class="page-view">
-      <div class="view-header">
-        <div class="view-header-top">
-          <div class="view-header-left">
-            <div class="hardware-tab-row">
-              <button class="hardware-sub-tab" data-target="view-hardware" onclick="switchToView('view-hardware')"><i class="fa-solid fa-desktop"></i> ฮาร์ดแวร์</button>
-              <button class="hardware-sub-tab active" data-target="view-paper" onclick="switchToView('view-paper')"><i class="fa-solid fa-print"></i> เครื่องพิมพ์</button>
+      <div id="view-paper" class="page-view">
+        <div class="view-header">
+          <div class="view-header-top">
+            <div class="view-header-left">
+              <div class="hardware-tab-row">
+                <button class="hardware-sub-tab" data-target="view-hardware" onclick="switchToView('view-hardware')"><i
+                    class="fa-solid fa-desktop"></i> ฮาร์ดแวร์</button>
+                <button class="hardware-sub-tab active" data-target="view-paper" onclick="switchToView('view-paper')"><i
+                    class="fa-solid fa-print"></i> เครื่องพิมพ์</button>
+              </div>
+              <div class="view-title-group">
+                <h2><i class="fa-solid fa-file-invoice"></i> รายงานการให้บริการระบบพิมพ์งานและกระดาษองค์กร</h2>
+                <p>สถิติเครื่องพิมพ์ศูนย์กลาง ปริมาณกระดาษ และการผลักดันระบบ e-Document</p>
+              </div>
             </div>
-            <div class="view-title-group">
-              <h2><i class="fa-solid fa-file-invoice"></i> รายงานการให้บริการระบบพิมพ์งานและกระดาษองค์กร</h2>
-              <p>สถิติเครื่องพิมพ์ศูนย์กลาง ปริมาณกระดาษ และการผลักดันระบบ e-Document</p>
+            <div class="view-header-actions">
+              <button class="btn-action btn-green" onclick="triggerExcelUpload()"><i class="fa-solid fa-file-excel"></i>
+                นำเข้า Excel</button>
             </div>
           </div>
-          <div class="view-header-actions">
-            <button class="btn-action btn-green" onclick="triggerExcelUpload()"><i class="fa-solid fa-file-excel"></i> นำเข้า Excel</button>
+        </div>
+        <div class="paper-layout-grid">
+          <div class="paper-charts-column">
+            <div class="chart-card">
+              <div class="card-title-v2"><i class="fa-solid fa-chart-line"></i> การใช้กระดาษรายเดือน</div>
+              <div class="chart-container-v2">
+                <canvas id="paperMonthlyChart"></canvas>
+              </div>
+            </div>
+            <div class="chart-card">
+              <div class="card-title-v2"><i class="fa-solid fa-chart-pie"></i> การใช้กระดาษของแต่ละสำนักงาน</div>
+              <div class="chart-container-v2">
+                <canvas id="paperRatioChart"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="paper-info-column">
+            <div class="table-card paper-table-card">
+              <div class="card-title-v2"><i class="fa-solid fa-print"></i> ทะเบียนเครื่องพิมพ์และปริมาณการใช้กระดาษสะสม
+              </div>
+              <div class="table-responsive paper-table-scroll">
+                <table class="custom-table">
+                  <thead>
+                    <tr>
+                      <th>ชื่อเครื่องพิมพ์</th>
+                      <th>สังกัดแผนก/สำนัก</th>
+                      <th>IP Address</th>
+                      <th>ยี่ห้อ / รุ่น</th>
+                      <th>มิเตอร์เริ่มต้น (แผ่น)</th>
+                      <th>มิเตอร์ล่าสุด (แผ่น)</th>
+                      <th>ปริมาณการพิมพ์จริงสะสม</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Network Printer 01</td>
+                      <td>สำนักที่ 1</td>
+                      <td>10.0.100.11</td>
+                      <td>HP LaserJet Pro M404dn</td>
+                      <td>5,000</td>
+                      <td>48,920</td>
+                      <td class="text-success">43,920</td>
+                    </tr>
+                    <tr>
+                      <td>Color Printer 02</td>
+                      <td>สำนักที่ 2</td>
+                      <td>10.0.100.12</td>
+                      <td>Canon LBP623Cdw</td>
+                      <td>1,200</td>
+                      <td>18,450</td>
+                      <td class="text-success">17,250</td>
+                    </tr>
+                    <tr>
+                      <td>Copier Machine 01</td>
+                      <td>สำนักที่ 3</td>
+                      <td>10.0.100.13</td>
+                      <td>Xerox Altalink C8045</td>
+                      <td>25,000</td>
+                      <td>142,300</td>
+                      <td class="text-success">117,300</td>
+                    </tr>
+                    <tr>
+                      <td>Fast Printer 03</td>
+                      <td>สำนักที่ 4</td>
+                      <td>10.0.100.14</td>
+                      <td>Brother HL-L5200DW</td>
+                      <td>800</td>
+                      <td>35,120</td>
+                      <td class="text-success">34,320</td>
+                    </tr>
+                    <tr>
+                      <td>Printer Multi-function 04</td>
+                      <td>สำนักที่ 5</td>
+                      <td>10.0.100.15</td>
+                      <td>Epson EcoTank L15150</td>
+                      <td>4,500</td>
+                      <td>28,990</td>
+                      <td class="text-success">24,490</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <div class="paper-layout-grid">
-        <div class="paper-charts-column">
-          <div class="chart-card">
-            <div class="card-title-v2"><i class="fa-solid fa-chart-line"></i> การใช้กระดาษรายเดือน</div>
-            <div class="chart-container-v2">
-              <canvas id="paperMonthlyChart"></canvas>
-            </div>
-          </div>
-          <div class="chart-card">
-            <div class="card-title-v2"><i class="fa-solid fa-chart-pie"></i> การใช้กระดาษของแต่ละสำนักงาน</div>
-            <div class="chart-container-v2">
-              <canvas id="paperRatioChart"></canvas>
-            </div>
-          </div>
-        </div>
-        <div class="paper-info-column">
-          <div class="table-card paper-table-card">
-            <div class="card-title-v2"><i class="fa-solid fa-print"></i> ทะเบียนเครื่องพิมพ์และปริมาณการใช้กระดาษสะสม</div>
-            <div class="table-responsive paper-table-scroll">
-              <table class="custom-table">
-                <thead>
-                  <tr>
-                    <th>ชื่อเครื่องพิมพ์</th>
-                    <th>สังกัดแผนก/สำนัก</th>
-                    <th>IP Address</th>
-                    <th>ยี่ห้อ / รุ่น</th>
-                    <th>มิเตอร์เริ่มต้น (แผ่น)</th>
-                    <th>มิเตอร์ล่าสุด (แผ่น)</th>
-                    <th>ปริมาณการพิมพ์จริงสะสม</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Network Printer 01</td>
-                    <td>สำนักที่ 1</td>
-                    <td>10.0.100.11</td>
-                    <td>HP LaserJet Pro M404dn</td>
-                    <td>5,000</td>
-                    <td>48,920</td>
-                    <td class="text-success">43,920</td>
-                  </tr>
-                  <tr>
-                    <td>Color Printer 02</td>
-                    <td>สำนักที่ 2</td>
-                    <td>10.0.100.12</td>
-                    <td>Canon LBP623Cdw</td>
-                    <td>1,200</td>
-                    <td>18,450</td>
-                    <td class="text-success">17,250</td>
-                  </tr>
-                  <tr>
-                    <td>Copier Machine 01</td>
-                    <td>สำนักที่ 3</td>
-                    <td>10.0.100.13</td>
-                    <td>Xerox Altalink C8045</td>
-                    <td>25,000</td>
-                    <td>142,300</td>
-                    <td class="text-success">117,300</td>
-                  </tr>
-                  <tr>
-                    <td>Fast Printer 03</td>
-                    <td>สำนักที่ 4</td>
-                    <td>10.0.100.14</td>
-                    <td>Brother HL-L5200DW</td>
-                    <td>800</td>
-                    <td>35,120</td>
-                    <td class="text-success">34,320</td>
-                  </tr>
-                  <tr>
-                    <td>Printer Multi-function 04</td>
-                    <td>สำนักที่ 5</td>
-                    <td>10.0.100.15</td>
-                    <td>Epson EcoTank L15150</td>
-                    <td>4,500</td>
-                    <td>28,990</td>
-                    <td class="text-success">24,490</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- =====================================================
+      <!-- =====================================================
          VIEW 4 : LICENSE
          ===================================================== -->
-    <div id="view-license" class="page-view">
-      <div class="view-header">
-        <div class="view-title-group">
-          <h2><i class="fa-solid fa-key"></i> การจัดสรรสิทธิ์ซอฟต์แวร์ลิขสิทธิ์องค์กร</h2>
-          <p>ซอฟต์แวร์ที่สำนักจัดหาและบริหารสิทธิ์แจกจ่ายให้หน่วยงานต่างๆ ภายใน สกมช.</p>
+      <div id="view-license" class="page-view">
+        <div class="view-header">
+          <div class="view-title-group">
+            <h2><i class="fa-solid fa-key"></i> การจัดสรรสิทธิ์ซอฟต์แวร์ลิขสิทธิ์องค์กร</h2>
+            <p>ซอฟต์แวร์ที่สำนักจัดหาและบริหารสิทธิ์แจกจ่ายให้หน่วยงานต่างๆ ภายใน สกมช.</p>
+          </div>
         </div>
+        <div class="licenses-grid" id="licensesContainer"></div>
       </div>
-      <div class="licenses-grid" id="licensesContainer"></div>
-    </div>
 
-    <!-- =====================================================
+      <!-- =====================================================
          VIEW 5 : CASES
          ===================================================== -->
-    <div id="view-cases" class="page-view">
-      <div class="view-header">
-        <div class="view-title-group">
-          <h2><i class="fa-solid fa-headset"></i> รายการ Case คำขอรับบริการแจ้งซ่อมและสนับสนุน IT Support</h2>
-          <p>บันทึก Case แจ้งซ่อม อุปกรณ์ไอที และปัญหาระบบที่สำนักได้รับ (Helpdesk Tickets)</p>
-        </div>
-        <div class="filter-bar">
-          <button class="btn-action btn-green" onclick="triggerExcelUpload()"><i class="fa-solid fa-file-excel"></i> นำเข้า Excel</button>
-          <div class="search-input-wrapper">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="caseSearchInput" class="search-input" placeholder="ค้นหา Case..." onkeyup="filterCases()">
+      <div id="view-cases" class="page-view">
+        <div class="view-header">
+          <div class="view-title-group">
+            <h2><i class="fa-solid fa-headset"></i> รายการ Case คำขอรับบริการแจ้งซ่อมและสนับสนุน IT Support</h2>
+            <p>บันทึก Case แจ้งซ่อม อุปกรณ์ไอที และปัญหาระบบที่สำนักได้รับ (Helpdesk Tickets)</p>
           </div>
-          <select id="caseSeveritySelect" class="select-filter" onchange="filterCases()">
-            <option value="all">ทุกระดับความด่วน</option>
-            <option value="Critical">Critical</option>
-            <option value="High">High</option>
-            <option value="Medium">Medium</option>
-            <option value="Low">Low</option>
-          </select>
+          <div class="filter-bar">
+            <button class="btn-action btn-green" onclick="triggerExcelUpload()"><i class="fa-solid fa-file-excel"></i>
+              นำเข้า Excel</button>
+            <div class="search-input-wrapper">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="caseSearchInput" class="search-input" placeholder="ค้นหา Case..."
+                onkeyup="filterCases()">
+            </div>
+            <select id="caseSeveritySelect" class="select-filter" onchange="filterCases()">
+              <option value="all">ทุกระดับความด่วน</option>
+              <option value="Critical">Critical</option>
+              <option value="High">High</option>
+              <option value="Medium">Medium</option>
+              <option value="Low">Low</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-card">
+          <div class="table-responsive">
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Case ID</th>
+                  <th>หัวข้อคำขอรับบริการ</th>
+                  <th>ความด่วน</th>
+                  <th>สำนักที่ส่งเรื่อง</th>
+                  <th>ช่าง IT รับผิดชอบ</th>
+                  <th>สถานะ</th>
+                  <th>รายละเอียด</th>
+                </tr>
+              </thead>
+              <tbody id="caseTableBody"></tbody>
+            </table>
+          </div>
         </div>
       </div>
-      <div class="table-card">
-        <div class="table-responsive">
-          <table class="custom-table">
-            <thead>
-              <tr>
-                <th>Case ID</th>
-                <th>หัวข้อคำขอรับบริการ</th>
-                <th>ความด่วน</th>
-                <th>สำนักที่ส่งเรื่อง</th>
-                <th>ช่าง IT รับผิดชอบ</th>
-                <th>สถานะ</th>
-                <th>รายละเอียด</th>
-              </tr>
-            </thead>
-            <tbody id="caseTableBody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
 
-    <!-- =====================================================
+      <!-- =====================================================
          VIEW 6 : PROJECTS
          ===================================================== -->
-    <div id="view-projects" class="page-view">
-      <div class="view-header">
-        <div class="view-title-group">
-          <h2><i class="fa-solid fa-diagram-project"></i> รายการโครงการพัฒนาระบบเทคโนโลยีสารสนเทศ</h2>
-          <p>ติดตามโครงการ งบประมาณ ผู้จัดการ และความคืบหน้า (Progress %)</p>
+      <div id="view-projects" class="page-view">
+        <div class="view-header compact-proj-header" style="margin-bottom: 20px;">
+          <div class="proj-header-top-row"
+            style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div class="proj-title-inline" style="display: flex; align-items: center; gap: 10px;">
+              <h2 style="margin: 0; color: #1e3a8a; font-size: 1.1rem; font-weight: 700;"><i
+                  class="fa-solid fa-diagram-project"
+                  style="margin-right: 6px;"></i>รายงานติดตามโครงการและกิจกรรมตามแผนยุทธศาสตร์ (สทส.)</h2>
+            </div>
+
+          </div>
         </div>
+
+        <div class="projects-content-scroll" style="flex: 1; overflow-y: auto; min-height: 0; padding-right: 5px;">
+
+          <div style="font-size: 0.9rem; font-weight: 700; color: #1e3a8a; margin-bottom: 12px;"><i class="fa-solid fa-list-check"></i> รายละเอียด 3 โครงการ (สทส.)</div>
+          
+          <div class="project-table-container" style="background: white; border-radius: 10px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.02); margin-bottom: 20px;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem; text-align: left;">
+              <thead>
+                <tr style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; color: #475569;">
+                  <th style="padding: 12px 16px; font-weight: 700; width: 5%;">#</th>
+                  <th style="padding: 12px 16px; font-weight: 700; width: 45%;">ชื่อโครงการ / กิจกรรม</th>
+                  <th style="padding: 12px 16px; font-weight: 700; width: 10%;">งบประมาณ</th>
+                  <th style="padding: 12px 16px; font-weight: 700; width: 10%;">หมวดรายจ่าย</th>
+                  <th style="padding: 12px 16px; font-weight: 700; width: 10%;">งวดเวลา</th>
+                  <th style="padding: 12px 16px; font-weight: 700; width: 10%;">ความคืบหน้า</th>
+                  <th style="padding: 12px 16px; font-weight: 700; width: 10%;">สถานะ</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom: 1px solid #f1f5f9;">
+                  <td style="padding: 12px 16px; color: #64748b;">1</td>
+                  <td style="padding: 12px 16px; font-weight: 600; color: #0f172a;">34(1) กิจกรรมการจัดทำแผนแม่บท ICT และ Enterprise Architecture และปรับปรุงระบบเทคโนโลยีสารสนเทศสำนักงาน</td>
+                  <td style="padding: 12px 16px; color: #64748b;">-</td>
+                  <td style="padding: 12px 16px; color: #64748b;">งบดำเนินงาน</td>
+                  <td style="padding: 12px 16px; color: #64748b;">ต.ค. 68</td>
+                  <td style="padding: 12px 16px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <span style="font-weight: 700; color: #1e3a8a;">100%</span>
+                      <div style="flex: 1; background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden; min-width: 40px;">
+                        <div style="height: 100%; width: 100%; background: #3b82f6; border-radius: 3px;"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td style="padding: 12px 16px;">
+                    <span style="background: #eff6ff; color: #1d4ed8; padding: 4px 8px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; display: inline-block; white-space: nowrap;"><i class="fa-solid fa-bolt"></i> เร็วกว่าแผน</span>
+                  </td>
+                </tr>
+                <tr style="border-bottom: 1px solid #f1f5f9;">
+                  <td style="padding: 12px 16px; color: #64748b;">2</td>
+                  <td style="padding: 12px 16px; font-weight: 600; color: #0f172a;">35(4.1) กิจกรรมจัดหานวัตกรรมด้านความมั่นคงปลอดภัยไซเบอร์ Big Data หรือ AI มาใช้เพื่อพัฒนาขีดความสามารถในการบริหารองค์กรสมัยใหม่</td>
+                  <td style="padding: 12px 16px; color: #64748b;">-</td>
+                  <td style="padding: 12px 16px; color: #64748b;">งบดำเนินงาน</td>
+                  <td style="padding: 12px 16px; color: #64748b;">ต.ค. 68</td>
+                  <td style="padding: 12px 16px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <span style="font-weight: 700; color: #1e3a8a;">75%</span>
+                      <div style="flex: 1; background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden; min-width: 40px;">
+                        <div style="height: 100%; width: 75%; background: #3b82f6; border-radius: 3px;"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td style="padding: 12px 16px;">
+                    <span style="background: #eff6ff; color: #1d4ed8; padding: 4px 8px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; display: inline-block; white-space: nowrap;"><i class="fa-solid fa-bolt"></i> เร็วกว่าแผน</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 12px 16px; color: #64748b;">3</td>
+                  <td style="padding: 12px 16px; font-weight: 600; color: #0f172a;">36(4.1) กิจกรรมการพัฒนาระบบ Smart Back Office ให้สามารถสนับสนุนงานหลักได้ทุกกระบวนงาน</td>
+                  <td style="padding: 12px 16px; color: #64748b;">-</td>
+                  <td style="padding: 12px 16px; color: #64748b;">งบดำเนินงาน</td>
+                  <td style="padding: 12px 16px; color: #64748b;">ต.ค. 68</td>
+                  <td style="padding: 12px 16px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <span style="font-weight: 700; color: #1e3a8a;">75%</span>
+                      <div style="flex: 1; background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden; min-width: 40px;">
+                        <div style="height: 100%; width: 75%; background: #10b981; border-radius: 3px;"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td style="padding: 12px 16px;">
+                    <span style="background: #ecfdf5; color: #047857; padding: 4px 8px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; display: inline-block; white-space: nowrap;"><i class="fa-solid fa-check"></i> เป็นไปตามแผน</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Executive Overview Panel -->
+          <div class="proj-exec-panel" style="display: flex; gap: 16px; margin-bottom: 20px;">
+            <div class="exec-total-box"
+              style="background: linear-gradient(135deg, #0f1f5c, #1e3a8a); color: white; border-radius: 12px; padding: 20px; flex: 1.2; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(30,58,138,0.2);">
+              <div>
+                <div style="font-size: 0.8rem; font-weight: 600; opacity: 0.9; margin-bottom: 4px;"><i
+                    class="fa-solid fa-layer-group"></i> ภาพรวมโครงการ สทส.</div>
+                <div style="font-size: 3rem; font-weight: 800; line-height: 1;">3</div>
+                <div style="font-size: 0.75rem; opacity: 0.8;">โครงการ/กิจกรรมทั้งหมด</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-size: 2rem; font-weight: 800; color: #facc15;">0.0M</div>
+                <div style="font-size: 0.75rem; opacity: 0.8;">งบประมาณรวม (บาท)</div>
+              </div>
+            </div>
+
+            <div class="exec-status-boxes" style="flex: 2; display: flex; gap: 10px;">
+              <!-- 3 statuses -->
+              <div class="status-box on-track"
+                style="flex: 1; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 12px; padding: 16px; display: flex; align-items: flex-start; gap: 10px;">
+                <div
+                  style="background: #10b981; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 0.8rem; margin-top: 4px;">
+                  <i class="fa-solid fa-check"></i></div>
+                <div>
+                  <div style="font-size: 1.5rem; font-weight: 800; color: #064e3b; line-height: 1;">1</div>
+                  <div style="font-size: 0.8rem; color: #047857; font-weight: 600;">เป็นไปตามแผน (33%)</div>
+                </div>
+              </div>
+              <div class="status-box ahead"
+                style="flex: 1; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 16px; display: flex; align-items: flex-start; gap: 10px;">
+                <div
+                  style="background: #3b82f6; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 0.8rem; margin-top: 4px;">
+                  <i class="fa-solid fa-bolt"></i></div>
+                <div>
+                  <div style="font-size: 1.5rem; font-weight: 800; color: #1e3a8a; line-height: 1;">2</div>
+                  <div style="font-size: 0.8rem; color: #1d4ed8; font-weight: 600;">เร็วกว่าแผน (67%)</div>
+                </div>
+              </div>
+              <div class="status-box delayed"
+                style="flex: 1; background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; padding: 16px; display: flex; align-items: flex-start; gap: 10px;">
+                <div
+                  style="background: #ef4444; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 0.8rem; margin-top: 4px;">
+                  <i class="fa-solid fa-triangle-exclamation"></i></div>
+                <div>
+                  <div style="font-size: 1.5rem; font-weight: 800; color: #7f1d1d; line-height: 1;">0</div>
+                  <div style="font-size: 0.8rem; color: #b91c1c; font-weight: 600;">ล่าช้ากว่าแผน (0%)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+
+
+          <!-- Bottom Analytics Row -->
+          <div class="proj-analytics-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <!-- Budget Pie Chart -->
+            <div class="card card-pad" style="display: flex; flex-direction: column;">
+              <div class="card-header" style="margin-bottom: 0;">
+                <span class="card-title" style="color: #1e3a8a;"><i class="fa-solid fa-chart-pie"></i>
+                  สัดส่วนงบประมาณจำแนกตามยุทธศาสตร์</span>
+                <span class="card-badge">0.0M บาท</span>
+              </div>
+              <div class="chart-wrap"
+                style="flex: 1; display: flex; align-items: center; justify-content: center; min-height: 200px;">
+                <div style="width: 100%; height: 100%; position: relative;">
+                  <canvas id="projBudgetPieChart"></canvas>
+                </div>
+              </div>
+            </div>
+
+            <!-- Status Doughnut Chart -->
+            <div class="card card-pad" style="display: flex; flex-direction: column;">
+              <div class="card-header" style="margin-bottom: 0;">
+                <span class="card-title" style="color: #1e3a8a;"><i class="fa-solid fa-chart-line"></i>
+                  สัดส่วนสถานะการดำเนินงาน (3 กิจกรรม)</span>
+                <span class="card-badge">100% Total</span>
+              </div>
+              <div class="chart-wrap"
+                style="flex: 1; display: flex; align-items: center; justify-content: center; min-height: 200px;">
+                <div style="width: 100%; height: 100%; position: relative;">
+                  <canvas id="projStatusDonutChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div> <!-- /projects-content-scroll -->
       </div>
-      <div class="projects-grid" id="projectsContainer"></div>
+
+    </div><!-- /content-scroll -->
+
+    <!-- Footer -->
+    <div class="footer-bar">
+      © 2026 สำนักเทคโนโลยีสารสนเทศ (สทส.) · สำนักงานคณะกรรมการการรักษาความมั่นคงปลอดภัยไซเบอร์แห่งชาติ (สกมช.)
     </div>
 
-  </div><!-- /content-scroll -->
+  </div><!-- /app-shell -->
 
-  <!-- Footer -->
-  <div class="footer-bar">
-    © 2026 สำนักเทคโนโลยีสารสนเทศ (สทส.) · สำนักงานคณะกรรมการการรักษาความมั่นคงปลอดภัยไซเบอร์แห่งชาติ (สกมช.)
-  </div>
-
-</div><!-- /app-shell -->
-
-<!-- Modal -->
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal-content">
-    <div class="modal-header">
-      <div class="modal-title-wrap">
-        <img src="assets/logo.png" alt="NCSA Logo" class="modal-logo">
-        <h3 id="modalTitle">รายละเอียด</h3>
+  <!-- Modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <img src="assets/logo.png" alt="NCSA Logo" class="modal-logo">
+          <h3 id="modalTitle">รายละเอียด</h3>
+        </div>
+        <button class="modal-close-btn" id="modalCloseBtn"><i class="fa-solid fa-xmark"></i></button>
       </div>
-      <button class="modal-close-btn" id="modalCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+      <div class="modal-body" id="modalBody"></div>
     </div>
-    <div class="modal-body" id="modalBody"></div>
   </div>
-</div>
 
-<!-- Toast -->
-<div id="toastNotification" class="toast-notification"></div>
-
-<script src="js/data.js"></script>
-<script src="js/charts.js"></script>
-<script src="js/main.js"></script>
+  <!-- Toast -->
+  <div id="toastNotification" class="toast-notification"></div>
+  <script src="js/data.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/main.js"></script>
 </body>
+
 </html>

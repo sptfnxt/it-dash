@@ -11,6 +11,7 @@ function initAllCharts() {
   initOverviewCharts();
   initPaperCharts();
   initLicenseCharts();
+  initProjectCharts();
 }
 
 // Helper: linear gradient top→bottom
@@ -91,7 +92,7 @@ function initOverviewCharts() {
   // --- B. Dept Doughnut (Row 1 Right) ---
   const ctxDept = document.getElementById('overviewDeptChart');
   if (ctxDept) {
-    const COLORS = ['#3b82f6','#1e3a8a','#dc2626','#10b981','#f59e0b','#8b5cf6'];
+    const COLORS = ['#3b82f6', '#1e3a8a', '#dc2626', '#10b981', '#f59e0b', '#8b5cf6'];
     chartInstances.overviewDept = new Chart(ctxDept, {
       type: 'doughnut',
       data: {
@@ -453,7 +454,7 @@ function updateAllCharts() {
   if (chartInstances.overviewBarMini) {
     chartInstances.overviewBarMini.data.labels = NCSA_DATA.paperUsage.monthlyTrend.map(d => d.month);
     chartInstances.overviewBarMini.data.datasets[0].data = NCSA_DATA.paperUsage.monthlyTrend.map(d => d.reams);
-    chartInstances.overviewBarMini.data.datasets[1].data = NCSA_DATA.paperUsage.monthlyTrend.map(d => Math.round(d.cost/100));
+    chartInstances.overviewBarMini.data.datasets[1].data = NCSA_DATA.paperUsage.monthlyTrend.map(d => Math.round(d.cost / 100));
     chartInstances.overviewBarMini.update();
   }
 
@@ -530,3 +531,82 @@ function renderModalLicenseDeptChart(assignedDepts, licenseName) {
   });
 }
 
+
+// --------------------------------------------------------------------------
+// PROJECT CHARTS
+// --------------------------------------------------------------------------
+function initProjectCharts() {
+  const pieCanvas = document.getElementById('projBudgetPieChart');
+  const donutCanvas = document.getElementById('projStatusDonutChart');
+  
+  if (pieCanvas) {
+    if (chartInstances.projBudgetPie) {
+      chartInstances.projBudgetPie.destroy();
+    }
+    const pieCtx = pieCanvas.getContext('2d');
+    chartInstances.projBudgetPie = new Chart(pieCtx, {
+      type: 'pie',
+      data: {
+        labels: ['ยุทธศาสตร์ที่ 1', 'ยุทธศาสตร์ที่ 2', 'ยุทธศาสตร์ที่ 3', 'ยุทธศาสตร์ที่ 4'],
+        datasets: [{
+          data: [1, 1, 1, 1], // The budget in sample data is all 0, use placeholder for visuals
+          backgroundColor: ['#e2e8f0', '#cbd5e1', '#94a3b8', '#1e3a8a'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'right',
+            labels: { boxWidth: 12, font: { size: 10 } }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return ' ' + context.label + ': ไม่มีข้อมูลงบประมาณ';
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  if (donutCanvas) {
+    if (chartInstances.projStatusDonut) {
+      chartInstances.projStatusDonut.destroy();
+    }
+    const donutCtx = donutCanvas.getContext('2d');
+    chartInstances.projStatusDonut = new Chart(donutCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['เป็นไปตามแผน', 'เร็วกว่าแผน', 'ล่าช้ากว่าแผน'],
+        datasets: [{
+          data: [1, 2, 0], // Status: 1 (ตามแผน), 2 (เร็วกว่าแผน)
+          backgroundColor: ['#10b981', '#3b82f6', '#ef4444'],
+          borderWidth: 0,
+          cutout: '70%'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'right',
+            labels: { boxWidth: 12, font: { size: 10 } }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return ' ' + context.label + ': ' + context.parsed + ' โครงการ';
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+}
