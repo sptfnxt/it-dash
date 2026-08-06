@@ -1178,11 +1178,11 @@ function openKpiDetailModal(kpiType) {
         <div style="background:#f3e8ff;padding:10px;border-radius:10px;border:1px solid #d8b4fe;">
           <div style="font-size:0.68rem;color:#6b21a8;font-weight:600;">จำนวนโครงการทั้งหมด</div>
           <div style="font-size:1.3rem;font-weight:800;color:#7c3aed;">${total} <span style="font-size:0.7rem;">โครงการ</span></div>
-          <div style="font-size:0.68rem;color:#059669;font-weight:600;">ความคืบหน้าภาพรวม 85%</div>
+          <div style="font-size:0.68rem;color:#059669;font-weight:600;">ความคืบหน้าภาพรวม 83.3%</div>
         </div>
         <div style="background:#eff6ff;padding:10px;border-radius:10px;border:1px solid #bfdbfe;">
           <div style="font-size:0.68rem;color:#1e40af;font-weight:600;">งบประมาณรวมโครงการ</div>
-          <div style="font-size:1.3rem;font-weight:800;color:#1e3a8a;">฿${(totalBudget/1000000).toFixed(1)} <span style="font-size:0.7rem;">ล้านบาท</span></div>
+          <div style="font-size:1.3rem;font-weight:800;color:#1e3a8a;">${totalBudget === 0 ? 'ไม่ใช้งบประมาณ' : '฿' + (totalBudget/1000000).toFixed(1) + ' ล้านบาท'}</div>
           <div style="font-size:0.68rem;color:#64748b;">(ปีงบประมาณ 2569)</div>
         </div>
       </div>
@@ -1199,7 +1199,7 @@ function openKpiDetailModal(kpiType) {
           <thead>
             <tr>
               <th>ชื่อโครงการ</th>
-              <th>ผู้จัดการ</th>
+              <th>หน่วยงาน</th>
               <th>งบประมาณ</th>
               <th>ความคืบหน้า</th>
               <th>สถานะ</th>
@@ -1208,16 +1208,16 @@ function openKpiDetailModal(kpiType) {
           <tbody>
             ${NCSA_DATA.projects.map(p => `
               <tr>
-                <td><strong style="color:#1e3a8a;">${p.name.slice(0, 32)}...</strong></td>
-                <td>${p.manager}</td>
-                <td>฿${(p.budgetTHB/1000000).toFixed(1)}M</td>
+                <td><strong style="color:#1e3a8a;">${p.name.slice(0, 38)}...</strong></td>
+                <td>${p.dept}</td>
+                <td>${p.budgetTHB === 0 ? 'ไม่ใช้งบประมาณ' : '฿' + (p.budgetTHB/1000000).toFixed(1) + 'M'}</td>
                 <td>
                   <div style="display:flex;align-items:center;gap:6px;">
                     <div class="progress-bar-wrap" style="width:60px;height:4px;"><div class="progress-bar-fill bg-blue" style="width:${p.progressPercent}%"></div></div>
                     <strong>${p.progressPercent}%</strong>
                   </div>
                 </td>
-                <td><span class="badge ${p.status==='เสร็จสิ้น'?'badge-green':p.status==='มีความเสี่ยงล่าช้า'?'badge-red':'badge-blue'}" style="font-size:0.65rem;">${p.status}</span></td>
+                <td><span class="badge ${p.progressPercent===100?'badge-green':p.status==='เร็วกว่าแผน'?'badge-teal':'badge-blue'}" style="font-size:0.65rem;">${p.status}</span></td>
               </tr>
             `).join('')}
           </tbody>

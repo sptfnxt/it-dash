@@ -36,12 +36,13 @@ const NCSA_DATA = {
     lowCases: 3,
     slaResolutionRate: 98.2, // 98.2% SLA Resolution Rate
 
-    totalProjects: 8,
-    totalBudgetTHB: 245000000,
-    projectsOnTrack: 6,
-    projectsDelayed: 1,
+    totalProjects: 3,
+    totalBudgetTHB: 0,
+    projectsOnTrack: 1,
+    projectsAhead: 2,
+    projectsDelayed: 0,
     projectsCompleted: 1,
-    overallProjectProgress: 76.5
+    overallProjectProgress: 83.3
   },
 
   // 2. Hardware Assets List (คอมพิวเตอร์ เครื่องพิมพ์ เซิร์ฟเวอร์ ฯลฯ)
@@ -450,71 +451,54 @@ const NCSA_DATA = {
     }
   ],
 
-  // 6. IT Projects Managed by IT Support Bureau
+  // 6. IT Projects Managed by IT Bureau (สำนักเทคโนโลยีสารสนเทศ) from data.chaiyapat.space
   projects: [
     {
-      id: "PRJ-2026-01",
-      name: "โครงการยกระดับศูนย์บริการลูกค้าและระบบ Helpdesk สกมช. (ITSM Upgrade)",
-      dept: "สำนักสื่อสารและเทคโนโลยีสารสนเทศ (สสท.)",
-      manager: "นายกิตติศักดิ์ พรหมคุณ",
-      budgetTHB: 15000000,
-      startDate: "2025-10-01",
-      endDate: "2026-09-30",
-      progressPercent: 88,
-      status: "ตามแผน",
-      milestones: [
-        { title: "จัดหาระบบ IT Service Management (ITSM Platform)", done: true },
-        { title: "เชื่อมต่อระบบรับแจ้ง Case ผ่าน LINE & Portal", done: true },
-        { title: "ทดสอบการจ่ายงานและติดตาม SLA อัตโนมัติ", done: true },
-        { title: "ส่งมอบงานงวดสุดท้าย", done: false }
-      ]
-    },
-    {
-      id: "PRJ-2026-02",
-      name: "โครงการปรับปรุงและเปลี่ยนแทนเครื่องคอมพิวเตอร์ประจำปี (PC Hardware Renewal)",
-      dept: "สำนักสื่อสารและเทคโนโลยีสารสนเทศ (สสท.)",
-      manager: "นายภาณุเดช (IT Support Lead)",
-      budgetTHB: 35000000,
-      startDate: "2026-01-15",
-      endDate: "2026-11-30",
-      progressPercent: 72,
-      status: "ตามแผน",
-      milestones: [
-        { title: "จัดซื้อ คอมพิวเตอร์/โน๊ตบุ๊ค ใหม่ 350 ชุด", done: true },
-        { title: "กระจายส่งมอบอุปกรณ์ให้ 6 สำนัก", done: true },
-        { title: "เก็บคืนอุปกรณ์หมดสัญญาเช่า", done: false }
-      ]
-    },
-    {
-      id: "PRJ-2026-03",
-      name: "โครงการจัดหาซอฟต์แวร์ลิขสิทธิ์รวมองค์กร (Enterprise License Procurement)",
-      dept: "สำนักสื่อสารและเทคโนโลยีสารสนเทศ (สสท.)",
-      manager: "นายวิศรุต (License Manager)",
-      budgetTHB: 48000000,
-      startDate: "2026-02-01",
-      endDate: "2026-10-15",
-      progressPercent: 80,
-      status: "ตามแผน",
-      milestones: [
-        { title: "จัดหาไลเซนส์ M365, CrowdStrike, Adobe", done: true },
-        { title: "จัดสรรสิทธิ์และลงทะเบียนเข้าระบบกลาง", done: true },
-        { title: "จัดทำรายงานการใช้งานสิทธิ์เสนอผู้บริหาร", done: false }
-      ]
-    },
-    {
-      id: "PRJ-2026-04",
-      name: "โครงการบริหารจัดการเครื่องพิมพ์ศูนย์กลางและลดการใช้กระดาษ (Managed Print Services)",
-      dept: "สำนักสื่อสารและเทคโนโลยีสารสนเทศ (สสท.)",
-      manager: "นายธนพล จิตเที่ยง",
-      budgetTHB: 12000000,
-      startDate: "2025-11-01",
-      endDate: "2026-08-31",
+      id: "34(1)",
+      name: "กิจกรรมการจัดทำแผนแม่บท ICT และ Enterprise Architecture และปรับปรุงระบบเทคโนโลยีสารสนเทศสำนักงาน",
+      dept: "สำนักเทคโนโลยีสารสนเทศ",
+      manager: "สำนักเทคโนโลยีสารสนเทศ",
+      budgetTHB: 0,
+      startDate: "2026-01-01",
+      endDate: "2026-12-31",
       progressPercent: 100,
-      status: "เสร็จสิ้น",
+      status: "เร็วกว่าแผน",
       milestones: [
-        { title: "ติดตั้งระบบบัตรแตะพิมพ์งาน (Pull Printing)", done: true },
-        { title: "ตั้งค่าระบบจำกัดโควต้ากระดาษตามสำนัก", done: true },
-        { title: "เปิดใช้งานระบบไร้กระดาษสมบูรณ์แบบ", done: true }
+        { title: "จัดทำแผนแม่บท ICT (ICT Master Plan)", done: true },
+        { title: "จัดทำสถาปัตยกรรมองค์กร (Enterprise Architecture)", done: true },
+        { title: "ปรับปรุงระบบเทคโนโลยีสารสนเทศสำนักงาน", done: true }
+      ]
+    },
+    {
+      id: "35(4.1)",
+      name: "กิจกรรมจัดหานวัตกรรมด้านความมั่นคงปลอดภัยไซเบอร์ Big Data หรือ AI มาใช้เพื่อพัฒนาขีดความสามารถในการบริหารองค์กรสมัยใหม่",
+      dept: "สำนักเทคโนโลยีสารสนเทศ",
+      manager: "สำนักเทคโนโลยีสารสนเทศ",
+      budgetTHB: 0,
+      startDate: "2026-01-01",
+      endDate: "2026-12-31",
+      progressPercent: 75,
+      status: "เร็วกว่าแผน",
+      milestones: [
+        { title: "ศึกษาความต้องการนวัตกรรม Cyber, Big Data & AI", done: true },
+        { title: "จัดหาและทดสอบระบบประมวลผลการบริหารองค์กร", done: true },
+        { title: "ประเมินและเพิ่มขีดความสามารถในการบริหารสมัยใหม่", done: false }
+      ]
+    },
+    {
+      id: "36(4.1)",
+      name: "กิจกรรมการพัฒนาระบบ Smart Back Office ให้สามารถสนับสนุนงานหลักได้ทุกกระบวนงาน",
+      dept: "สำนักเทคโนโลยีสารสนเทศ",
+      manager: "สำนักเทคโนโลยีสารสนเทศ",
+      budgetTHB: 0,
+      startDate: "2026-01-01",
+      endDate: "2026-12-31",
+      progressPercent: 75,
+      status: "ตามแผน",
+      milestones: [
+        { title: "ออกแบบโครงสร้างระบบ Smart Back Office", done: true },
+        { title: "พัฒนาระบบงานสนับสนุนการดำเนินงานหลัก", done: true },
+        { title: "ทดสอบการเชื่อมโยงระบบทุกกระบวนงาน", done: false }
       ]
     }
   ]
