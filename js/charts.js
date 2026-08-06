@@ -288,8 +288,8 @@ function initPaperCharts() {
       data: {
         labels: NCSA_DATA.paperUsage.monthlyTrend.map(d => d.month),
         datasets: [{
-          label: 'ค่าบริการพิมพ์ (บาท)',
-          data: NCSA_DATA.paperUsage.monthlyTrend.map(d => d.cost),
+          label: 'ปริมาณกระดาษ (รีม)',
+          data: NCSA_DATA.paperUsage.monthlyTrend.map(d => d.reams),
           fill: true,
           backgroundColor: fillGradient,
           borderColor: '#2563eb',
@@ -346,15 +346,15 @@ function initPaperCharts() {
 
   const ctxRatio = document.getElementById('paperRatioChart');
   if (ctxRatio) {
-    const dig = NCSA_DATA.paperUsage?.printVsDigitalRatio?.digitalDocPercent ?? 67;
-    const pap = NCSA_DATA.paperUsage?.printVsDigitalRatio?.paperDocPercent ?? 33;
+    const deptLabels = NCSA_DATA.paperUsage.departmentBreakdown.map(d => d.dept.match(/\(([^)]+)\)/)?.[1] || d.dept);
+    const deptData = NCSA_DATA.paperUsage.departmentBreakdown.map(d => d.reams);
     chartInstances.paperRatio = new Chart(ctxRatio, {
       type: 'pie',
       data: {
-        labels: ['เอกสารดิจิทัล (e-Document)', 'กระดาษพิมพ์ (Paper)'],
+        labels: deptLabels,
         datasets: [{
-          data: [dig, pap],
-          backgroundColor: ['#10b981', '#dc2626'],
+          data: deptData,
+          backgroundColor: ['#3b82f6', '#1e3a8a', '#dc2626', '#059669', '#d97706', '#7c3aed'],
           hoverOffset: 14,
           borderWidth: 3,
           borderColor: '#fff'
