@@ -1609,18 +1609,3 @@ canvas {
     padding: 12px 0 8px 0;
   }
 }
-
-/* ===========================================================================
-   3D CHART HOVER EFFECT
-   =========================================================================== */
-#projStatusDonutChart {
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.35s ease;
-  transform-origin: center center;
-}
-
-#projStatusDonutChart:hover {
-  filter: drop-shadow(0px 12px 24px rgba(30, 58, 138, 0.28));
-  transform: perspective(800px) rotateX(12deg) scale(1.04);
-}
-
-
