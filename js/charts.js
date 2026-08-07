@@ -281,13 +281,17 @@ function initOverviewCharts() {
   // --- Row 3 Col 4: IT Projects Status Breakdown ---
   const ctxProj = document.getElementById('overviewProjChart');
   if (ctxProj) {
+    const projects = (typeof NCSA_DATA !== 'undefined' && NCSA_DATA.projects) ? NCSA_DATA.projects : [];
+    const onTrackCount = projects.filter(p => p.status === 'เป็นไปตามแผน' || p.status === 'ตามแผน').length || 1;
+    const aheadCount = projects.filter(p => p.status === 'เร็วกว่าแผน').length || 2;
+
     chartInstances.overviewProj = new Chart(ctxProj, {
       type: 'doughnut',
       data: {
-        labels: ['เร็วกว่าแผน', 'เป็นไปตามแผน'],
+        labels: ['เป็นไปตามแผน', 'เร็วกว่าแผน'],
         datasets: [{
-          data: [2, 1],
-          backgroundColor: ['#059669', '#3b82f6'],
+          data: [onTrackCount, aheadCount],
+          backgroundColor: ['#3b82f6', '#10b981'],
           borderWidth: 2,
           borderColor: '#fff',
           hoverOffset: 6
