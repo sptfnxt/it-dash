@@ -608,13 +608,16 @@ function initProjectCharts() {
           backgroundColor: ['#64748b', '#94a3b8', '#cbd5e1', '#1e3a8a'],
           borderColor: '#ffffff',
           borderWidth: 2,
-          hoverOffset: 18,
+          hoverOffset: 14,
           hoverBorderWidth: 3
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        layout: {
+          padding: { top: 10, bottom: 16, left: 10, right: 10 }
+        },
         animation: { animateScale: true, animateRotate: true, duration: 1200, easing: 'easeOutQuart' },
         onClick: (event, activeElements) => {
           if (activeElements && activeElements.length > 0) {
@@ -672,7 +675,7 @@ function initProjectCharts() {
           backgroundColor: ['#3b82f6', '#10b981', '#ef4444'], // เป็นไปตามแผน = สีฟ้า (#3b82f6), เร็วกว่าแผน = สีเขียว (#10b981), ล่าช้ากว่าแผน = สีแดง (#ef4444)
           borderColor: '#ffffff',
           borderWidth: 3,
-          hoverOffset: 28, // Dynamic 3D slice explosion on hover
+          hoverOffset: 18, // 3D slice pop-out on hover without clipping edges
           hoverBorderWidth: 4,
           hoverBorderColor: '#ffffff'
         }]
@@ -680,6 +683,9 @@ function initProjectCharts() {
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        layout: {
+          padding: { top: 12, bottom: 20, left: 12, right: 12 }
+        },
         animation: { animateScale: true, animateRotate: true, duration: 1200, easing: 'easeOutBack' },
         onClick: (event, activeElements) => {
           if (activeElements && activeElements.length > 0) {
@@ -719,10 +725,10 @@ function initProjectCharts() {
         beforeDraw(chart) {
           const { ctx } = chart;
           ctx.save();
-          ctx.shadowColor = 'rgba(15, 23, 42, 0.35)';
-          ctx.shadowBlur = 18;
-          ctx.shadowOffsetY = 8;
-          ctx.shadowOffsetX = 3;
+          ctx.shadowColor = 'rgba(15, 23, 42, 0.22)';
+          ctx.shadowBlur = 12;
+          ctx.shadowOffsetY = 5;
+          ctx.shadowOffsetX = 2;
         },
         afterDraw(chart) {
           const { ctx } = chart;
