@@ -303,65 +303,23 @@ function handleExcelUpload(event) {
 
 // Download Pre-Formatted Excel Template
 function downloadTemplate(type = 'all') {
-  const wb = XLSX.utils.book_new();
   let fileName = 'NCSA_IT_Dashboard_Template.xlsx';
+  
+  if (type === 'hardware') fileName = 'Hardware_Template.xlsx';
+  if (type === 'cases') fileName = 'Cases_Template.xlsx';
+  if (type === 'license') fileName = 'Licenses_Template.xlsx';
+  if (type === 'projects') fileName = 'Projects_Template.xlsx';
+  if (type === 'paper') fileName = 'Paper_Template.xlsx';
 
-  if (type === 'hardware' || type === 'all') {
-    const hwData = NCSA_DATA.hardware.map(h => ({
-      'รหัสสินทรัพย์': h.id, 'ชื่ออุปกรณ์ / สเปค': h.name,
-      'ประเภทอุปกรณ์': h.type, 'ชื่อผู้ถือครอง (Holder)': h.holder,
-      'ชื่อผู้รับ / ผู้ใช้งานจริง': h.recipient, 'IP Address': h.ip,
-      'MAC Address': h.mac, 'สำนักผู้ใช้': h.dept, 'รหัสสำนัก': h.deptCode,
-      'สถานะ': h.status, 'Serial Number': h.serial,
-      'สถานที่ติดตั้ง': h.location, 'วันที่รับมอบ': h.receivedDate
-    }));
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(hwData), 'Hardware');
-    if (type === 'hardware') fileName = 'Hardware_Template.xlsx';
-  }
+  // Create an invisible anchor element to trigger the download
+  const link = document.createElement('a');
+  link.href = `templates/${fileName}`;
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 
-  if (type === 'cases' || type === 'all') {
-    const caseData = NCSA_DATA.cases.map(c => ({
-      'Case ID': c.id, 'หัวข้อคำขอรับบริการ': c.title, 'ความด่วน': c.severity,
-      'สำนักที่ขอซ่อม': c.dept, 'รหัสสำนัก': c.deptCode, 'ผู้แจ้งเรื่อง': c.reporter,
-      'ช่าง IT ผู้รับผิดชอบ': c.assignee, 'สถานะการแก้ไข': c.status,
-      'วันที่แจ้ง': c.reportedDate, 'สถานะ SLA': c.slaStatus, 'สรุปการแก้ไข': c.description
-    }));
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(caseData), 'Cases');
-    if (type === 'cases') fileName = 'Cases_Template.xlsx';
-  }
-
-  if (type === 'license' || type === 'all') {
-    const licData = NCSA_DATA.licenses.map(l => ({
-      'id': l.id, 'ชื่อซอฟต์แวร์': l.name, 'หมวดหมู่': l.category,
-      'ผู้ให้บริการ': l.vendor, 'สิทธิ์ทั้งหมด': l.totalSeats,
-      'สิทธิ์ที่ใช้แล้ว': l.usedSeats, 'สิทธิ์ที่ว่าง': l.availableSeats,
-      'วันหมดอายุ': l.expiryDate, 'ราคาต่อสิทธิ์': l.unitCostTHB
-    }));
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(licData), 'Licenses');
-    if (type === 'license') fileName = 'Licenses_Template.xlsx';
-  }
-
-  if (type === 'projects' || type === 'all') {
-    const projData = NCSA_DATA.projects.map(p => ({
-      'รหัสโครงการ': p.id, 'ชื่อโครงการ': p.name, 'สำนักเจ้าของ': p.dept,
-      'งบประมาณ': p.budgetTHB, 'วันที่เริ่ม': p.startDate, 'วันที่สิ้นสุด': p.endDate,
-      'ความคืบหน้า (%)': p.progressPercent, 'สถานะ': p.status
-    }));
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(projData), 'Projects');
-    if (type === 'projects') fileName = 'Projects_Template.xlsx';
-  }
-
-  if (type === 'paper' || type === 'all') {
-    // We don't have paper data array structure for import yet, just create an empty template with headers
-    const paperHeaders = [{
-      'เดือน': 'ม.ค.', 'ปริมาณกระดาษ (รีม)': 410, 'จำนวนแผ่น': 205000, 'มูลค่า (บาท)': 49200
-    }];
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(paperHeaders), 'Paper');
-    if (type === 'paper') fileName = 'Paper_Template.xlsx';
-  }
-
-  XLSX.writeFile(wb, fileName);
-  showToast(`📥 ดาวน์โหลดไฟล์ ${fileName} เรียบร้อยแล้ว`);
+  showToast(`📥 กำลังดาวน์โหลดไฟล์ ${fileName} จากโฟลเดอร์แม่แบบ...`);
 }
 
 // Toast Notification

@@ -171,7 +171,7 @@
           <!-- Col 1: Hardware Status Breakdown -->
           <div class="card card-pad">
             <div class="card-header">
-              <span class="card-title"><i class="fa-solid fa-desktop"></i> 1. สถานะสินทรัพย์ Hardware</span>
+              <span class="card-title"><i class="fa-solid fa-desktop"></i> สถานะสินทรัพย์ Hardware</span>
               <span class="card-badge"><i class="fa-solid fa-cubes"></i> 1,248 เครื่อง</span>
             </div>
             <div class="chart-wrap">
@@ -182,7 +182,7 @@
           <!-- Col 2: Software License Allocation -->
           <div class="card card-pad">
             <div class="card-header">
-              <span class="card-title"><i class="fa-solid fa-key"></i> 2. การจัดสรร Software License</span>
+              <span class="card-title"><i class="fa-solid fa-key"></i> การจัดสรร Software License</span>
               <span class="card-badge"><i class="fa-solid fa-check-double"></i> ใช้แล้ว 91.1%</span>
             </div>
             <div class="chart-wrap">
@@ -193,7 +193,7 @@
           <!-- Col 3: Paper & Printing Overview -->
           <div class="card card-pad">
             <div class="card-header">
-              <span class="card-title"><i class="fa-solid fa-print"></i> 3. การใช้งานระบบพิมพ์ & กระดาษ</span>
+              <span class="card-title"><i class="fa-solid fa-print"></i> การใช้งานระบบพิมพ์ & กระดาษ</span>
               <span class="card-badge"><i class="fa-solid fa-leaf"></i> e-Doc 78.4%</span>
             </div>
             <div class="chart-wrap">
@@ -204,7 +204,7 @@
           <!-- Col 4: IT Projects Overview -->
           <div class="card card-pad">
             <div class="card-header">
-              <span class="card-title"><i class="fa-solid fa-bars-progress"></i> 4. โครงการพัฒนาไอที</span>
+              <span class="card-title"><i class="fa-solid fa-bars-progress"></i> โครงการพัฒนาไอที</span>
               <span class="card-badge"><i class="fa-solid fa-chart-line"></i> คืบหน้า 85%</span>
             </div>
             <div class="chart-wrap">
@@ -234,8 +234,10 @@
               </div>
             </div>
             <div class="view-header-actions">
-              <button class="btn-action" style="background: white; border: 1px solid #cbd5e1; color: #475569;" onclick="downloadTemplate('hardware')"><i class="fa-solid fa-download"></i> แม่แบบ</button>
-              <button class="btn-action btn-green" onclick="triggerExcelUpload()"><i class="fa-solid fa-file-excel"></i> นำเข้า Excel</button>
+              <button class="btn-action" style="background: white; border: 1px solid #cbd5e1; color: #475569;"
+                onclick="downloadTemplate('hardware')"><i class="fa-solid fa-download"></i> แม่แบบ</button>
+              <button class="btn-action btn-green" onclick="triggerExcelUpload()"><i class="fa-solid fa-file-excel"></i>
+                นำเข้า Excel</button>
               <div class="search-input-wrapper">
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <input type="text" id="hwSearchInput" class="search-input" placeholder="ค้นหา..."
@@ -299,8 +301,10 @@
               </div>
             </div>
             <div class="view-header-actions">
-              <button class="btn-action" style="background: white; border: 1px solid #cbd5e1; color: #475569;" onclick="downloadTemplate('paper')"><i class="fa-solid fa-download"></i> แม่แบบ</button>
-              <button class="btn-action btn-green" onclick="triggerExcelUpload()"><i class="fa-solid fa-file-excel"></i> นำเข้า Excel</button>
+              <button class="btn-action" style="background: white; border: 1px solid #cbd5e1; color: #475569;"
+                onclick="downloadTemplate('paper')"><i class="fa-solid fa-download"></i> แม่แบบ</button>
+              <button class="btn-action btn-green" onclick="triggerExcelUpload()"><i class="fa-solid fa-file-excel"></i>
+                นำเข้า Excel</button>
             </div>
           </div>
         </div>
@@ -400,8 +404,10 @@
             <p>ซอฟต์แวร์ที่สำนักจัดหาและบริหารสิทธิ์แจกจ่ายให้หน่วยงานต่างๆ ภายใน สกมช.</p>
           </div>
           <div class="view-header-actions">
-            <button class="btn-action" style="background: white; border: 1px solid #cbd5e1; color: #475569;" onclick="downloadTemplate('license')"><i class="fa-solid fa-download"></i> แม่แบบ</button>
-            <button class="btn-action btn-green" onclick="triggerExcelUpload()"><i class="fa-solid fa-file-excel"></i> นำเข้า Excel</button>
+            <button class="btn-action" style="background: white; border: 1px solid #cbd5e1; color: #475569;"
+              onclick="downloadTemplate('license')"><i class="fa-solid fa-download"></i> แม่แบบ</button>
+            <button class="btn-action btn-green" onclick="triggerExcelUpload()"><i class="fa-solid fa-file-excel"></i>
+              นำเข้า Excel</button>
           </div>
         </div>
         <div class="licenses-grid" id="licensesContainer"></div>
@@ -417,8 +423,10 @@
             <p>บันทึก Case แจ้งซ่อม อุปกรณ์ไอที และปัญหาระบบที่สำนักได้รับ (Helpdesk Tickets)</p>
           </div>
           <div class="filter-bar">
-            <button class="btn-action" style="background: white; border: 1px solid #cbd5e1; color: #475569;" onclick="downloadTemplate('cases')"><i class="fa-solid fa-download"></i> แม่แบบ</button>
-            <button class="btn-action btn-green" onclick="triggerExcelUpload()"><i class="fa-solid fa-file-excel"></i> นำเข้า Excel</button>
+            <button class="btn-action" style="background: white; border: 1px solid #cbd5e1; color: #475569;"
+              onclick="downloadTemplate('cases')"><i class="fa-solid fa-download"></i> แม่แบบ</button>
+            <button class="btn-action btn-green" onclick="triggerExcelUpload()"><i class="fa-solid fa-file-excel"></i>
+              นำเข้า Excel</button>
             <div class="search-input-wrapper">
               <i class="fa-solid fa-magnifying-glass"></i>
               <input type="text" id="caseSearchInput" class="search-input" placeholder="ค้นหา Case..."
@@ -466,8 +474,10 @@
                   style="margin-right: 6px;"></i>รายงานติดตามโครงการและกิจกรรมตามแผนยุทธศาสตร์ (สทส.)</h2>
             </div>
             <div class="view-header-actions">
-              <button class="btn-action" style="background: white; border: 1px solid #cbd5e1; color: #475569;" onclick="downloadTemplate('projects')"><i class="fa-solid fa-download"></i> แม่แบบ</button>
-              <button class="btn-action btn-green" onclick="triggerExcelUpload()"><i class="fa-solid fa-file-excel"></i> นำเข้า Excel</button>
+              <button class="btn-action" style="background: white; border: 1px solid #cbd5e1; color: #475569;"
+                onclick="downloadTemplate('projects')"><i class="fa-solid fa-download"></i> แม่แบบ</button>
+              <button class="btn-action btn-green" onclick="triggerExcelUpload()"><i class="fa-solid fa-file-excel"></i>
+                นำเข้า Excel</button>
             </div>
           </div>
         </div>
@@ -491,9 +501,13 @@
                   <div style="font-size: 0.75rem; opacity: 0.85;">งบประมาณรวม (บาท)</div>
                 </div>
               </div>
-              <div style="margin-top: 12px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: space-between; font-size: 0.75rem; background: rgba(255,255,255,0.12); padding: 6px 12px; border-radius: 20px;">
-                <span style="font-weight: 600;"><i class="fa-solid fa-list-check"></i> รายละเอียด 3 โครงการ (สทส.)</span>
-                <span style="background: #ffffff; color: #1e3a8a; padding: 2px 10px; border-radius: 12px; font-weight: 700; font-size: 0.7rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"><i class="fa-solid fa-arrow-right"></i> คลิกเข้าหน้าแสดงข้อมูล</span>
+              <div
+                style="margin-top: 12px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: space-between; font-size: 0.75rem; background: rgba(255,255,255,0.12); padding: 6px 12px; border-radius: 20px;">
+                <span style="font-weight: 600;"><i class="fa-solid fa-list-check"></i> รายละเอียด 3 โครงการ
+                  (สทส.)</span>
+                <span
+                  style="background: #ffffff; color: #1e3a8a; padding: 2px 10px; border-radius: 12px; font-weight: 700; font-size: 0.7rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"><i
+                    class="fa-solid fa-arrow-right"></i> คลิกเข้าหน้าแสดงข้อมูล</span>
               </div>
             </div>
 
@@ -504,7 +518,8 @@
                 title="คลิกเพื่อเข้าสู่หน้าแสดงข้อมูลโครงการ">
                 <div
                   style="background: #10b981; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 0.8rem; margin-top: 4px;">
-                  <i class="fa-solid fa-check"></i></div>
+                  <i class="fa-solid fa-check"></i>
+                </div>
                 <div>
                   <div style="font-size: 1.5rem; font-weight: 800; color: #064e3b; line-height: 1;">1</div>
                   <div style="font-size: 0.8rem; color: #047857; font-weight: 600;">เป็นไปตามแผน (33%)</div>
@@ -515,7 +530,8 @@
                 title="คลิกเพื่อเข้าสู่หน้าแสดงข้อมูลโครงการ">
                 <div
                   style="background: #3b82f6; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 0.8rem; margin-top: 4px;">
-                  <i class="fa-solid fa-bolt"></i></div>
+                  <i class="fa-solid fa-bolt"></i>
+                </div>
                 <div>
                   <div style="font-size: 1.5rem; font-weight: 800; color: #1e3a8a; line-height: 1;">2</div>
                   <div style="font-size: 0.8rem; color: #1d4ed8; font-weight: 600;">เร็วกว่าแผน (67%)</div>
@@ -526,7 +542,8 @@
                 title="คลิกเพื่อเข้าสู่หน้าแสดงข้อมูลโครงการ">
                 <div
                   style="background: #ef4444; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 0.8rem; margin-top: 4px;">
-                  <i class="fa-solid fa-triangle-exclamation"></i></div>
+                  <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
                 <div>
                   <div style="font-size: 1.5rem; font-weight: 800; color: #7f1d1d; line-height: 1;">0</div>
                   <div style="font-size: 0.8rem; color: #b91c1c; font-weight: 600;">ล่าช้ากว่าแผน (0%)</div>
@@ -576,21 +593,26 @@
          ===================================================== -->
       <div id="view-project-details" class="page-view">
         <div class="view-header" style="margin-bottom: 16px;">
-          <div class="view-header-top" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+          <div class="view-header-top"
+            style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
             <div class="view-title-group" style="display: flex; align-items: center; gap: 14px;">
-              <button class="btn-action btn-outline" onclick="switchToView('view-projects')" style="padding: 6px 14px; font-weight: 700; border-radius: 8px; border: 1.5px solid #cbd5e1; background: white; color: #1e3a8a; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+              <button class="btn-action btn-outline" onclick="switchToView('view-projects')"
+                style="padding: 6px 14px; font-weight: 700; border-radius: 8px; border: 1.5px solid #cbd5e1; background: white; color: #1e3a8a; cursor: pointer; display: flex; align-items: center; gap: 6px;">
                 <i class="fa-solid fa-arrow-left"></i> กลับหน้าภาพรวมโครงการ
               </button>
               <div>
                 <h2 style="margin: 0; color: #1e3a8a; font-size: 1.15rem; font-weight: 700;">
                   <i class="fa-solid fa-list-check" style="margin-right: 6px;"></i> รายละเอียด 3 โครงการ (สทส.)
                 </h2>
-                <p style="margin: 2px 0 0 0; font-size: 0.78rem; color: #64748b;">ข้อมูลรายละเอียดแผนงาน กิจกรรม ความคืบหน้า และสถานะโครงการทั้งหมด</p>
+                <p style="margin: 2px 0 0 0; font-size: 0.78rem; color: #64748b;">ข้อมูลรายละเอียดแผนงาน กิจกรรม
+                  ความคืบหน้า และสถานะโครงการทั้งหมด</p>
               </div>
             </div>
             <div class="view-header-actions">
-              <button class="btn-action" style="background: white; border: 1px solid #cbd5e1; color: #475569;" onclick="downloadTemplate('projects')"><i class="fa-solid fa-download"></i> แม่แบบ</button>
-              <button class="btn-action btn-green" onclick="triggerExcelUpload()"><i class="fa-solid fa-file-excel"></i> นำเข้า Excel</button>
+              <button class="btn-action" style="background: white; border: 1px solid #cbd5e1; color: #475569;"
+                onclick="downloadTemplate('projects')"><i class="fa-solid fa-download"></i> แม่แบบ</button>
+              <button class="btn-action btn-green" onclick="triggerExcelUpload()"><i class="fa-solid fa-file-excel"></i>
+                นำเข้า Excel</button>
             </div>
           </div>
         </div>
@@ -599,23 +621,31 @@
 
           <!-- Top Summary Cards Bar -->
           <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px;">
-            <div style="background: linear-gradient(135deg, #0f1f5c, #1e3a8a); color: white; border-radius: 12px; padding: 16px 20px; box-shadow: 0 4px 14px rgba(30,58,138,0.15); display: flex; justify-content: space-between; align-items: center;">
+            <div
+              style="background: linear-gradient(135deg, #0f1f5c, #1e3a8a); color: white; border-radius: 12px; padding: 16px 20px; box-shadow: 0 4px 14px rgba(30,58,138,0.15); display: flex; justify-content: space-between; align-items: center;">
               <div>
-                <div style="font-size: 0.78rem; opacity: 0.9; font-weight: 600;"><i class="fa-solid fa-layer-group"></i> โครงการทั้งหมด</div>
-                <div style="font-size: 2.2rem; font-weight: 800; line-height: 1.1;">3 <span style="font-size: 0.85rem; font-weight: 400;">โครงการ</span></div>
+                <div style="font-size: 0.78rem; opacity: 0.9; font-weight: 600;"><i class="fa-solid fa-layer-group"></i>
+                  โครงการทั้งหมด</div>
+                <div style="font-size: 2.2rem; font-weight: 800; line-height: 1.1;">3 <span
+                    style="font-size: 0.85rem; font-weight: 400;">โครงการ</span></div>
               </div>
               <i class="fa-solid fa-diagram-project" style="font-size: 2.5rem; opacity: 0.25;"></i>
             </div>
-            <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
+            <div
+              style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
               <div>
-                <div style="font-size: 0.78rem; color: #1e40af; font-weight: 600;"><i class="fa-solid fa-coins"></i> งบประมาณรวม</div>
-                <div style="font-size: 2.2rem; font-weight: 800; color: #1e3a8a; line-height: 1.1;">0.0M <span style="font-size: 0.85rem; font-weight: 400; color: #64748b;">บาท</span></div>
+                <div style="font-size: 0.78rem; color: #1e40af; font-weight: 600;"><i class="fa-solid fa-coins"></i>
+                  งบประมาณรวม</div>
+                <div style="font-size: 2.2rem; font-weight: 800; color: #1e3a8a; line-height: 1.1;">0.0M <span
+                    style="font-size: 0.85rem; font-weight: 400; color: #64748b;">บาท</span></div>
               </div>
               <i class="fa-solid fa-money-bill-wave" style="font-size: 2.5rem; color: #3b82f6; opacity: 0.25;"></i>
             </div>
-            <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 12px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
+            <div
+              style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 12px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
               <div>
-                <div style="font-size: 0.78rem; color: #047857; font-weight: 600;"><i class="fa-solid fa-chart-line"></i> ความคืบหน้าภาพรวม</div>
+                <div style="font-size: 0.78rem; color: #047857; font-weight: 600;"><i
+                    class="fa-solid fa-chart-line"></i> ความคืบหน้าภาพรวม</div>
                 <div style="font-size: 2.2rem; font-weight: 800; color: #064e3b; line-height: 1.1;">83.3%</div>
               </div>
               <i class="fa-solid fa-circle-check" style="font-size: 2.5rem; color: #10b981; opacity: 0.25;"></i>
@@ -623,9 +653,11 @@
           </div>
 
           <!-- Data Table Card -->
-          <div class="table-card" style="background: white; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 4px 16px rgba(0,0,0,0.03); overflow: hidden;">
+          <div class="table-card"
+            style="background: white; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 4px 16px rgba(0,0,0,0.03); overflow: hidden;">
             <div class="table-responsive">
-              <table class="custom-table" style="width: 100%; border-collapse: collapse; font-size: 0.82rem; text-align: left;">
+              <table class="custom-table"
+                style="width: 100%; border-collapse: collapse; font-size: 0.82rem; text-align: left;">
                 <thead>
                   <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; color: #334155;">
                     <th style="padding: 14px 18px; font-weight: 700; width: 5%;">#</th>
@@ -640,56 +672,70 @@
                 <tbody id="projTableBody">
                   <tr style="border-bottom: 1px solid #f1f5f9;">
                     <td style="padding: 14px 18px; color: #64748b; font-weight: 600;">1</td>
-                    <td style="padding: 14px 18px; font-weight: 600; color: #0f172a; line-height: 1.5;">กิจกรรมการจัดทำแผนแม่บท ICT และ Enterprise Architecture และปรับปรุงระบบเทคโนโลยีสารสนเทศสำนักงาน</td>
+                    <td style="padding: 14px 18px; font-weight: 600; color: #0f172a; line-height: 1.5;">
+                      กิจกรรมการจัดทำแผนแม่บท ICT และ Enterprise Architecture และปรับปรุงระบบเทคโนโลยีสารสนเทศสำนักงาน
+                    </td>
                     <td style="padding: 14px 18px; color: #64748b;">-</td>
                     <td style="padding: 14px 18px; color: #64748b;">งบดำเนินงาน</td>
                     <td style="padding: 14px 18px; color: #64748b;">ต.ค. 68</td>
                     <td style="padding: 14px 18px;">
                       <div style="display: flex; align-items: center; gap: 8px;">
                         <span style="font-weight: 700; color: #1e3a8a;">100%</span>
-                        <div style="flex: 1; background: #e2e8f0; height: 7px; border-radius: 4px; overflow: hidden; min-width: 50px;">
+                        <div
+                          style="flex: 1; background: #e2e8f0; height: 7px; border-radius: 4px; overflow: hidden; min-width: 50px;">
                           <div style="height: 100%; width: 100%; background: #3b82f6; border-radius: 4px;"></div>
                         </div>
                       </div>
                     </td>
                     <td style="padding: 14px 18px;">
-                      <span style="background: #eff6ff; color: #1d4ed8; padding: 5px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; display: inline-block; white-space: nowrap;"><i class="fa-solid fa-bolt"></i> เร็วกว่าแผน</span>
+                      <span
+                        style="background: #eff6ff; color: #1d4ed8; padding: 5px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; display: inline-block; white-space: nowrap;"><i
+                          class="fa-solid fa-bolt"></i> เร็วกว่าแผน</span>
                     </td>
                   </tr>
                   <tr style="border-bottom: 1px solid #f1f5f9;">
                     <td style="padding: 14px 18px; color: #64748b; font-weight: 600;">2</td>
-                    <td style="padding: 14px 18px; font-weight: 600; color: #0f172a; line-height: 1.5;">กิจกรรมจัดหานวัตกรรมด้านความมั่นคงปลอดภัยไซเบอร์ Big Data หรือ AI มาใช้เพื่อพัฒนาขีดความสามารถในการบริหารองค์กรสมัยใหม่</td>
+                    <td style="padding: 14px 18px; font-weight: 600; color: #0f172a; line-height: 1.5;">
+                      กิจกรรมจัดหานวัตกรรมด้านความมั่นคงปลอดภัยไซเบอร์ Big Data หรือ AI
+                      มาใช้เพื่อพัฒนาขีดความสามารถในการบริหารองค์กรสมัยใหม่</td>
                     <td style="padding: 14px 18px; color: #64748b;">-</td>
                     <td style="padding: 14px 18px; color: #64748b;">งบดำเนินงาน</td>
                     <td style="padding: 14px 18px; color: #64748b;">ต.ค. 68</td>
                     <td style="padding: 14px 18px;">
                       <div style="display: flex; align-items: center; gap: 8px;">
                         <span style="font-weight: 700; color: #1e3a8a;">75%</span>
-                        <div style="flex: 1; background: #e2e8f0; height: 7px; border-radius: 4px; overflow: hidden; min-width: 50px;">
+                        <div
+                          style="flex: 1; background: #e2e8f0; height: 7px; border-radius: 4px; overflow: hidden; min-width: 50px;">
                           <div style="height: 100%; width: 75%; background: #3b82f6; border-radius: 4px;"></div>
                         </div>
                       </div>
                     </td>
                     <td style="padding: 14px 18px;">
-                      <span style="background: #eff6ff; color: #1d4ed8; padding: 5px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; display: inline-block; white-space: nowrap;"><i class="fa-solid fa-bolt"></i> เร็วกว่าแผน</span>
+                      <span
+                        style="background: #eff6ff; color: #1d4ed8; padding: 5px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; display: inline-block; white-space: nowrap;"><i
+                          class="fa-solid fa-bolt"></i> เร็วกว่าแผน</span>
                     </td>
                   </tr>
                   <tr>
                     <td style="padding: 14px 18px; color: #64748b; font-weight: 600;">3</td>
-                    <td style="padding: 14px 18px; font-weight: 600; color: #0f172a; line-height: 1.5;">กิจกรรมการพัฒนาระบบ Smart Back Office ให้สามารถสนับสนุนงานหลักได้ทุกกระบวนงาน</td>
+                    <td style="padding: 14px 18px; font-weight: 600; color: #0f172a; line-height: 1.5;">
+                      กิจกรรมการพัฒนาระบบ Smart Back Office ให้สามารถสนับสนุนงานหลักได้ทุกกระบวนงาน</td>
                     <td style="padding: 14px 18px; color: #64748b;">-</td>
                     <td style="padding: 14px 18px; color: #64748b;">งบดำเนินงาน</td>
                     <td style="padding: 14px 18px; color: #64748b;">ต.ค. 68</td>
                     <td style="padding: 14px 18px;">
                       <div style="display: flex; align-items: center; gap: 8px;">
                         <span style="font-weight: 700; color: #1e3a8a;">75%</span>
-                        <div style="flex: 1; background: #e2e8f0; height: 7px; border-radius: 4px; overflow: hidden; min-width: 50px;">
+                        <div
+                          style="flex: 1; background: #e2e8f0; height: 7px; border-radius: 4px; overflow: hidden; min-width: 50px;">
                           <div style="height: 100%; width: 75%; background: #10b981; border-radius: 4px;"></div>
                         </div>
                       </div>
                     </td>
                     <td style="padding: 14px 18px;">
-                      <span style="background: #ecfdf5; color: #047857; padding: 5px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; display: inline-block; white-space: nowrap;"><i class="fa-solid fa-check"></i> เป็นไปตามแผน</span>
+                      <span
+                        style="background: #ecfdf5; color: #047857; padding: 5px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; display: inline-block; white-space: nowrap;"><i
+                          class="fa-solid fa-check"></i> เป็นไปตามแผน</span>
                     </td>
                   </tr>
                 </tbody>
