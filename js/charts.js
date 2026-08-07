@@ -644,20 +644,52 @@ function initProjectCharts() {
       chartInstances.projStatusDonut.destroy();
     }
     const donutCtx = donutCanvas.getContext('2d');
+    
+    // Remove custom popup element if present
+    const oldPopup = document.getElementById('projStatusHoverPopup');
+    if (oldPopup) oldPopup.remove();
+
+    // Dynamic project status counts from NCSA_DATA.projects
+    const projects = (typeof NCSA_DATA !== 'undefined' && NCSA_DATA.projects) ? NCSA_DATA.projects : [];
+    const onTrackList = projects.filter(p => p.status === 'เป็นไปตามแผน' || p.status === 'ตามแผน');
+    const aheadList = projects.filter(p => p.status === 'เร็วกว่าแผน');
+    const delayedList = projects.filter(p => p.status === 'ล่าช้ากว่าแผน' || p.status === 'ล่าช้า');
+
+    // Custom 3D Shadow Plugin for Chart.js
+    const shadow3DPlugin = {
+      id: 'shadow3DPlugin',
+      beforeDraw(chart) {
+        const { ctx } = chart;
+        ctx.save();
+        ctx.shadowColor = 'rgba(15, 23, 42, 0.28)';
+        ctx.shadowBlur = 18;
+        ctx.shadowOffsetX = 3;
+        ctx.shadowOffsetY = 10;
+      },
+      afterDraw(chart) {
+        chart.ctx.restore();
+      }
+    };
+
     chartInstances.projStatusDonut = new Chart(donutCtx, {
       type: 'doughnut',
       data: {
         labels: ['เป็นไปตามแผน', 'เร็วกว่าแผน', 'ล่าช้ากว่าแผน'],
         datasets: [{
-          data: [1, 2, 0], // Status: 1 (ตามแผน), 2 (เร็วกว่าแผน)
+          data: [onTrackList.length, aheadList.length, delayedList.length],
           backgroundColor: ['#10b981', '#3b82f6', '#ef4444'],
-          borderWidth: 0,
-          cutout: '70%'
+          borderWidth: 2,
+          borderColor: '#ffffff',
+          hoverOffset: 24, // 3D Pop-out displacement when hovering over slice
+          hoverBorderWidth: 4,
+          hoverBorderColor: '#ffffff'
         }]
       },
+      plugins: [shadow3DPlugin],
       options: {
         responsive: true,
         maintainAspectRatio: false,
+<<<<<<< HEAD
         onClick: (event, activeElements) => {
           if (activeElements && activeElements.length > 0) {
             const idx = activeElements[0].index;
@@ -665,26 +697,53 @@ function initProjectCharts() {
               openChartDetailModal('overviewProj', idx);
             }
           }
+=======
+        animation: {
+          animateScale: true,
+          animateRotate: true,
+          duration: 1200,
+          easing: 'easeOutQuart'
+>>>>>>> 5ce18db9841065df45bddf27a18153a47a04d940
         },
         onHover: (event, chartElements) => {
           if (event.native && event.native.target) {
             event.native.target.style.cursor = chartElements.length ? 'pointer' : 'default';
           }
         },
+<<<<<<< HEAD
+=======
+        onClick: (event, activeElements) => {
+          if (activeElements && activeElements.length > 0) {
+            const idx = activeElements[0].index;
+            const labels = ['เป็นไปตามแผน', 'เร็วกว่าแผน', 'ล่าช้ากว่าแผน'];
+            if (typeof openProjectStatusModal === 'function') {
+              openProjectStatusModal(labels[idx]);
+            }
+          }
+        },
+>>>>>>> 5ce18db9841065df45bddf27a18153a47a04d940
         plugins: {
           legend: {
             position: 'right',
-            labels: { boxWidth: 12, font: { size: 10 } }
+            labels: { boxWidth: 12, font: { size: 10, family: "'Prompt', sans-serif" } }
           },
           tooltip: {
+            enabled: true,
+            backgroundColor: '#0f172a',
+            padding: 10,
+            cornerRadius: 8,
+            titleFont: { size: 12, weight: '700', family: "'Prompt', sans-serif" },
+            bodyFont: { size: 11, family: "'Prompt', sans-serif" },
             callbacks: {
               label: function(context) {
                 return ' ' + context.label + ': ' + context.parsed + ' โครงการ (คลิกเพื่อดู)';
               }
             }
           }
-        }
+        },
+        cutout: '68%'
       }
     });
   }
 }
+

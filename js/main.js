@@ -1493,3 +1493,93 @@ function openProjectDetailsModal() {
   scrollToProjDetails();
 }
 
+function openProjectStatusModal(statusName) {
+  const modalTitle = document.getElementById('modalTitle');
+  const modalBody = document.getElementById('modalBody');
+  const modalOverlay = document.getElementById('modalOverlay');
+  if (!modalTitle || !modalBody || !modalOverlay) return;
+
+  const currentProjects = (typeof NCSA_DATA !== 'undefined' && NCSA_DATA.projects) ? NCSA_DATA.projects : [];
+  let filtered = [];
+  let statusColor = '#3b82f6';
+  let badgeClass = 'badge-blue';
+
+  if (statusName === 'เป็นไปตามแผน' || statusName === 'ตามแผน') {
+    filtered = currentProjects.filter(p => p.status === 'เป็นไปตามแผน' || p.status === 'ตามแผน');
+    statusColor = '#10b981';
+    badgeClass = 'badge-green';
+  } else if (statusName === 'เร็วกว่าแผน') {
+    filtered = currentProjects.filter(p => p.status === 'เร็วกว่าแผน');
+    statusColor = '#3b82f6';
+    badgeClass = 'badge-blue';
+  } else {
+    filtered = currentProjects.filter(p => p.status === 'ล่าช้ากว่าแผน' || p.status === 'ล่าช้า');
+    statusColor = '#ef4444';
+    badgeClass = 'badge-red';
+  }
+
+  modalTitle.innerHTML = `<i class="fa-solid fa-chart-pie" style="color:${statusColor};"></i> รายชื่อโครงการในสถานะ: ${statusName}`;
+  modalBody.innerHTML = `
+    <div style="background:#f8fafc;padding:12px 16px;border-radius:10px;border:1px solid #e2e8f0;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;">
+      <div>
+        <div style="font-size:0.78rem;color:#64748b;font-weight:600;">สถานะการดำเนินงาน</div>
+        <div style="font-size:1.2rem;font-weight:800;color:#1e3a8a;">${statusName}</div>
+      </div>
+      <div style="text-align:right;">
+        <span class="badge ${badgeClass}" style="font-size:0.85rem;padding:4px 12px;border-radius:20px;">
+          ${filtered.length} โครงการ
+        </span>
+      </div>
+    </div>
+
+    <div style="font-weight:700;font-size:0.82rem;color:#1e3a8a;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
+      <span><i class="fa-solid fa-list-check"></i> รายการโครงการ (${filtered.length} รายการ)</span>
+      <button class="btn-action btn-green" style="padding:4px 10px;font-size:0.72rem;" onclick="closeModal();switchToView('view-project-details');">
+        <i class="fa-solid fa-arrow-right"></i> ไปหน้าแสดงข้อมูลโครงการ
+      </button>
+    </div>
+
+    <div style="max-height:280px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;">
+      ${filtered.length > 0 ? `
+        <table class="custom-table" style="font-size:0.75rem;">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>ชื่อโครงการ / กิจกรรม</th>
+              <th>หน่วยงาน</th>
+              <th>ความคืบหน้า</th>
+              <th>สถานะ</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${filtered.map(p => `
+              <tr>
+                <td><strong>${p.id}</strong></td>
+                <td><div style="font-weight:600;color:#1e3a8a;line-height:1.3;">${p.name}</div></td>
+                <td>${p.dept || 'สทส.'}</td>
+                <td>
+                  <div style="display:flex;align-items:center;gap:6px;">
+                    <div style="flex:1;background:#e2e8f0;height:6px;border-radius:3px;overflow:hidden;min-width:50px;">
+                      <div style="width:${p.progressPercent}%;background:${statusColor};height:100%;"></div>
+                    </div>
+                    <span style="font-weight:700;color:${statusColor};font-size:0.72rem;">${p.progressPercent}%</span>
+                  </div>
+                </td>
+                <td><span class="badge ${badgeClass}" style="font-size:0.65rem;">${p.status}</span></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      ` : `
+        <div style="text-align:center;padding:24px;color:#94a3b8;font-size:0.8rem;">
+          <i class="fa-solid fa-folder-open" style="font-size:1.8rem;margin-bottom:8px;display:block;"></i>
+          ไม่มีโครงการในสถานะ ${statusName}
+        </div>
+      `}
+    </div>
+  `;
+
+  modalOverlay.classList.add('active');
+}
+
+
