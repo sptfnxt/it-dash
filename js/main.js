@@ -639,10 +639,16 @@ function openLicenseModal(licenseId) {
   const pct = Math.round((lic.usedSeats / lic.totalSeats) * 100);
   const totalAssignedSeats = (lic.assignedDepts || []).reduce((sum, d) => sum + d.seats, 0);
 
-  document.getElementById('modalTitle').innerText = `รายละเอียดสิทธิ์: ${lic.name}`;
+  const logoSrc = getLicenseLogoSrc(lic.name);
+  document.getElementById('modalTitle').innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;">
+      <img src="${logoSrc}" alt="${lic.name} logo" style="width:26px;height:26px;object-fit:contain;border-radius:6px;background:#fff;padding:2px;border:1px solid #cbd5e1;box-shadow:0 1px 3px rgba(0,0,0,0.1);flex-shrink:0;">
+      <span>รายละเอียดสิทธิ์: ${lic.name}</span>
+    </div>
+  `;
   document.getElementById('modalBody').innerHTML = `
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;background:#f8fafc;padding:8px 10px;border-radius:10px;border:1px solid #e2e8f0;">
-      <img src="${getLicenseLogoSrc(lic.name)}" alt="${lic.name} logo" style="width:36px;height:36px;object-fit:contain;border-radius:8px;border:1px solid #cbd5e1;background:#fff;padding:2px;box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+      <img src="${logoSrc}" alt="${lic.name} logo" style="width:36px;height:36px;object-fit:contain;border-radius:8px;border:1px solid #cbd5e1;background:#fff;padding:2px;box-shadow:0 1px 4px rgba(0,0,0,0.05);">
       <div style="flex:1;">
         <h4 style="margin:0;font-size:0.88rem;color:#1e3a8a;font-weight:700;line-height:1.2;">${lic.name}</h4>
         <p style="margin:2px 0 0;font-size:0.72rem;color:#64748b;">${lic.category} | ${lic.vendor}</p>
@@ -713,6 +719,15 @@ function openChartDetailModal(chartType, index, datasetIndex) {
     const casesCount = [18, 24, 15, 29, 22, 19, 26][index] || 20;
     const paperInfo = NCSA_DATA.paperUsage.monthlyTrend[index] || { reams: 350, pages: 175000, cost: 42000 };
 
+    // Filter or show case samples relevant to clicked month
+    const monthNums = ['01', '02', '03', '04', '05', '06', '07'];
+    const mNum = monthNums[index] || '07';
+    let monthCases = NCSA_DATA.cases.filter(c => c.reportedDate && c.reportedDate.includes(`2026-${mNum}`));
+    if (monthCases.length === 0) {
+      // Pick a subset of cases matching month index for demonstration
+      monthCases = NCSA_DATA.cases.slice(0, Math.min(NCSA_DATA.cases.length, 3));
+    }
+
     modalTitle.innerHTML = `<i class="fa-solid fa-chart-bar" style="color:#3b82f6;"></i> รายละเอียด Case IT Support — เดือน ${month}`;
     modalBody.innerHTML = `
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
@@ -729,8 +744,8 @@ function openChartDetailModal(chartType, index, datasetIndex) {
       </div>
 
       <div style="margin-bottom:8px;font-weight:700;font-size:0.82rem;color:#1e3a8a;display:flex;align-items:center;justify-content:space-between;">
-        <span><i class="fa-solid fa-list-check"></i> รายการ Case ตัวอย่างประจำเดือน ${month}</span>
-        <span class="badge badge-blue" style="font-size:0.68rem;">รวม ${NCSA_DATA.cases.length} Cases</span>
+        <span><i class="fa-solid fa-list-check"></i> รายการ Case IT Support — เดือน ${month}</span>
+        <span class="badge badge-blue" style="font-size:0.68rem;">รวม ${casesCount} Cases</span>
       </div>
 
       <div style="max-height:220px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;">
@@ -745,7 +760,7 @@ function openChartDetailModal(chartType, index, datasetIndex) {
             </tr>
           </thead>
           <tbody>
-            ${NCSA_DATA.cases.map(c => `
+            ${monthCases.map(c => `
               <tr>
                 <td><strong>${c.id}</strong></td>
                 <td><div style="font-weight:600;color:#1e3a8a;">${c.title.slice(0,30)}...</div><div style="font-size:0.68rem;color:#64748b;">${c.deptCode} | ${c.reporter}</div></td>
@@ -791,7 +806,7 @@ function openChartDetailModal(chartType, index, datasetIndex) {
       </div>
 
       <div style="margin-bottom:6px;font-weight:700;font-size:0.8rem;color:#1e3a8a;display:flex;justify-content:space-between;align-items:center;">
-        <span><i class="fa-solid fa-list"></i> รายชื่ออุปกรณ์ที่จัดสรร (${items.length} รายการ)</span>
+        <span><i class="fa-solid fa-list"></i> รายชื่ออุปกรณ์ที่จัดสรรเฉพาะ ${deptCode} (${items.length} รายการ)</span>
       </div>
 
       <div style="max-height:240px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;">
@@ -831,25 +846,171 @@ function openChartDetailModal(chartType, index, datasetIndex) {
       </div>
     `;
 
-  } else if (chartType === 'overviewBarMini' || chartType === 'paperMonthly') {
+  } else if (chartType === 'overviewHw') {
+    const statuses = ['ใช้งานปกติ', 'ส่งซ่อม/บำรุง', 'สำรองพร้อมใช้'];
+    const colors = ['#10b981', '#f59e0b', '#3b82f6'];
+    const statusLabel = statuses[index] || statuses[0];
+    const color = colors[index] || '#10b981';
+
+    let filterKey = 'ใช้งานปกติ';
+    if (index === 1) filterKey = 'ส่งซ่อม';
+    if (index === 2) filterKey = 'สำรอง';
+
+    const items = NCSA_DATA.hardware.filter(h => h.status === filterKey || (index === 1 && h.status.includes('ซ่อม')));
+    const totalCount = [1180, 45, 23][index] || items.length;
+
+    modalTitle.innerHTML = `<i class="fa-solid fa-boxes-stacked" style="color:${color};"></i> รายละเอียดอุปกรณ์ไอที — สถานะ: ${statusLabel}`;
+    modalBody.innerHTML = `
+      <div style="background:#f8fafc;padding:12px;border-radius:10px;border:1px solid #e2e8f0;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-size:0.75rem;color:#475569;font-weight:600;">สถานะการใช้งาน</div>
+          <div style="font-size:1.3rem;font-weight:800;color:${color};">${statusLabel}</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:0.75rem;color:#475569;font-weight:600;">จำนวนอุปกรณ์ทั้งหมด</div>
+          <div style="font-size:1.5rem;font-weight:800;color:#1e3a8a;">${totalCount.toLocaleString()} <span style="font-size:0.75rem;">เครื่อง</span></div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:6px;font-weight:700;font-size:0.8rem;color:#1e3a8a;display:flex;justify-content:space-between;align-items:center;">
+        <span><i class="fa-solid fa-list"></i> รายการอุปกรณ์ที่มีสถานะ "${statusLabel}"</span>
+      </div>
+
+      <div style="max-height:230px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;">
+        <table class="custom-table" style="font-size:0.74rem;">
+          <thead>
+            <tr>
+              <th>รหัส / อุปกรณ์</th>
+              <th>สำนัก</th>
+              <th>ผู้ถือครอง</th>
+              <th>สถานที่</th>
+              <th>จัดการ</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${items.length === 0 ? `<tr><td colspan="5" style="text-align:center;padding:16px;color:#64748b;">มีอุปกรณ์ในระบบสถานะ ${statusLabel} ทั้งหมด ${totalCount} เครื่อง</td></tr>` :
+              items.map(hw => {
+                const logoSrc = getHardwareLogoSrc(hw.name);
+                return `
+              <tr>
+                <td>
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <img src="${logoSrc}" alt="${hw.name}" style="width:26px;height:26px;object-fit:contain;border-radius:4px;border:1px solid #cbd5e1;background:#fff;padding:2px;">
+                    <div>
+                      <div style="font-weight:700;color:#1e3a8a;">${hw.id}</div>
+                      <div style="font-size:0.68rem;color:#64748b;">${hw.name}</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="badge badge-blue" style="font-size:0.65rem;">${hw.deptCode}</span></td>
+                <td>${hw.holder}</td>
+                <td>${hw.location}</td>
+                <td><button class="btn-action" style="padding:2px 6px;font-size:0.68rem;" onclick="openHardwareModal('${hw.id}')">ดูข้อมูล</button></td>
+              </tr>
+            `;}).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+
+  } else if (chartType === 'overviewLic') {
+    const licNames = ['M365', 'Windows 11', 'Kaspersky', 'Adobe', 'VMware', 'อื่นๆ'];
+    const targetLicName = licNames[index] || 'M365';
+
+    let lic = NCSA_DATA.licenses.find(l => l.name.toLowerCase().includes(targetLicName.toLowerCase()));
+    if (!lic) {
+      lic = NCSA_DATA.licenses[index] || NCSA_DATA.licenses[0];
+    }
+
+    const logoSrc = getLicenseLogoSrc(lic.name);
+
+    modalTitle.innerHTML = `
+      <div style="display:flex;align-items:center;gap:8px;">
+        <img src="${logoSrc}" alt="${lic.name} logo" style="width:26px;height:26px;object-fit:contain;border-radius:6px;background:#fff;padding:2px;border:1px solid #cbd5e1;box-shadow:0 1px 3px rgba(0,0,0,0.1);flex-shrink:0;">
+        <span>รายละเอียด Software License — ${lic.name}</span>
+      </div>
+    `;
+    modalBody.innerHTML = `
+      <div style="display:flex;align-items:center;gap:12px;background:#f8fafc;padding:10px 14px;border-radius:10px;border:1px solid #e2e8f0;margin-bottom:12px;">
+        <img src="${logoSrc}" alt="${lic.name} logo" style="width:42px;height:42px;object-fit:contain;border-radius:8px;border:1px solid #cbd5e1;background:#fff;padding:3px;box-shadow:0 2px 6px rgba(0,0,0,0.06);flex-shrink:0;">
+        <div>
+          <h4 style="margin:0;font-size:0.95rem;color:#1e3a8a;font-weight:700;line-height:1.2;">${lic.name}</h4>
+          <div style="font-size:0.73rem;color:#64748b;margin-top:3px;">
+            หมวดหมู่: <strong style="color:#1e3a8a;">${lic.category || 'Software License'}</strong> | ผู้พัฒนา: <strong>${lic.vendor || '-'}</strong>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:8px;margin-bottom:12px;">
+        <div style="background:#eff6ff;padding:10px;border-radius:10px;border:1px solid #bfdbfe;text-align:center;">
+          <div style="font-size:0.7rem;color:#1e40af;font-weight:600;">สิทธิ์ทั้งหมด (Total)</div>
+          <div style="font-size:1.3rem;font-weight:800;color:#1e3a8a;">${lic.totalSeats.toLocaleString()} <span style="font-size:0.75rem;">Seats</span></div>
+        </div>
+        <div style="background:#f0fdf4;padding:10px;border-radius:10px;border:1px solid #bbf7d0;text-align:center;">
+          <div style="font-size:0.7rem;color:#166534;font-weight:600;">เปิดใช้งานแล้ว (Used)</div>
+          <div style="font-size:1.3rem;font-weight:800;color:#15803d;">${lic.usedSeats.toLocaleString()} <span style="font-size:0.75rem;">Seats</span></div>
+        </div>
+        <div style="background:#fff7ed;padding:10px;border-radius:10px;border:1px solid #ffedd5;text-align:center;">
+          <div style="font-size:0.7rem;color:#c2410c;font-weight:600;">คงเหลือว่าง (Available)</div>
+          <div style="font-size:1.3rem;font-weight:800;color:#ea580c;">${lic.availableSeats.toLocaleString()} <span style="font-size:0.75rem;">Seats</span></div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:6px;font-weight:700;font-size:0.8rem;color:#1e3a8a;display:flex;justify-content:space-between;align-items:center;">
+        <span><i class="fa-solid fa-building"></i> การจัดสรรสิทธิ์ตามสำนัก (${lic.name})</span>
+        <button class="btn-action btn-blue" style="padding:2px 8px;font-size:0.7rem;" onclick="openLicenseModal('${lic.id}')">ดูรายละเอียดฉบับเต็ม</button>
+      </div>
+
+      <div style="max-height:190px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;">
+        <table class="custom-table" style="font-size:0.74rem;">
+          <thead>
+            <tr>
+              <th>สำนัก / หน่วยงาน</th>
+              <th>จำนวนสิทธิ์ (Seats)</th>
+              <th>สัดส่วนการจัดสรร</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${(lic.assignedDepts || []).map(d => {
+              const pct = Math.round((d.seats / lic.usedSeats) * 100);
+              return `
+              <tr>
+                <td><strong>${d.dept}</strong></td>
+                <td><span style="font-weight:700;color:#1e3a8a;">${d.seats.toLocaleString()} Seats</span></td>
+                <td>
+                  <div style="display:flex;align-items:center;gap:6px;">
+                    <div style="flex:1;height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden;">
+                      <div style="width:${pct}%;height:100%;background:#3b82f6;border-radius:3px;"></div>
+                    </div>
+                    <span style="font-size:0.68rem;color:#64748b;">${pct}%</span>
+                  </div>
+                </td>
+              </tr>
+            `;}).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+
+  } else if (chartType === 'overviewPaperMini' || chartType === 'paperMonthly') {
     const item = NCSA_DATA.paperUsage.monthlyTrend[index] || NCSA_DATA.paperUsage.monthlyTrend[0];
-    modalTitle.innerHTML = `<i class="fa-solid fa-print" style="color:#0d9488;"></i> สถิติการใช้กระดาษและงบประมาณ — เดือน ${item.month}`;
+    modalTitle.innerHTML = `<i class="fa-solid fa-print" style="color:#0d9488;"></i> สถิติการใช้กระดาษ — เดือน ${item.month}`;
     modalBody.innerHTML = `
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
         <div style="background:#f0fdf4;padding:10px;border-radius:10px;border:1px solid #bbf7d0;">
-          <div style="font-size:0.72rem;color:#166534;font-weight:600;">ปริมาณพิมพ์กระดาษ</div>
+          <div style="font-size:0.72rem;color:#166534;font-weight:600;">ปริมาณพิมพ์กระดาษประจำเดือน ${item.month}</div>
           <div style="font-size:1.3rem;font-weight:800;color:#15803d;">${item.reams} <span style="font-size:0.75rem;">รีม</span></div>
           <div style="font-size:0.68rem;color:#64748b;">คิดเป็น ${item.pages.toLocaleString()} แผ่น</div>
         </div>
         <div style="background:#fff7ed;padding:10px;border-radius:10px;border:1px solid #ffedd5;">
-          <div style="font-size:0.72rem;color:#c2410c;font-weight:600;">ค่าใช้จ่ายรวมระบบพิมพ์</div>
+          <div style="font-size:0.72rem;color:#c2410c;font-weight:600;">ค่าใช้จ่ายรวมระบบพิมพ์ประจำเดือน ${item.month}</div>
           <div style="font-size:1.3rem;font-weight:800;color:#ea580c;">฿${item.cost.toLocaleString()}</div>
           <div style="font-size:0.68rem;color:#059669;font-weight:600;"><i class="fa-solid fa-leaf"></i> ลดลง 12.4% YoY</div>
         </div>
       </div>
 
       <div style="font-weight:700;font-size:0.8rem;color:#1e3a8a;margin-bottom:6px;">
-        <i class="fa-solid fa-building-user"></i> โควต้าและการใช้งานกระดาษแยกสำนัก
+        <i class="fa-solid fa-building-user"></i> โควต้าและการใช้งานกระดาษแยกสำนักประจำเดือน ${item.month}
       </div>
       <div style="max-height:220px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;">
         <table class="custom-table" style="font-size:0.74rem;">
@@ -872,6 +1033,109 @@ function openChartDetailModal(chartType, index, datasetIndex) {
             `).join('')}
           </tbody>
         </table>
+      </div>
+    `;
+
+  } else if (chartType === 'overviewProj') {
+    const statuses = ['เร็วกว่าแผน', 'เป็นไปตามแผน'];
+    const targetStatus = statuses[index] || statuses[0];
+    const items = NCSA_DATA.projects.filter(p => targetStatus === 'เร็วกว่าแผน' ? p.status === 'เร็วกว่าแผน' : p.status === 'ตามแผน' || p.status === 'เป็นไปตามแผน');
+
+    modalTitle.innerHTML = `<i class="fa-solid fa-diagram-project" style="color:#059669;"></i> รายละเอียดโครงการพัฒนาไอที — สถานะ: ${targetStatus}`;
+    modalBody.innerHTML = `
+      <div style="background:#f0fdf4;padding:12px;border-radius:10px;border:1px solid #bbf7d0;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-size:0.75rem;color:#166534;font-weight:600;">สถานะโครงการ</div>
+          <div style="font-size:1.3rem;font-weight:800;color:#15803d;">${targetStatus}</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:0.75rem;color:#166534;font-weight:600;">จำนวนโครงการ</div>
+          <div style="font-size:1.5rem;font-weight:800;color:#1e3a8a;">${items.length} <span style="font-size:0.75rem;">โครงการ</span></div>
+        </div>
+      </div>
+
+      <div style="font-weight:700;font-size:0.8rem;color:#1e3a8a;margin-bottom:6px;">
+        <i class="fa-solid fa-list-check"></i> รายการโครงการที่มีสถานะ "${targetStatus}"
+      </div>
+      <div style="max-height:220px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;">
+        <table class="custom-table" style="font-size:0.74rem;">
+          <thead>
+            <tr>
+              <th>รหัส</th>
+              <th>ชื่อโครงการ / กิจกรรม</th>
+              <th>ความคืบหน้า</th>
+              <th>สถานะ</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${items.map(p => `
+              <tr>
+                <td><strong>${p.id}</strong></td>
+                <td><div style="font-weight:600;color:#1e3a8a;">${p.name}</div><div style="font-size:0.68rem;color:#64748b;">${p.dept}</div></td>
+                <td><span style="font-weight:700;color:#059669;">${p.progressPercent}%</span></td>
+                <td><span class="badge badge-green" style="font-size:0.65rem;">${p.status}</span></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+
+  } else if (chartType === 'paperRatioDept') {
+    const deptObj = NCSA_DATA.paperUsage.departmentBreakdown[index] || NCSA_DATA.paperUsage.departmentBreakdown[0];
+    modalTitle.innerHTML = `<i class="fa-solid fa-building-user" style="color:#3b82f6;"></i> รายละเอียดการใช้กระดาษ — ${deptObj.dept}`;
+    modalBody.innerHTML = `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+        <div style="background:#eff6ff;padding:10px;border-radius:10px;border:1px solid #bfdbfe;text-align:center;">
+          <div style="font-size:0.72rem;color:#1e40af;font-weight:600;">ปริมาณการใช้กระดาษ</div>
+          <div style="font-size:1.4rem;font-weight:800;color:#1e3a8a;">${deptObj.reams} <span style="font-size:0.75rem;">รีม</span></div>
+          <div style="font-size:0.68rem;color:#64748b;">(${deptObj.pages.toLocaleString()} แผ่น)</div>
+        </div>
+        <div style="background:#f8fafc;padding:10px;border-radius:10px;border:1px solid #e2e8f0;text-align:center;">
+          <div style="font-size:0.72rem;color:#475569;font-weight:600;">โควต้าที่ได้รับ</div>
+          <div style="font-size:1.4rem;font-weight:800;color:#0f172a;">${deptObj.quota} <span style="font-size:0.75rem;">รีม</span></div>
+          <div style="font-size:0.68rem;color:${deptObj.percent > 90 ? '#dc2626' : '#059669'};font-weight:600;">ใช้อยู่ ${deptObj.percent}% (${deptObj.status})</div>
+        </div>
+      </div>
+
+      <div style="font-weight:700;font-size:0.8rem;color:#1e3a8a;margin-bottom:6px;">
+        <i class="fa-solid fa-print"></i> เครื่องพิมพ์และสถิติในสังกัด ${deptObj.dept.split(' ')[0]}
+      </div>
+      <div style="max-height:200px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;padding:10px;background:#f8fafc;font-size:0.75rem;color:#334155;">
+        <div style="margin-bottom:6px;">• อัตราการประหยัดกระดาษ: <strong>${100 - deptObj.percent > 0 ? (100 - deptObj.percent).toFixed(1) : 0}%</strong> ของโควต้าคงเหลือ</div>
+        <div style="margin-bottom:6px;">• การใช้เอกสารผ่าน e-Document: <strong>82.4%</strong></div>
+        <div>• ข้อเสนอแนะ: <strong>${deptObj.percent > 90 ? 'แนะนำให้ใช้ e-Doc แทนการพิมพ์เอกสารฉบับร่าง' : 'ปฏิบัติตามมาตรการประหยัดกระดาษได้เป็นอย่างดี'}</strong></div>
+      </div>
+    `;
+
+  } else if (chartType === 'projStrategy') {
+    const stratNames = [
+      'ยุทธศาสตร์ที่ 1: จัดทำแผนแม่บท ICT และ Enterprise Architecture',
+      'ยุทธศาสตร์ที่ 2: จัดหานวัตกรรม Cyber Security, Big Data & AI',
+      'ยุทธศาสตร์ที่ 3: พัฒนาระบบ Smart Back Office',
+      'ยุทธศาสตร์ที่ 4: พัฒนาโครงสร้างพื้นฐานไอทีและระบบคลาวด์'
+    ];
+    const titleText = stratNames[index] || stratNames[0];
+    const proj = NCSA_DATA.projects[index] || NCSA_DATA.projects[0];
+
+    modalTitle.innerHTML = `<i class="fa-solid fa-chess-king" style="color:#1e3a8a;"></i> รายละเอียดโครงการตามยุทธศาสตร์`;
+    modalBody.innerHTML = `
+      <div style="background:#eff6ff;padding:12px;border-radius:10px;border:1px solid #bfdbfe;margin-bottom:12px;">
+        <h4 style="margin:0 0 4px 0;font-size:0.88rem;color:#1e3a8a;font-weight:700;">${titleText}</h4>
+        <div style="font-size:0.72rem;color:#64748b;">หน่วยงานรับผิดชอบ: ${proj.manager}</div>
+      </div>
+
+      <div style="font-weight:700;font-size:0.8rem;color:#1e3a8a;margin-bottom:6px;">
+        <i class="fa-solid fa-circle-check"></i> กิจกรรมและ Milestones โครงการ (${proj.name})
+      </div>
+      <div style="max-height:220px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;padding:10px;background:#fff;">
+        <div style="font-size:0.75rem;margin-bottom:8px;"><strong>ความคืบหน้าโครงการ:</strong> <span style="color:#059669;font-weight:700;">${proj.progressPercent}%</span> (${proj.status})</div>
+        ${proj.milestones.map(m => `
+          <div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid #f1f5f9;font-size:0.73rem;">
+            <i class="fa-solid ${m.done ? 'fa-circle-check' : 'fa-circle-notch'}" style="color:${m.done ? '#10b981' : '#f59e0b'};"></i>
+            <span style="${m.done ? 'color:#1e293b;' : 'color:#64748b;'}">${m.title}</span>
+          </div>
+        `).join('')}
       </div>
     `;
 

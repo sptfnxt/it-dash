@@ -159,6 +159,19 @@ function initOverviewCharts() {
         responsive: true,
         maintainAspectRatio: false,
         animation: { duration: 1000 },
+        onClick: (event, activeElements) => {
+          if (activeElements && activeElements.length > 0) {
+            const idx = activeElements[0].index;
+            if (typeof openChartDetailModal === 'function') {
+              openChartDetailModal('overviewHw', idx);
+            }
+          }
+        },
+        onHover: (event, chartElements) => {
+          if (event.native && event.native.target) {
+            event.native.target.style.cursor = chartElements.length ? 'pointer' : 'default';
+          }
+        },
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -194,6 +207,19 @@ function initOverviewCharts() {
         responsive: true,
         maintainAspectRatio: false,
         animation: { animateScale: true, duration: 1200 },
+        onClick: (event, activeElements) => {
+          if (activeElements && activeElements.length > 0) {
+            const idx = activeElements[0].index;
+            if (typeof openChartDetailModal === 'function') {
+              openChartDetailModal('overviewLic', idx);
+            }
+          }
+        },
+        onHover: (event, chartElements) => {
+          if (event.native && event.native.target) {
+            event.native.target.style.cursor = chartElements.length ? 'pointer' : 'default';
+          }
+        },
         plugins: {
           legend: { position: 'bottom', labels: { font: { size: 9 }, padding: 6, usePointStyle: true } },
           tooltip: {
@@ -225,6 +251,19 @@ function initOverviewCharts() {
         responsive: true,
         maintainAspectRatio: false,
         animation: { duration: 1000 },
+        onClick: (event, activeElements) => {
+          if (activeElements && activeElements.length > 0) {
+            const idx = activeElements[0].index;
+            if (typeof openChartDetailModal === 'function') {
+              openChartDetailModal('overviewPaperMini', idx);
+            }
+          }
+        },
+        onHover: (event, chartElements) => {
+          if (event.native && event.native.target) {
+            event.native.target.style.cursor = chartElements.length ? 'pointer' : 'default';
+          }
+        },
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -258,6 +297,19 @@ function initOverviewCharts() {
         responsive: true,
         maintainAspectRatio: false,
         animation: { animateScale: true, duration: 1200 },
+        onClick: (event, activeElements) => {
+          if (activeElements && activeElements.length > 0) {
+            const idx = activeElements[0].index;
+            if (typeof openChartDetailModal === 'function') {
+              openChartDetailModal('overviewProj', idx);
+            }
+          }
+        },
+        onHover: (event, chartElements) => {
+          if (event.native && event.native.target) {
+            event.native.target.style.cursor = chartElements.length ? 'pointer' : 'default';
+          }
+        },
         plugins: {
           legend: { position: 'bottom', labels: { font: { size: 9 }, padding: 6, usePointStyle: true } },
           tooltip: {
@@ -368,7 +420,7 @@ function initPaperCharts() {
           if (activeElements && activeElements.length > 0) {
             const idx = activeElements[0].index;
             if (typeof openChartDetailModal === 'function') {
-              openChartDetailModal('digitalVsPaper', idx);
+              openChartDetailModal('paperRatioDept', idx);
             }
           }
         },
@@ -557,6 +609,19 @@ function initProjectCharts() {
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        onClick: (event, activeElements) => {
+          if (activeElements && activeElements.length > 0) {
+            const idx = activeElements[0].index;
+            if (typeof openChartDetailModal === 'function') {
+              openChartDetailModal('projStrategy', idx);
+            }
+          }
+        },
+        onHover: (event, chartElements) => {
+          if (event.native && event.native.target) {
+            event.native.target.style.cursor = chartElements.length ? 'pointer' : 'default';
+          }
+        },
         plugins: {
           legend: {
             position: 'right',
@@ -565,7 +630,7 @@ function initProjectCharts() {
           tooltip: {
             callbacks: {
               label: function(context) {
-                return ' ' + context.label + ': ไม่มีข้อมูลงบประมาณ';
+                return ' ' + context.label + ': คลิกเพื่อดูรายละเอียดโครงการ';
               }
             }
           }
@@ -593,6 +658,19 @@ function initProjectCharts() {
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        onClick: (event, activeElements) => {
+          if (activeElements && activeElements.length > 0) {
+            const idx = activeElements[0].index;
+            if (typeof openChartDetailModal === 'function') {
+              openChartDetailModal('overviewProj', idx);
+            }
+          }
+        },
+        onHover: (event, chartElements) => {
+          if (event.native && event.native.target) {
+            event.native.target.style.cursor = chartElements.length ? 'pointer' : 'default';
+          }
+        },
         plugins: {
           legend: {
             position: 'right',
@@ -601,7 +679,7 @@ function initProjectCharts() {
           tooltip: {
             callbacks: {
               label: function(context) {
-                return ' ' + context.label + ': ' + context.parsed + ' โครงการ';
+                return ' ' + context.label + ': ' + context.parsed + ' โครงการ (คลิกเพื่อดู)';
               }
             }
           }
