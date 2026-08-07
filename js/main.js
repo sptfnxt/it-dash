@@ -541,9 +541,16 @@ function renderProjectCards() {
   container.innerHTML = '';
 
   NCSA_DATA.projects.forEach(p => {
-    const statusMap = {'มีความเสี่ยงล่าช้า':'badge-red','เสร็จสิ้น':'badge-green'};
-    const sc = statusMap[p.status] || 'badge-blue';
-    const fillC = p.progressPercent === 100 ? 'bg-green' : p.progressPercent < 50 ? 'bg-red' : 'bg-blue';
+    const statusMap = {
+      'เร็วกว่าแผน': 'badge-green',
+      'เป็นไปตามแผน': 'badge-blue',
+      'ตามแผน': 'badge-blue',
+      'ล่าช้ากว่าแผน': 'badge-red',
+      'มีความเสี่ยงล่าช้า': 'badge-red',
+      'เสร็จสิ้น': 'badge-green'
+    };
+    const sc = statusMap[p.status] || (p.status.includes('เร็วกว่า') ? 'badge-green' : 'badge-blue');
+    const fillC = p.status === 'เร็วกว่าแผน' ? 'bg-green' : (p.status === 'ล่าช้ากว่าแผน' || p.status.includes('ล่าช้า')) ? 'bg-red' : 'bg-blue';
     const card = document.createElement('div');
     card.className = 'project-card';
     card.innerHTML = `
@@ -1037,20 +1044,36 @@ function openChartDetailModal(chartType, index, datasetIndex) {
     `;
 
   } else if (chartType === 'overviewProj') {
-    const statuses = ['เร็วกว่าแผน', 'เป็นไปตามแผน'];
-    const targetStatus = statuses[index] || statuses[0];
-    const items = NCSA_DATA.projects.filter(p => targetStatus === 'เร็วกว่าแผน' ? p.status === 'เร็วกว่าแผน' : p.status === 'ตามแผน' || p.status === 'เป็นไปตามแผน');
+    const statuses = ['เป็นไปตามแผน', 'เร็วกว่าแผน', 'ล่าช้ากว่าแผน'];
+    const statusColors = ['#3b82f6', '#10b981', '#ef4444'];
+    const badgeClasses = ['badge-blue', 'badge-green', 'badge-red'];
+    const bgColors = ['#eff6ff', '#f0fdf4', '#fef2f2'];
+    const borderColors = ['#bfdbfe', '#bbf7d0', '#fecaca'];
+    const textColors = ['#1d4ed8', '#15803d', '#dc2626'];
 
-    modalTitle.innerHTML = `<i class="fa-solid fa-diagram-project" style="color:#059669;"></i> รายละเอียดโครงการพัฒนาไอที — สถานะ: ${targetStatus}`;
+    const targetStatus = statuses[index] || statuses[0];
+    const color = statusColors[index] || '#3b82f6';
+    const badgeClass = badgeClasses[index] || 'badge-blue';
+    const bgColor = bgColors[index] || '#eff6ff';
+    const borderColor = borderColors[index] || '#bfdbfe';
+    const textColor = textColors[index] || '#1d4ed8';
+
+    const items = NCSA_DATA.projects.filter(p => {
+      if (index === 0) return p.status === 'เป็นไปตามแผน' || p.status === 'ตามแผน';
+      if (index === 1) return p.status === 'เร็วกว่าแผน';
+      return p.status === 'ล่าช้ากว่าแผน' || p.status === 'ล่าช้า';
+    });
+
+    modalTitle.innerHTML = `<i class="fa-solid fa-diagram-project" style="color:${color};"></i> รายละเอียดโครงการพัฒนาไอที — สถานะ: ${targetStatus}`;
     modalBody.innerHTML = `
-      <div style="background:#f0fdf4;padding:12px;border-radius:10px;border:1px solid #bbf7d0;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;">
+      <div style="background:${bgColor};padding:12px;border-radius:10px;border:1px solid ${borderColor};margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;">
         <div>
-          <div style="font-size:0.75rem;color:#166534;font-weight:600;">สถานะโครงการ</div>
-          <div style="font-size:1.3rem;font-weight:800;color:#15803d;">${targetStatus}</div>
+          <div style="font-size:0.75rem;color:#475569;font-weight:600;">สถานะโครงการ</div>
+          <div style="font-size:1.3rem;font-weight:800;color:${textColor};">${targetStatus}</div>
         </div>
         <div style="text-align:right;">
-          <div style="font-size:0.75rem;color:#166534;font-weight:600;">จำนวนโครงการ</div>
-          <div style="font-size:1.5rem;font-weight:800;color:#1e3a8a;">${items.length} <span style="font-size:0.75rem;">โครงการ</span></div>
+          <div style="font-size:0.75rem;color:#475569;font-weight:600;">จำนวนโครงการ</div>
+          <div style="font-size:1.5rem;font-weight:800;color:${textColor};">${items.length} <span style="font-size:0.75rem;">โครงการ</span></div>
         </div>
       </div>
 
@@ -1068,12 +1091,13 @@ function openChartDetailModal(chartType, index, datasetIndex) {
             </tr>
           </thead>
           <tbody>
-            ${items.map(p => `
+            ${items.length === 0 ? `<tr><td colspan="4" style="text-align:center;padding:16px;color:#94a3b8;">ไม่มีโครงการในสถานะ ${targetStatus}</td></tr>` :
+              items.map(p => `
               <tr>
                 <td><strong>${p.id}</strong></td>
                 <td><div style="font-weight:600;color:#1e3a8a;">${p.name}</div><div style="font-size:0.68rem;color:#64748b;">${p.dept}</div></td>
-                <td><span style="font-weight:700;color:#059669;">${p.progressPercent}%</span></td>
-                <td><span class="badge badge-green" style="font-size:0.65rem;">${p.status}</span></td>
+                <td><span style="font-weight:700;color:${color};">${p.progressPercent}%</span></td>
+                <td><span class="badge ${badgeClass}" style="font-size:0.65rem;">${p.status}</span></td>
               </tr>
             `).join('')}
           </tbody>

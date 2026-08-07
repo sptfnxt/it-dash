@@ -583,7 +583,6 @@ function renderModalLicenseDeptChart(assignedDepts, licenseName) {
   });
 }
 
-
 // --------------------------------------------------------------------------
 // PROJECT CHARTS
 // --------------------------------------------------------------------------
@@ -602,13 +601,17 @@ function initProjectCharts() {
         labels: ['ยุทธศาสตร์ที่ 1', 'ยุทธศาสตร์ที่ 2', 'ยุทธศาสตร์ที่ 3', 'ยุทธศาสตร์ที่ 4'],
         datasets: [{
           data: [1, 1, 1, 1], // The budget in sample data is all 0, use placeholder for visuals
-          backgroundColor: ['#e2e8f0', '#cbd5e1', '#94a3b8', '#1e3a8a'],
-          borderWidth: 0
+          backgroundColor: ['#64748b', '#94a3b8', '#cbd5e1', '#1e3a8a'],
+          borderColor: '#ffffff',
+          borderWidth: 2,
+          hoverOffset: 18,
+          hoverBorderWidth: 3
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        animation: { animateScale: true, animateRotate: true, duration: 1200, easing: 'easeOutQuart' },
         onClick: (event, activeElements) => {
           if (activeElements && activeElements.length > 0) {
             const idx = activeElements[0].index;
@@ -625,9 +628,14 @@ function initProjectCharts() {
         plugins: {
           legend: {
             position: 'right',
-            labels: { boxWidth: 12, font: { size: 10 } }
+            labels: { boxWidth: 12, font: { size: 10, family: "'Prompt', sans-serif" } }
           },
           tooltip: {
+            backgroundColor: '#0f172a',
+            padding: 10,
+            cornerRadius: 8,
+            titleFont: { family: "'Prompt', sans-serif", size: 11, weight: '700' },
+            bodyFont: { family: "'Prompt', sans-serif", size: 11 },
             callbacks: {
               label: function(context) {
                 return ' ' + context.label + ': คลิกเพื่อดูรายละเอียดโครงการ';
@@ -644,20 +652,31 @@ function initProjectCharts() {
       chartInstances.projStatusDonut.destroy();
     }
     const donutCtx = donutCanvas.getContext('2d');
+
+    // Dynamic project status counts from NCSA_DATA.projects
+    const projects = (typeof NCSA_DATA !== 'undefined' && NCSA_DATA.projects) ? NCSA_DATA.projects : [];
+    const onTrackList = projects.filter(p => p.status === 'เป็นไปตามแผน' || p.status === 'ตามแผน');
+    const aheadList = projects.filter(p => p.status === 'เร็วกว่าแผน');
+    const delayedList = projects.filter(p => p.status === 'ล่าช้ากว่าแผน' || p.status === 'ล่าช้า');
+
     chartInstances.projStatusDonut = new Chart(donutCtx, {
       type: 'doughnut',
       data: {
         labels: ['เป็นไปตามแผน', 'เร็วกว่าแผน', 'ล่าช้ากว่าแผน'],
         datasets: [{
-          data: [1, 2, 0], // Status: 1 (ตามแผน), 2 (เร็วกว่าแผน)
-          backgroundColor: ['#10b981', '#3b82f6', '#ef4444'],
-          borderWidth: 0,
-          cutout: '70%'
+          data: [onTrackList.length || 1, aheadList.length || 2, delayedList.length || 0],
+          backgroundColor: ['#3b82f6', '#10b981', '#ef4444'], // เป็นไปตามแผน = สีฟ้า (#3b82f6), เร็วกว่าแผน = สีเขียว (#10b981), ล่าช้ากว่าแผน = สีแดง (#ef4444)
+          borderColor: '#ffffff',
+          borderWidth: 3,
+          hoverOffset: 28, // Dynamic 3D slice explosion on hover
+          hoverBorderWidth: 4,
+          hoverBorderColor: '#ffffff'
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        animation: { animateScale: true, animateRotate: true, duration: 1200, easing: 'easeOutBack' },
         onClick: (event, activeElements) => {
           if (activeElements && activeElements.length > 0) {
             const idx = activeElements[0].index;
@@ -674,17 +693,38 @@ function initProjectCharts() {
         plugins: {
           legend: {
             position: 'right',
-            labels: { boxWidth: 12, font: { size: 10 } }
+            labels: { boxWidth: 12, font: { size: 10, family: "'Prompt', sans-serif" } }
           },
           tooltip: {
+            backgroundColor: '#0f172a',
+            padding: 10,
+            cornerRadius: 8,
+            titleFont: { family: "'Prompt', sans-serif", size: 11, weight: '700' },
+            bodyFont: { family: "'Prompt', sans-serif", size: 11 },
             callbacks: {
               label: function(context) {
-                return ' ' + context.label + ': ' + context.parsed + ' โครงการ (คลิกเพื่อดู)';
+                return ' ' + context.label + ': ' + context.parsed + ' โครงการ (คลิกเพื่อดูรายละเอียด)';
               }
             }
           }
+        },
+        cutout: '66%'
+      },
+      plugins: [{
+        id: 'donut3DShadow',
+        beforeDraw(chart) {
+          const { ctx } = chart;
+          ctx.save();
+          ctx.shadowColor = 'rgba(15, 23, 42, 0.35)';
+          ctx.shadowBlur = 18;
+          ctx.shadowOffsetY = 8;
+          ctx.shadowOffsetX = 3;
+        },
+        afterDraw(chart) {
+          const { ctx } = chart;
+          ctx.restore();
         }
-      }
+      }]
     });
   }
 }
