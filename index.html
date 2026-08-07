@@ -476,9 +476,9 @@
 
           <!-- Executive Overview Panel -->
           <div class="proj-exec-panel" style="display: flex; gap: 16px; margin-bottom: 20px;">
-            <div class="exec-total-box" onclick="switchToView('view-project-details')"
+            <div class="exec-total-box" onclick="showProjectDetailsByStatus('all')"
               style="background: linear-gradient(135deg, #0f1f5c, #1e3a8a); color: white; border-radius: 12px; padding: 18px 20px; flex: 1.2; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 15px rgba(30,58,138,0.2); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;"
-              title="คลิกเพื่อเข้าสู่หน้าแสดงข้อมูลรายละเอียดโครงการ">
+              title="คลิกเพื่อเข้าสู่หน้าแสดงข้อมูลรายละเอียดโครงการทั้งหมด">
               <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
                 <div>
                   <div style="font-size: 0.85rem; font-weight: 700; opacity: 0.95; margin-bottom: 4px;"><i
@@ -499,9 +499,9 @@
 
             <div class="exec-status-boxes" style="flex: 2; display: flex; gap: 10px;">
               <!-- 3 statuses -->
-              <div class="status-box on-track" onclick="switchToView('view-project-details')"
+              <div class="status-box on-track" onclick="showProjectDetailsByStatus('เป็นไปตามแผน')"
                 style="flex: 1; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 16px; display: flex; align-items: flex-start; gap: 10px; cursor: pointer;"
-                title="คลิกเพื่อเข้าสู่หน้าแสดงข้อมูลโครงการ">
+                title="คลิกเพื่อดูเฉพาะโครงการที่เป็นไปตามแผน">
                 <div
                   style="background: #3b82f6; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 0.8rem; margin-top: 4px;">
                   <i class="fa-solid fa-check"></i></div>
@@ -510,9 +510,9 @@
                   <div style="font-size: 0.8rem; color: #1d4ed8; font-weight: 600;">เป็นไปตามแผน (33%)</div>
                 </div>
               </div>
-              <div class="status-box ahead" onclick="switchToView('view-project-details')"
+              <div class="status-box ahead" onclick="showProjectDetailsByStatus('เร็วกว่าแผน')"
                 style="flex: 1; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 12px; padding: 16px; display: flex; align-items: flex-start; gap: 10px; cursor: pointer;"
-                title="คลิกเพื่อเข้าสู่หน้าแสดงข้อมูลโครงการ">
+                title="คลิกเพื่อดูเฉพาะโครงการที่เร็วกว่าแผน">
                 <div
                   style="background: #10b981; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 0.8rem; margin-top: 4px;">
                   <i class="fa-solid fa-bolt"></i></div>
@@ -521,9 +521,9 @@
                   <div style="font-size: 0.8rem; color: #047857; font-weight: 600;">เร็วกว่าแผน (67%)</div>
                 </div>
               </div>
-              <div class="status-box delayed" onclick="switchToView('view-project-details')"
+              <div class="status-box delayed" onclick="showProjectDetailsByStatus('ล่าช้ากว่าแผน')"
                 style="flex: 1; background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; padding: 16px; display: flex; align-items: flex-start; gap: 10px; cursor: pointer;"
-                title="คลิกเพื่อเข้าสู่หน้าแสดงข้อมูลโครงการ">
+                title="คลิกเพื่อดูเฉพาะโครงการที่ล่าช้ากว่าแผน">
                 <div
                   style="background: #ef4444; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 0.8rem; margin-top: 4px;">
                   <i class="fa-solid fa-triangle-exclamation"></i></div>
@@ -541,8 +541,8 @@
             <div class="card card-pad" style="display: flex; flex-direction: column;">
               <div class="card-header" style="margin-bottom: 0;">
                 <span class="card-title" style="color: #1e3a8a;"><i class="fa-solid fa-chart-pie"></i>
-                  สัดส่วนงบประมาณจำแนกตามยุทธศาสตร์</span>
-                <span class="card-badge">0.0M บาท</span>
+                  สัดส่วนงบประมาณโครงการ (สทส.)</span>
+                <span class="card-badge">3 โครงการ (สทส.)</span>
               </div>
               <div class="chart-wrap"
                 style="flex: 1; display: flex; align-items: center; justify-content: center; min-height: 230px; padding: 10px;">
@@ -582,10 +582,10 @@
                 <i class="fa-solid fa-arrow-left"></i> กลับหน้าภาพรวมโครงการ
               </button>
               <div>
-                <h2 style="margin: 0; color: #1e3a8a; font-size: 1.15rem; font-weight: 700;">
+                <h2 id="projDetailHeaderTitle" style="margin: 0; color: #1e3a8a; font-size: 1.15rem; font-weight: 700;">
                   <i class="fa-solid fa-list-check" style="margin-right: 6px;"></i> รายละเอียด 3 โครงการ (สทส.)
                 </h2>
-                <p style="margin: 2px 0 0 0; font-size: 0.78rem; color: #64748b;">ข้อมูลรายละเอียดแผนงาน กิจกรรม ความคืบหน้า และสถานะโครงการทั้งหมด</p>
+                <p id="projDetailHeaderSubtitle" style="margin: 2px 0 0 0; font-size: 0.78rem; color: #64748b;">ข้อมูลรายละเอียดแผนงาน กิจกรรม ความคืบหน้า และสถานะโครงการทั้งหมด</p>
               </div>
             </div>
             <div class="view-header-actions">
@@ -598,28 +598,37 @@
         <div style="flex: 1; overflow-y: auto; min-height: 0; padding-right: 5px;">
 
           <!-- Top Summary Cards Bar -->
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px;">
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 16px;">
             <div style="background: linear-gradient(135deg, #0f1f5c, #1e3a8a); color: white; border-radius: 12px; padding: 16px 20px; box-shadow: 0 4px 14px rgba(30,58,138,0.15); display: flex; justify-content: space-between; align-items: center;">
               <div>
                 <div style="font-size: 0.78rem; opacity: 0.9; font-weight: 600;"><i class="fa-solid fa-layer-group"></i> โครงการทั้งหมด</div>
-                <div style="font-size: 2.2rem; font-weight: 800; line-height: 1.1;">3 <span style="font-size: 0.85rem; font-weight: 400;">โครงการ</span></div>
+                <div id="projDetailTotalCount" style="font-size: 2.2rem; font-weight: 800; line-height: 1.1;">3 <span style="font-size: 0.85rem; font-weight: 400;">โครงการ</span></div>
               </div>
               <i class="fa-solid fa-diagram-project" style="font-size: 2.5rem; opacity: 0.25;"></i>
             </div>
             <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
               <div>
                 <div style="font-size: 0.78rem; color: #1e40af; font-weight: 600;"><i class="fa-solid fa-coins"></i> งบประมาณรวม</div>
-                <div style="font-size: 2.2rem; font-weight: 800; color: #1e3a8a; line-height: 1.1;">0.0M <span style="font-size: 0.85rem; font-weight: 400; color: #64748b;">บาท</span></div>
+                <div id="projDetailTotalBudget" style="font-size: 2.2rem; font-weight: 800; color: #1e3a8a; line-height: 1.1;">0.0M <span style="font-size: 0.85rem; font-weight: 400; color: #64748b;">บาท</span></div>
               </div>
               <i class="fa-solid fa-money-bill-wave" style="font-size: 2.5rem; color: #3b82f6; opacity: 0.25;"></i>
             </div>
             <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 12px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
               <div>
                 <div style="font-size: 0.78rem; color: #047857; font-weight: 600;"><i class="fa-solid fa-chart-line"></i> ความคืบหน้าภาพรวม</div>
-                <div style="font-size: 2.2rem; font-weight: 800; color: #064e3b; line-height: 1.1;">83.3%</div>
+                <div id="projDetailAvgProgress" style="font-size: 2.2rem; font-weight: 800; color: #064e3b; line-height: 1.1;">83.3%</div>
               </div>
               <i class="fa-solid fa-circle-check" style="font-size: 2.5rem; color: #10b981; opacity: 0.25;"></i>
             </div>
+          </div>
+
+          <!-- Filter Pills Row -->
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 14px; background: white; padding: 10px 14px; border-radius: 10px; border: 1px solid #e2e8f0;">
+            <span style="font-size: 0.78rem; font-weight: 700; color: #475569; margin-right: 4px;"><i class="fa-solid fa-filter"></i> กรองสถานะ:</span>
+            <button class="proj-filter-pill active" data-status="all" onclick="showProjectDetailsByStatus('all')">ทั้งหมด (3)</button>
+            <button class="proj-filter-pill" data-status="เป็นไปตามแผน" onclick="showProjectDetailsByStatus('เป็นไปตามแผน')">เป็นไปตามแผน (1)</button>
+            <button class="proj-filter-pill" data-status="เร็วกว่าแผน" onclick="showProjectDetailsByStatus('เร็วกว่าแผน')">เร็วกว่าแผน (2)</button>
+            <button class="proj-filter-pill" data-status="ล่าช้ากว่าแผน" onclick="showProjectDetailsByStatus('ล่าช้ากว่าแผน')">ล่าช้ากว่าแผน (0)</button>
           </div>
 
           <!-- Data Table Card -->

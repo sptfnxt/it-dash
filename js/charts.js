@@ -602,10 +602,14 @@ function initProjectCharts() {
     chartInstances.projBudgetPie = new Chart(pieCtx, {
       type: 'pie',
       data: {
-        labels: ['ยุทธศาสตร์ที่ 1', 'ยุทธศาสตร์ที่ 2', 'ยุทธศาสตร์ที่ 3', 'ยุทธศาสตร์ที่ 4'],
+        labels: [
+          'แผนแม่บท ICT & EA (ยุทธศาสตร์ 1)',
+          'นวัตกรรม Cyber, Big Data & AI (ยุทธศาสตร์ 4)',
+          'ระบบ Smart Back Office (ยุทธศาสตร์ 4)'
+        ],
         datasets: [{
-          data: [1, 1, 1, 1], // The budget in sample data is all 0, use placeholder for visuals
-          backgroundColor: ['#64748b', '#94a3b8', '#cbd5e1', '#1e3a8a'],
+          data: [1, 1, 1],
+          backgroundColor: ['#1e3a8a', '#3b82f6', '#10b981'],
           borderColor: '#ffffff',
           borderWidth: 2,
           hoverOffset: 14,

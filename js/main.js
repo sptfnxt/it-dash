@@ -584,6 +584,104 @@ function renderProjectCards() {
   });
 }
 
+// Filter project details page table by status
+function showProjectDetailsByStatus(statusFilter = 'all') {
+  switchToView('view-project-details');
+
+  const titleEl = document.getElementById('projDetailHeaderTitle');
+  const subEl = document.getElementById('projDetailHeaderSubtitle');
+  const countEl = document.getElementById('projDetailTotalCount');
+  const budgetEl = document.getElementById('projDetailTotalBudget');
+  const progressEl = document.getElementById('projDetailAvgProgress');
+  const tbody = document.getElementById('projTableBody');
+
+  const allProjects = (typeof NCSA_DATA !== 'undefined' && NCSA_DATA.projects) ? NCSA_DATA.projects : [];
+  let filtered = allProjects;
+
+  if (statusFilter === 'เป็นไปตามแผน' || statusFilter === 'on-track') {
+    filtered = allProjects.filter(p => p.status === 'เป็นไปตามแผน' || p.status === 'ตามแผน');
+  } else if (statusFilter === 'เร็วกว่าแผน' || statusFilter === 'ahead') {
+    filtered = allProjects.filter(p => p.status === 'เร็วกว่าแผน');
+  } else if (statusFilter === 'ล่าช้ากว่าแผน' || statusFilter === 'delayed') {
+    filtered = allProjects.filter(p => p.status === 'ล่าช้ากว่าแผน' || p.status === 'ล่าช้า');
+  }
+
+  // Update Header
+  if (titleEl) {
+    if (statusFilter === 'all') {
+      titleEl.innerHTML = `<i class="fa-solid fa-list-check" style="margin-right: 6px;"></i> รายละเอียด 3 โครงการ (สทส.)`;
+    } else {
+      titleEl.innerHTML = `<i class="fa-solid fa-filter" style="margin-right: 6px; color:#3b82f6;"></i> รายละเอียดโครงการ — สถานะ: ${statusFilter}`;
+    }
+  }
+
+  if (subEl) {
+    subEl.textContent = statusFilter === 'all'
+      ? 'ข้อมูลรายละเอียดแผนงาน กิจกรรม ความคืบหน้า และสถานะโครงการทั้งหมด'
+      : `แสดงเฉพาะโครงการที่มีสถานะ "${statusFilter}" (${filtered.length} โครงการ)`;
+  }
+
+  // Update Summary Cards
+  if (countEl) countEl.innerHTML = `${filtered.length} <span style="font-size: 0.85rem; font-weight: 400;">โครงการ</span>`;
+
+  const totalBudget = filtered.reduce((acc, p) => acc + (p.budgetTHB || 0), 0);
+  if (budgetEl) budgetEl.innerHTML = `${(totalBudget / 1000000).toFixed(1)}M <span style="font-size: 0.85rem; font-weight: 400; color: #64748b;">บาท</span>`;
+
+  const avgProg = filtered.length ? (filtered.reduce((acc, p) => acc + (p.progressPercent || 0), 0) / filtered.length).toFixed(1) : '0.0';
+  if (progressEl) progressEl.innerHTML = `${avgProg}%`;
+
+  // Update active filter pill
+  document.querySelectorAll('.proj-filter-pill').forEach(pill => {
+    pill.classList.toggle('active', pill.dataset.status === statusFilter);
+  });
+
+  // Update Table Body
+  if (!tbody) return;
+  if (filtered.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="7" style="text-align: center; padding: 40px 20px; color: #94a3b8;">
+          <i class="fa-solid fa-folder-open" style="font-size: 2rem; margin-bottom: 8px; color: #cbd5e1; display: block;"></i>
+          <div style="font-weight: 700; font-size: 0.9rem; color: #64748b;">ไม่มีรายการโครงการในสถานะ "${statusFilter}"</div>
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map((p, idx) => {
+    const isAhead = p.status === 'เร็วกว่าแผน';
+    const isDelayed = p.status === 'ล่าช้ากว่าแผน' || p.status === 'ล่าช้า';
+    const badgeBg = isAhead ? '#eff6ff' : (isDelayed ? '#fef2f2' : '#ecfdf5');
+    const badgeColor = isAhead ? '#1d4ed8' : (isDelayed ? '#b91c1c' : '#047857');
+    const iconClass = isAhead ? 'fa-bolt' : (isDelayed ? 'fa-triangle-exclamation' : 'fa-check');
+    const barColor = isAhead ? '#3b82f6' : (isDelayed ? '#ef4444' : '#10b981');
+
+    return `
+      <tr style="border-bottom: 1px solid #f1f5f9;">
+        <td style="padding: 14px 18px; color: #64748b; font-weight: 600;">${idx + 1}</td>
+        <td style="padding: 14px 18px; font-weight: 600; color: #0f172a; line-height: 1.5;">${p.name}</td>
+        <td style="padding: 14px 18px; color: #64748b;">${p.budgetTHB ? (p.budgetTHB / 1000000).toFixed(1) + 'M' : '-'}</td>
+        <td style="padding: 14px 18px; color: #64748b;">งบดำเนินงาน</td>
+        <td style="padding: 14px 18px; color: #64748b;">ต.ค. 68</td>
+        <td style="padding: 14px 18px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-weight: 700; color: #1e3a8a;">${p.progressPercent}%</span>
+            <div style="flex: 1; background: #e2e8f0; height: 7px; border-radius: 4px; overflow: hidden; min-width: 50px;">
+              <div style="height: 100%; width: ${p.progressPercent}%; background: ${barColor}; border-radius: 4px;"></div>
+            </div>
+          </div>
+        </td>
+        <td style="padding: 14px 18px;">
+          <span style="background: ${badgeBg}; color: ${badgeColor}; padding: 5px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; display: inline-block; white-space: nowrap;">
+            <i class="fa-solid ${iconClass}"></i> ${p.status}
+          </span>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
 // --------------------------------------------------------------------------
 // MODAL SYSTEM
 // --------------------------------------------------------------------------
@@ -1134,10 +1232,9 @@ function openChartDetailModal(chartType, index, datasetIndex) {
 
   } else if (chartType === 'projStrategy') {
     const stratNames = [
-      'ยุทธศาสตร์ที่ 1: จัดทำแผนแม่บท ICT และ Enterprise Architecture',
-      'ยุทธศาสตร์ที่ 2: จัดหานวัตกรรม Cyber Security, Big Data & AI',
-      'ยุทธศาสตร์ที่ 3: พัฒนาระบบ Smart Back Office',
-      'ยุทธศาสตร์ที่ 4: พัฒนาโครงสร้างพื้นฐานไอทีและระบบคลาวด์'
+      'ยุทธศาสตร์ที่ 1: กิจกรรมการจัดทำแผนแม่บท ICT และ Enterprise Architecture (สทส.)',
+      'ยุทธศาสตร์ที่ 4: กิจกรรมจัดหานวัตกรรม Cyber Security, Big Data & AI (สทส.)',
+      'ยุทธศาสตร์ที่ 4: กิจกรรมการพัฒนาระบบ Smart Back Office (สทส.)'
     ];
     const titleText = stratNames[index] || stratNames[0];
     const proj = NCSA_DATA.projects[index] || NCSA_DATA.projects[0];
