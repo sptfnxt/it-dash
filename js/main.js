@@ -23,7 +23,7 @@ function initDateDisplay() {
   const todayBadge = document.getElementById('todayBadge');
   if (todayBadge) {
     const now = new Date();
-    todayBadge.innerHTML = `<i class="fa-regular fa-calendar"></i> ${now.toLocaleDateString('th-TH', { day:'numeric', month:'short', year:'numeric' })}`;
+    todayBadge.innerHTML = `<i class="fa-regular fa-calendar"></i> ${now.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' })}`;
   }
 }
 
@@ -66,16 +66,16 @@ function initOverviewWidgets() {
 
 function updateKpiCards() {
   const totalHW = NCSA_DATA.hardware.length;
-  const totalReams = NCSA_DATA.paperUsage.monthlyTrend.reduce((s,d)=>s+d.reams,0);
-  const totalSeats = NCSA_DATA.licenses.reduce((s,l)=>s+l.totalSeats,0);
+  const totalReams = NCSA_DATA.paperUsage.monthlyTrend.reduce((s, d) => s + d.reams, 0);
+  const totalSeats = NCSA_DATA.licenses.reduce((s, l) => s + l.totalSeats, 0);
   const totalCases = NCSA_DATA.cases.length;
   const totalProj = NCSA_DATA.projects.length;
 
-  setEl('kpiHW',    totalHW.toLocaleString());
+  setEl('kpiHW', totalHW.toLocaleString());
   setEl('kpiPaper', totalReams.toLocaleString());
-  setEl('kpiLic',   totalSeats.toLocaleString());
-  setEl('kpiCase',  totalCases);
-  setEl('kpiProj',  totalProj);
+  setEl('kpiLic', totalSeats.toLocaleString());
+  setEl('kpiCase', totalCases);
+  setEl('kpiProj', totalProj);
 }
 
 function setEl(id, val) {
@@ -83,17 +83,17 @@ function setEl(id, val) {
   if (el) el.textContent = val;
 }
 
-const DEPT_COLORS = ['#3b82f6','#1e3a8a','#dc2626','#10b981','#f59e0b','#8b5cf6'];
+const DEPT_COLORS = ['#3b82f6', '#1e3a8a', '#dc2626', '#10b981', '#f59e0b', '#8b5cf6'];
 
 function buildDeptLegend() {
   const container = document.getElementById('deptLegendList');
   if (!container) return;
   const depts = ['สบก.', 'สปซ.', 'สยป.', 'สวบ.', 'สกส.', 'สสท.'];
-  const counts = depts.map(code => NCSA_DATA.hardware.filter(h => h.deptCode===code || h.dept.includes(code)).length);
-  const total = counts.reduce((a,b)=>a+b,0) || 1;
+  const counts = depts.map(code => NCSA_DATA.hardware.filter(h => h.deptCode === code || h.dept.includes(code)).length);
+  const total = counts.reduce((a, b) => a + b, 0) || 1;
 
-  container.innerHTML = depts.map((d,i)=>{
-    const pct = Math.round(counts[i]/total*100);
+  container.innerHTML = depts.map((d, i) => {
+    const pct = Math.round(counts[i] / total * 100);
     return `<div class="legend-item">
       <div class="legend-dot-label">
         <span class="legend-dot" style="background:${DEPT_COLORS[i]};"></span>
@@ -112,16 +112,16 @@ function buildRecentCaseList() {
   if (!container) return;
   const recent = [...NCSA_DATA.cases].slice(-5).reverse();
 
-  let sevColor = {Critical:'#dc2626', High:'#f97316', Medium:'#3b82f6', Low:'#22c55e'};
+  let sevColor = { Critical: '#dc2626', High: '#f97316', Medium: '#3b82f6', Low: '#22c55e' };
   container.innerHTML = recent.map(c => {
-    const initials = c.assignee.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase() || 'IT';
+    const initials = c.assignee.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || 'IT';
     return `<div class="activity-item">
       <div class="activity-avatar" style="background:#eff6ff;color:#1e3a8a;">${initials}</div>
       <div class="activity-info">
         <div class="activity-name">${c.id}</div>
-        <div class="activity-detail">${c.title.slice(0,38)}...</div>
+        <div class="activity-detail">${c.title.slice(0, 38)}...</div>
       </div>
-      <span class="badge" style="background:${sevColor[c.severity]||'#64748b'}20;color:${sevColor[c.severity]||'#64748b'};font-size:0.65rem;">${c.severity}</span>
+      <span class="badge" style="background:${sevColor[c.severity] || '#64748b'}20;color:${sevColor[c.severity] || '#64748b'};font-size:0.65rem;">${c.severity}</span>
     </div>`;
   }).join('');
 }
@@ -148,7 +148,7 @@ function buildDataActivityList() {
         <span style="margin-left:auto;font-weight:700;color:#dc2626;">${pap}%</span>
       </div>
       <div style="margin-top:4px;padding-top:6px;border-top:1px solid #f1f5f9;font-size:0.68rem;color:#64748b;">
-        <i class="fa-solid fa-leaf" style="color:#10b981;"></i> ลดการใช้กระดาษ ${100-pap}% YoY
+        <i class="fa-solid fa-leaf" style="color:#10b981;"></i> ลดการใช้กระดาษ ${100 - pap}% YoY
       </div>
     </div>`;
 }
@@ -159,15 +159,15 @@ function initSparklineSLA() {
 
   const total = NCSA_DATA.cases.length || 1;
   const onTime = NCSA_DATA.cases.filter(c => c.slaStatus !== 'เกินกำหนด SLA').length;
-  const pct = Math.round(onTime/total*100);
+  const pct = Math.round(onTime / total * 100);
   setEl('slaValue', pct + '%');
 
   new Chart(canvas, {
     type: 'line',
     data: {
-      labels: ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.'],
+      labels: ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.'],
       datasets: [{
-        data: [92,94,96,95,97,98,pct],
+        data: [92, 94, 96, 95, 97, 98, pct],
         fill: true,
         backgroundColor: 'rgba(13,148,136,0.12)',
         borderColor: '#0d9488',
@@ -192,8 +192,8 @@ function initSparklineSLA() {
           event.native.target.style.cursor = chartElements.length ? 'pointer' : 'default';
         }
       },
-      plugins: { legend: {display:false}, tooltip: {enabled:false} },
-      scales: { x: {display:false}, y: {display:false, min:85, max:100} },
+      plugins: { legend: { display: false }, tooltip: { enabled: false } },
+      scales: { x: { display: false }, y: { display: false, min: 85, max: 100 } },
       animation: { duration: 1200, easing: 'easeOutQuart' }
     }
   });
@@ -213,7 +213,7 @@ function handleExcelUpload(event) {
   if (!file) return;
 
   const reader = new FileReader();
-  reader.onload = function(e) {
+  reader.onload = function (e) {
     try {
       const data = new Uint8Array(e.target.result);
       const workbook = XLSX.read(data, { type: 'array' });
@@ -392,8 +392,8 @@ function renderHardwareTable() {
   if (!tbody) return;
 
   const search = document.getElementById('hwSearchInput')?.value.toLowerCase().trim() || '';
-  const typeF  = document.getElementById('hwTypeSelect')?.value || 'all';
-  const statF  = document.getElementById('hwStatusSelect')?.value || 'all';
+  const typeF = document.getElementById('hwTypeSelect')?.value || 'all';
+  const statF = document.getElementById('hwStatusSelect')?.value || 'all';
 
   const filtered = NCSA_DATA.hardware.filter(item => {
     const matchSearch = [item.name, item.holder, item.recipient, item.ip, item.serial, item.mac]
@@ -501,7 +501,7 @@ function renderCaseTable() {
   if (!tbody) return;
 
   const search = document.getElementById('caseSearchInput')?.value.toLowerCase().trim() || '';
-  const sevF   = document.getElementById('caseSeveritySelect')?.value || 'all';
+  const sevF = document.getElementById('caseSeveritySelect')?.value || 'all';
 
   const filtered = NCSA_DATA.cases.filter(c => {
     const matchS = [c.id, c.title, c.dept, c.assignee, c.reporter].some(v => v.toLowerCase().includes(search));
@@ -515,15 +515,15 @@ function renderCaseTable() {
   }
 
   filtered.forEach(c => {
-    const sevMap = {Critical:'badge-red', High:'badge-yellow', Medium:'badge-blue', Low:'badge-green'};
+    const sevMap = { Critical: 'badge-red', High: 'badge-yellow', Medium: 'badge-blue', Low: 'badge-green' };
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td><strong>${c.id}</strong></td>
       <td><div style="font-weight:600;color:#1e3a8a;">${c.title}</div><div style="font-size:0.74rem;color:#64748b;">ผู้แจ้ง: ${c.reporter} (${c.deptCode}) | ${c.reportedDate}</div></td>
-      <td><span class="badge ${sevMap[c.severity]||'badge-blue'}">${c.severity}</span></td>
+      <td><span class="badge ${sevMap[c.severity] || 'badge-blue'}">${c.severity}</span></td>
       <td>${c.dept}</td>
       <td><i class="fa-solid fa-headset" style="color:#1e3a8a;margin-right:4px;"></i>${c.assignee}</td>
-      <td><span class="badge ${c.status==='กำลังดำเนินการ'?'badge-yellow':'badge-green'}">${c.status}</span></td>
+      <td><span class="badge ${c.status === 'กำลังดำเนินการ' ? 'badge-yellow' : 'badge-green'}">${c.status}</span></td>
       <td><button class="btn-action" style="padding:4px 10px;font-size:0.74rem;" onclick="openCaseModal('${c.id}')">รายละเอียด</button></td>
     `;
     tbody.appendChild(tr);
@@ -563,7 +563,7 @@ function renderProjectCards() {
       </div>
       <div class="project-meta-row">
         <div class="project-meta-item"><span>ผู้จัดการ:</span><strong>${p.manager}</strong></div>
-        <div class="project-meta-item"><span>งบประมาณ:</span><strong style="color:#1e3a8a;">${(p.budgetTHB/1000000).toFixed(1)} ล้านบาท</strong></div>
+        <div class="project-meta-item"><span>งบประมาณ:</span><strong style="color:#1e3a8a;">${(p.budgetTHB / 1000000).toFixed(1)} ล้านบาท</strong></div>
       </div>
       <div>
         <div style="display:flex;justify-content:space-between;font-size:0.8rem;font-weight:600;margin-bottom:2px;">
@@ -573,10 +573,10 @@ function renderProjectCards() {
       </div>
       <div style="font-size:0.76rem;background:#f8fafc;padding:8px;border-radius:8px;">
         <div style="font-weight:600;color:#64748b;margin-bottom:4px;">Milestones:</div>
-        ${p.milestones.map(m=>`
+        ${p.milestones.map(m => `
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
-            <i class="fa-solid ${m.done?'fa-circle-check':'fa-circle-notch'}" style="color:${m.done?'#059669':'#94a3b8'};"></i>
-            <span style="color:${m.done?'#0f172a':'#64748b'};">${m.title}</span>
+            <i class="fa-solid ${m.done ? 'fa-circle-check' : 'fa-circle-notch'}" style="color:${m.done ? '#059669' : '#94a3b8'};"></i>
+            <span style="color:${m.done ? '#0f172a' : '#64748b'};">${m.title}</span>
           </div>`).join('')}
       </div>
       <div style="font-size:0.74rem;color:#64748b;text-align:right;">ระยะเวลา: ${p.startDate} ถึง ${p.endDate}</div>`;
@@ -713,10 +713,10 @@ function openHardwareModal(hwId) {
       <h4 style="font-size:1rem;color:#1e3a8a;margin-top:10px;font-weight:700;">${hw.name}</h4>
       <p style="color:#64748b;font-size:0.8rem;">${hw.type} | ${hw.dept}</p>
     </div>
-    ${[['รหัสสินทรัพย์',hw.id],['ผู้ถือครอง',hw.holder],['ผู้รับ/ผู้ใช้จริง',hw.recipient],
-       ['IP Address',hw.ip],['MAC Address',hw.mac],['Serial Number',hw.serial],
-       ['สถานที่',hw.location],['สถานะ',hw.status],['วันรับมอบ',hw.receivedDate]]
-      .map(([k,v])=>`<div class="detail-row"><span>${k}:</span><strong>${v}</strong></div>`).join('')}`;
+    ${[['รหัสสินทรัพย์', hw.id], ['ผู้ถือครอง', hw.holder], ['ผู้รับ/ผู้ใช้จริง', hw.recipient],
+    ['IP Address', hw.ip], ['MAC Address', hw.mac], ['Serial Number', hw.serial],
+    ['สถานที่', hw.location], ['สถานะ', hw.status], ['วันรับมอบ', hw.receivedDate]]
+      .map(([k, v]) => `<div class="detail-row"><span>${k}:</span><strong>${v}</strong></div>`).join('')}`;
   document.getElementById('modalOverlay')?.classList.add('active');
 }
 
@@ -729,9 +729,9 @@ function openCaseModal(caseId) {
       <h4 style="color:#1e3a8a;font-size:0.92rem;">${c.title}</h4>
       <p style="font-size:0.78rem;color:#475569;margin-top:2px;">ระดับความด่วน: <strong>${c.severity}</strong></p>
     </div>
-    ${[['สำนัก',c.dept],['ผู้แจ้ง',c.reporter],['ช่าง IT',c.assignee],
-       ['วันที่แจ้ง',c.reportedDate],['สถานะ SLA',c.slaStatus]]
-      .map(([k,v])=>`<div class="detail-row"><span>${k}:</span><strong>${v}</strong></div>`).join('')}
+    ${[['สำนัก', c.dept], ['ผู้แจ้ง', c.reporter], ['ช่าง IT', c.assignee],
+    ['วันที่แจ้ง', c.reportedDate], ['สถานะ SLA', c.slaStatus]]
+      .map(([k, v]) => `<div class="detail-row"><span>${k}:</span><strong>${v}</strong></div>`).join('')}
     <div style="margin-top:12px;"><h5 style="color:#1e3a8a;margin-bottom:6px;font-size:0.84rem;">สรุปการแก้ไข:</h5>
       <div style="background:#f8fafc;padding:10px;border-radius:8px;font-size:0.8rem;color:#334155;">${c.description}</div>
     </div>`;
@@ -778,10 +778,10 @@ function openLicenseModal(licenseId) {
       <!-- Compact 2-Column Grid for Department Breakdown -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
         ${(lic.assignedDepts || []).map((d, i) => {
-          const deptPct = Math.round((d.seats / (totalAssignedSeats || 1)) * 100);
-          const colorList = ['#1e3a8a', '#2563eb', '#0284c7', '#059669', '#7c3aed', '#d97706', '#dc2626', '#0d9488'];
-          const color = colorList[i % colorList.length];
-          return `
+    const deptPct = Math.round((d.seats / (totalAssignedSeats || 1)) * 100);
+    const colorList = ['#1e3a8a', '#2563eb', '#0284c7', '#059669', '#7c3aed', '#d97706', '#dc2626', '#0d9488'];
+    const color = colorList[i % colorList.length];
+    return `
             <div style="background:#fff;padding:5px 8px;border-radius:8px;border:1px solid #f1f5f9;">
               <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.72rem;margin-bottom:3px;">
                 <span style="font-weight:600;color:#0f172a;display:flex;align-items:center;gap:4px;">
@@ -794,7 +794,7 @@ function openLicenseModal(licenseId) {
               </div>
             </div>
           `;
-        }).join('')}
+  }).join('')}
       </div>
     </div>`;
 
@@ -868,9 +868,9 @@ function openChartDetailModal(chartType, index, datasetIndex) {
             ${monthCases.map(c => `
               <tr>
                 <td><strong>${c.id}</strong></td>
-                <td><div style="font-weight:600;color:#1e3a8a;">${c.title.slice(0,30)}...</div><div style="font-size:0.68rem;color:#64748b;">${c.deptCode} | ${c.reporter}</div></td>
-                <td><span class="badge ${c.severity==='Critical'?'badge-red':c.severity==='High'?'badge-yellow':'badge-blue'}" style="font-size:0.65rem;">${c.severity}</span></td>
-                <td><span class="badge ${c.status==='กำลังดำเนินการ'?'badge-yellow':'badge-green'}" style="font-size:0.65rem;">${c.status}</span></td>
+                <td><div style="font-weight:600;color:#1e3a8a;">${c.title.slice(0, 30)}...</div><div style="font-size:0.68rem;color:#64748b;">${c.deptCode} | ${c.reporter}</div></td>
+                <td><span class="badge ${c.severity === 'Critical' ? 'badge-red' : c.severity === 'High' ? 'badge-yellow' : 'badge-blue'}" style="font-size:0.65rem;">${c.severity}</span></td>
+                <td><span class="badge ${c.status === 'กำลังดำเนินการ' ? 'badge-yellow' : 'badge-green'}" style="font-size:0.65rem;">${c.status}</span></td>
                 <td><button class="btn-action" style="padding:2px 6px;font-size:0.68rem;" onclick="openCaseModal('${c.id}')">ดูเคส</button></td>
               </tr>
             `).join('')}
@@ -926,10 +926,10 @@ function openChartDetailModal(chartType, index, datasetIndex) {
             </tr>
           </thead>
           <tbody>
-            ${items.length === 0 ? '<tr><td colspan="5" style="text-align:center;padding:14px;color:#64748b;">ไม่พบข้อมูลอุปกรณ์สังกัดนี้</td></tr>' : 
-              items.map(hw => {
-                const logoSrc = getHardwareLogoSrc(hw.name);
-                return `
+            ${items.length === 0 ? '<tr><td colspan="5" style="text-align:center;padding:14px;color:#64748b;">ไม่พบข้อมูลอุปกรณ์สังกัดนี้</td></tr>' :
+        items.map(hw => {
+          const logoSrc = getHardwareLogoSrc(hw.name);
+          return `
               <tr>
                 <td>
                   <div style="display:flex;align-items:center;gap:8px;">
@@ -942,10 +942,11 @@ function openChartDetailModal(chartType, index, datasetIndex) {
                 </td>
                 <td><i class="fa-solid fa-user" style="color:#3b82f6;margin-right:2px;"></i>${hw.holder}</td>
                 <td><code style="font-size:0.7rem;background:#f1f5f9;padding:1px 4px;border-radius:4px;">${hw.ip}</code></td>
-                <td><span class="badge ${hw.status==='ส่งซ่อม'?'badge-red':hw.status==='สำรอง'?'badge-yellow':'badge-green'}" style="font-size:0.65rem;">${hw.status}</span></td>
+                <td><span class="badge ${hw.status === 'ส่งซ่อม' ? 'badge-red' : hw.status === 'สำรอง' ? 'badge-yellow' : 'badge-green'}" style="font-size:0.65rem;">${hw.status}</span></td>
                 <td><button class="btn-action" style="padding:2px 6px;font-size:0.68rem;" onclick="openHardwareModal('${hw.id}')">ดูข้อมูล</button></td>
               </tr>
-            `;}).join('')}
+            `;
+        }).join('')}
           </tbody>
         </table>
       </div>
@@ -994,9 +995,9 @@ function openChartDetailModal(chartType, index, datasetIndex) {
           </thead>
           <tbody>
             ${items.length === 0 ? `<tr><td colspan="5" style="text-align:center;padding:16px;color:#64748b;">มีอุปกรณ์ในระบบสถานะ ${statusLabel} ทั้งหมด ${totalCount} เครื่อง</td></tr>` :
-              items.map(hw => {
-                const logoSrc = getHardwareLogoSrc(hw.name);
-                return `
+        items.map(hw => {
+          const logoSrc = getHardwareLogoSrc(hw.name);
+          return `
               <tr>
                 <td>
                   <div style="display:flex;align-items:center;gap:8px;">
@@ -1012,7 +1013,8 @@ function openChartDetailModal(chartType, index, datasetIndex) {
                 <td>${hw.location}</td>
                 <td><button class="btn-action" style="padding:2px 6px;font-size:0.68rem;" onclick="openHardwareModal('${hw.id}')">ดูข้อมูล</button></td>
               </tr>
-            `;}).join('')}
+            `;
+        }).join('')}
           </tbody>
         </table>
       </div>
@@ -1077,8 +1079,8 @@ function openChartDetailModal(chartType, index, datasetIndex) {
           </thead>
           <tbody>
             ${(lic.assignedDepts || []).map(d => {
-              const pct = Math.round((d.seats / lic.usedSeats) * 100);
-              return `
+      const pct = Math.round((d.seats / lic.usedSeats) * 100);
+      return `
               <tr>
                 <td><strong>${d.dept}</strong></td>
                 <td><span style="font-weight:700;color:#1e3a8a;">${d.seats.toLocaleString()} Seats</span></td>
@@ -1091,7 +1093,8 @@ function openChartDetailModal(chartType, index, datasetIndex) {
                   </div>
                 </td>
               </tr>
-            `;}).join('')}
+            `;
+    }).join('')}
           </tbody>
         </table>
       </div>
@@ -1190,7 +1193,7 @@ function openChartDetailModal(chartType, index, datasetIndex) {
           </thead>
           <tbody>
             ${items.length === 0 ? `<tr><td colspan="4" style="text-align:center;padding:16px;color:#94a3b8;">ไม่มีโครงการในสถานะ ${targetStatus}</td></tr>` :
-              items.map(p => `
+        items.map(p => `
               <tr>
                 <td><strong>${p.id}</strong></td>
                 <td><div style="font-weight:600;color:#1e3a8a;">${p.name}</div><div style="font-size:0.68rem;color:#64748b;">${p.dept}</div></td>
@@ -1265,11 +1268,11 @@ function openChartDetailModal(chartType, index, datasetIndex) {
     const digPct = NCSA_DATA.paperUsage?.printVsDigitalRatio?.digitalDocPercent ?? 78.4;
     const papPct = NCSA_DATA.paperUsage?.printVsDigitalRatio?.paperDocPercent ?? 21.6;
 
-    modalTitle.innerHTML = `<i class="fa-solid fa-file-contract" style="color:${isDigital?'#10b981':'#dc2626'};"></i> สถิติเอกสาร ${isDigital ? 'e-Document (ดิจิทัล)' : 'กระดาษพิมพ์ (Paper)'}`;
+    modalTitle.innerHTML = `<i class="fa-solid fa-file-contract" style="color:${isDigital ? '#10b981' : '#dc2626'};"></i> สถิติเอกสาร ${isDigital ? 'e-Document (ดิจิทัล)' : 'กระดาษพิมพ์ (Paper)'}`;
     modalBody.innerHTML = `
-      <div style="background:${isDigital?'#f0fdf4':'#fef2f2'};padding:12px;border-radius:10px;border:1px solid ${isDigital?'#bbf7d0':'#fecaca'};margin-bottom:12px;text-align:center;">
-        <div style="font-size:0.78rem;color:${isDigital?'#166534':'#991b1b'};font-weight:600;">สัดส่วนการใช้อิเล็กทรอนิกส์เทียบกับกระดาษ</div>
-        <div style="font-size:2rem;font-weight:800;color:${isDigital?'#15803d':'#dc2626'};">${isDigital ? digPct : papPct}%</div>
+      <div style="background:${isDigital ? '#f0fdf4' : '#fef2f2'};padding:12px;border-radius:10px;border:1px solid ${isDigital ? '#bbf7d0' : '#fecaca'};margin-bottom:12px;text-align:center;">
+        <div style="font-size:0.78rem;color:${isDigital ? '#166534' : '#991b1b'};font-weight:600;">สัดส่วนการใช้อิเล็กทรอนิกส์เทียบกับกระดาษ</div>
+        <div style="font-size:2rem;font-weight:800;color:${isDigital ? '#15803d' : '#dc2626'};">${isDigital ? digPct : papPct}%</div>
         <div style="font-size:0.72rem;color:#475569;margin-top:2px;">
           ${isDigital ? '<i class="fa-solid fa-leaf" style="color:#10b981;"></i> ประหยัดกระดาษสะสมได้กว่า 184 ต้นในปีนี้' : '<i class="fa-solid fa-triangle-exclamation" style="color:#dc2626;"></i> มีเป้าหมายลดการใช้กระดาษอีก 15% ในไตรมาสถัดไป'}
         </div>
@@ -1289,8 +1292,8 @@ function openChartDetailModal(chartType, index, datasetIndex) {
           </thead>
           <tbody>
             ${NCSA_DATA.paperUsage.topPrinters.map(p => {
-              const logoSrc = getHardwareLogoSrc(p.name);
-              return `
+      const logoSrc = getHardwareLogoSrc(p.name);
+      return `
               <tr>
                 <td>
                   <div style="display:flex;align-items:center;gap:8px;">
@@ -1301,14 +1304,15 @@ function openChartDetailModal(chartType, index, datasetIndex) {
                 <td>${p.location}</td>
                 <td><span style="font-weight:700;color:#059669;">${p.pagesThisMonth.toLocaleString()} แผ่น</span></td>
               </tr>
-            `;}).join('')}
+            `;
+    }).join('')}
           </tbody>
         </table>
       </div>
     `;
 
   } else if (chartType === 'slaTrend') {
-    const months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.'];
+    const months = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.'];
     const month = months[index] || 'ก.ค.';
     const slaVal = [92, 94, 96, 95, 97, 98, 98.2][index] || 98.2;
 
@@ -1386,8 +1390,8 @@ function openKpiDetailModal(kpiType) {
           </thead>
           <tbody>
             ${NCSA_DATA.hardware.slice(0, 6).map(h => {
-              const logoSrc = getHardwareLogoSrc(h.name);
-              return `
+      const logoSrc = getHardwareLogoSrc(h.name);
+      return `
                 <tr>
                   <td>
                     <div style="display:flex;align-items:center;gap:6px;">
@@ -1397,19 +1401,19 @@ function openKpiDetailModal(kpiType) {
                   </td>
                   <td>${h.type}</td>
                   <td><span class="badge badge-blue">${h.deptCode}</span></td>
-                  <td><span class="badge ${h.status==='ส่งซ่อม'?'badge-red':h.status==='สำรอง'?'badge-yellow':'badge-green'}" style="font-size:0.65rem;">${h.status}</span></td>
+                  <td><span class="badge ${h.status === 'ส่งซ่อม' ? 'badge-red' : h.status === 'สำรอง' ? 'badge-yellow' : 'badge-green'}" style="font-size:0.65rem;">${h.status}</span></td>
                 </tr>
               `;
-            }).join('')}
+    }).join('')}
           </tbody>
         </table>
       </div>
     `;
 
   } else if (kpiType === 'paper') {
-    const totalReams = NCSA_DATA.paperUsage.monthlyTrend.reduce((s,d)=>s+d.reams,0);
-    const totalPages = NCSA_DATA.paperUsage.monthlyTrend.reduce((s,d)=>s+d.pages,0);
-    const totalCost = NCSA_DATA.paperUsage.monthlyTrend.reduce((s,d)=>s+d.cost,0);
+    const totalReams = NCSA_DATA.paperUsage.monthlyTrend.reduce((s, d) => s + d.reams, 0);
+    const totalPages = NCSA_DATA.paperUsage.monthlyTrend.reduce((s, d) => s + d.pages, 0);
+    const totalCost = NCSA_DATA.paperUsage.monthlyTrend.reduce((s, d) => s + d.cost, 0);
 
     modalTitle.innerHTML = `<i class="fa-solid fa-leaf" style="color:#f97316;"></i> สรุปสถิติระบบพิมพ์และกระดาษองค์กร`;
     modalBody.innerHTML = `
@@ -1463,9 +1467,9 @@ function openKpiDetailModal(kpiType) {
     `;
 
   } else if (kpiType === 'license') {
-    const totalSeats = NCSA_DATA.licenses.reduce((s,l)=>s+l.totalSeats,0);
-    const usedSeats = NCSA_DATA.licenses.reduce((s,l)=>s+l.usedSeats,0);
-    const availSeats = NCSA_DATA.licenses.reduce((s,l)=>s+l.availableSeats,0);
+    const totalSeats = NCSA_DATA.licenses.reduce((s, l) => s + l.totalSeats, 0);
+    const usedSeats = NCSA_DATA.licenses.reduce((s, l) => s + l.usedSeats, 0);
+    const availSeats = NCSA_DATA.licenses.reduce((s, l) => s + l.availableSeats, 0);
     const utilRate = Math.round((usedSeats / totalSeats) * 100);
 
     modalTitle.innerHTML = `<i class="fa-solid fa-key" style="color:#059669;"></i> สรุปสิทธิ์ซอฟต์แวร์ลิขสิทธิ์องค์กร`;
@@ -1505,9 +1509,9 @@ function openKpiDetailModal(kpiType) {
           </thead>
           <tbody>
             ${NCSA_DATA.licenses.map(lic => {
-              const logoSrc = getLicenseLogoSrc(lic.name);
-              const pct = Math.round((lic.usedSeats / lic.totalSeats) * 100);
-              return `
+      const logoSrc = getLicenseLogoSrc(lic.name);
+      const pct = Math.round((lic.usedSeats / lic.totalSeats) * 100);
+      return `
                 <tr>
                   <td>
                     <div style="display:flex;align-items:center;gap:6px;">
@@ -1516,12 +1520,12 @@ function openKpiDetailModal(kpiType) {
                     </div>
                   </td>
                   <td>${lic.category}</td>
-                  <td><span class="badge ${pct>90?'badge-blue':'badge-green'}" style="font-size:0.65rem;">${lic.usedSeats}/${lic.totalSeats} (${pct}%)</span></td>
+                  <td><span class="badge ${pct > 90 ? 'badge-blue' : 'badge-green'}" style="font-size:0.65rem;">${lic.usedSeats}/${lic.totalSeats} (${pct}%)</span></td>
                   <td>${lic.expiryDate}</td>
                   <td><button class="btn-action" style="padding:2px 6px;font-size:0.68rem;" onclick="openLicenseModal('${lic.id}')">รายละเอียด</button></td>
                 </tr>
               `;
-            }).join('')}
+    }).join('')}
           </tbody>
         </table>
       </div>
@@ -1580,8 +1584,8 @@ function openKpiDetailModal(kpiType) {
                 <td><strong>${c.id}</strong></td>
                 <td><div style="font-weight:600;color:#1e3a8a;">${c.title.slice(0, 28)}...</div></td>
                 <td>${c.reporter} (${c.deptCode})</td>
-                <td><span class="badge ${c.severity==='Critical'?'badge-red':c.severity==='High'?'badge-yellow':'badge-blue'}" style="font-size:0.65rem;">${c.severity}</span></td>
-                <td><span class="badge ${c.status==='กำลังดำเนินการ'?'badge-yellow':'badge-green'}" style="font-size:0.65rem;">${c.status}</span></td>
+                <td><span class="badge ${c.severity === 'Critical' ? 'badge-red' : c.severity === 'High' ? 'badge-yellow' : 'badge-blue'}" style="font-size:0.65rem;">${c.severity}</span></td>
+                <td><span class="badge ${c.status === 'กำลังดำเนินการ' ? 'badge-yellow' : 'badge-green'}" style="font-size:0.65rem;">${c.status}</span></td>
                 <td><button class="btn-action" style="padding:2px 6px;font-size:0.68rem;" onclick="openCaseModal('${c.id}')">ดูเคส</button></td>
               </tr>
             `).join('')}
