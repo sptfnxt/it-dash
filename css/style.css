@@ -1136,7 +1136,7 @@ canvas {
 }
 .modal-overlay.active { opacity: 1; visibility: visible; }
 .modal-content {
-  background: #fff; width: 100%; max-width: 680px;
+  background: #fff; width: 92vw; max-width: 900px;
   border-radius: 18px; box-shadow: 0 24px 64px rgba(0,0,0,0.25); overflow: hidden;
 }
 .modal-header {

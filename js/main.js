@@ -406,7 +406,7 @@ function renderHardwareTable() {
   tbody.innerHTML = '';
 
   if (filtered.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:20px;color:#64748b;">ไม่พบข้อมูลที่ตรงกัน</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:20px;color:#64748b;">ไม่พบข้อมูลที่ตรงกัน</td></tr>`;
     return;
   }
 
@@ -426,11 +426,9 @@ function renderHardwareTable() {
         </div>
       </td>
       <td><i class="fa-solid fa-user" style="color:#1e3a8a;margin-right:4px;"></i>${hw.holder}</td>
-      <td><i class="fa-regular fa-handshake" style="color:#dc2626;margin-right:4px;"></i>${hw.recipient}</td>
       <td><div style="font-family:monospace;font-weight:600;">${hw.ip}</div><div style="font-size:0.72rem;color:#64748b;font-family:monospace;">${hw.mac}</div></td>
       <td><span class="badge badge-blue">${hw.deptCode}</span></td>
       <td><span class="badge ${sc}">${hw.status}</span></td>
-      <td>${hw.location}</td>
       <td><button class="btn-action" style="padding:4px 10px;font-size:0.74rem;" onclick="openHardwareModal('${hw.id}')"><i class="fa-solid fa-circle-info"></i> ดูข้อมูล</button></td>
     `;
     tbody.appendChild(tr);
@@ -714,9 +712,9 @@ function openHardwareModal(hwId) {
       <h4 style="font-size:1rem;color:#1e3a8a;margin-top:10px;font-weight:700;">${hw.name}</h4>
       <p style="color:#64748b;font-size:0.8rem;">${hw.type} | ${hw.dept}</p>
     </div>
-    ${[['รหัสสินทรัพย์', hw.id], ['ผู้ถือครอง', hw.holder], ['ผู้รับ/ผู้ใช้จริง', hw.recipient],
+    ${[['รหัสสินทรัพย์', hw.id], ['ผู้ถือครอง', hw.holder],
     ['IP Address', hw.ip], ['MAC Address', hw.mac], ['Serial Number', hw.serial],
-    ['สถานที่', hw.location], ['สถานะ', hw.status], ['วันรับมอบ', hw.receivedDate]]
+    ['สถานะ', hw.status], ['วันรับมอบ', hw.receivedDate]]
       .map(([k, v]) => `<div class="detail-row"><span>${k}:</span><strong>${v}</strong></div>`).join('')}`;
   document.getElementById('modalOverlay')?.classList.add('active');
 }
@@ -869,7 +867,7 @@ function openChartDetailModal(chartType, index, datasetIndex) {
             ${monthCases.map(c => `
               <tr>
                 <td><strong>${c.id}</strong></td>
-                <td><div style="font-weight:600;color:#1e3a8a;">${c.title.slice(0, 30)}...</div><div style="font-size:0.68rem;color:#64748b;">${c.deptCode} | ${c.reporter}</div></td>
+                <td><div style="font-weight:600;color:#1e3a8a;">${c.title}</div><div style="font-size:0.68rem;color:#64748b;">${c.deptCode} | ${c.reporter}</div></td>
                 <td><span class="badge ${c.severity === 'Critical' ? 'badge-red' : c.severity === 'High' ? 'badge-yellow' : 'badge-blue'}" style="font-size:0.65rem;">${c.severity}</span></td>
                 <td><span class="badge ${c.status === 'กำลังดำเนินการ' ? 'badge-yellow' : 'badge-green'}" style="font-size:0.65rem;">${c.status}</span></td>
                 <td><button class="btn-action" style="padding:2px 6px;font-size:0.68rem;" onclick="openCaseModal('${c.id}')">ดูเคส</button></td>
@@ -990,12 +988,11 @@ function openChartDetailModal(chartType, index, datasetIndex) {
               <th>รหัส / อุปกรณ์</th>
               <th>สำนัก</th>
               <th>ผู้ถือครอง</th>
-              <th>สถานที่</th>
-              <th>จัดการ</th>
+              <th>รายละเอียด</th>
             </tr>
           </thead>
           <tbody>
-            ${items.length === 0 ? `<tr><td colspan="5" style="text-align:center;padding:16px;color:#64748b;">มีอุปกรณ์ในระบบสถานะ ${statusLabel} ทั้งหมด ${totalCount} เครื่อง</td></tr>` :
+            ${items.length === 0 ? `<tr><td colspan="4" style="text-align:center;padding:16px;color:#64748b;">มีอุปกรณ์ในระบบสถานะ ${statusLabel} ทั้งหมด ${totalCount} เครื่อง</td></tr>` :
         items.map(hw => {
           const logoSrc = getHardwareLogoSrc(hw.name);
           return `
@@ -1011,7 +1008,6 @@ function openChartDetailModal(chartType, index, datasetIndex) {
                 </td>
                 <td><span class="badge badge-blue" style="font-size:0.65rem;">${hw.deptCode}</span></td>
                 <td>${hw.holder}</td>
-                <td>${hw.location}</td>
                 <td><button class="btn-action" style="padding:2px 6px;font-size:0.68rem;" onclick="openHardwareModal('${hw.id}')">ดูข้อมูล</button></td>
               </tr>
             `;
