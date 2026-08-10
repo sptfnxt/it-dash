@@ -226,7 +226,7 @@
               </div>
               <div class="view-title-group">
                 <h2><i class="fa-solid fa-laptop-code"></i> รายการอุปกรณ์ฮาร์ดแวร์ที่สำนักจัดสรรและดูแลรักษา</h2>
-                <p>รายละเอียดอุปกรณ์, ผู้ถือครอง, IP Address, MAC Address แยกตามสำนักผู้ใช้งาน</p>
+                <p>รายละเอียดอุปกรณ์, ผู้ถือครอง, ผู้รับมอบ, IP Address, MAC Address แยกตามสำนักผู้ใช้งาน</p>
               </div>
             </div>
             <div class="view-header-actions">
@@ -243,7 +243,7 @@
                 <option value="all">ทุกประเภท</option>
                 <option value="คอมพิวเตอร์ตั้งโต๊ะ">คอมพิวเตอร์ตั้งโต๊ะ</option>
                 <option value="โน๊ตบุ๊ค">โน๊ตบุ๊ค</option>
-                <option value="เครื่องพิมพ์">เครื่องพิมพ์</option>
+                <option value="Printer">Printer</option>
                 <option value="เซิร์ฟเวอร์">เซิร์ฟเวอร์</option>
                 <option value="อุปกรณ์เครือข่าย">อุปกรณ์เครือข่าย</option>
               </select>
@@ -264,9 +264,11 @@
                   <th>เลขครุภัณฑ์</th>
                   <th>ชื่ออุปกรณ์ / สเปค</th>
                   <th>ชื่อผู้ถือครอง</th>
+                  <th>ชื่อผู้รับ / ผู้ใช้จริง</th>
                   <th>IP / MAC Address</th>
                   <th>สำนักผู้ใช้</th>
                   <th>สถานะ</th>
+                  <th>สำนัก/ศูนย์/ฝ่าย</th>
                   <th>ข้อมูลเพิ่มเติม</th>
                 </tr>
               </thead>
@@ -413,22 +415,25 @@
       <div id="view-cases" class="page-view">
         <div class="view-header">
           <div class="view-title-group">
-            <h2><i class="fa-solid fa-headset"></i> รายงาน Case คำขอรับบริการแจ้งซ่อมและสนับสนุน IT Support</h2>
-            <p>รายการ Case คำขอรับบริการแจ้งซ่อมอุปกรณ์ไอทีและปัญหาระบบที่ได้รับการแจ้งเข้ามา</p>
+            <h2><i class="fa-solid fa-headset"></i> รายการ Case คำขอรับบริการแจ้งซ่อมและสนับสนุน IT Support</h2>
+            <p>บันทึก Case แจ้งซ่อม อุปกรณ์ไอที และปัญหาระบบที่สำนักได้รับ (Helpdesk Tickets)</p>
           </div>
           <div class="filter-bar">
+            <button class="btn-action" style="background: white; border: 1px solid #cbd5e1; color: #475569;"
+              onclick="downloadTemplate('cases')"><i class="fa-solid fa-download"></i> แม่แบบ</button>
+            <button class="btn-action btn-green" onclick="triggerExcelUpload()"><i class="fa-solid fa-file-excel"></i>
+              นำเข้า Excel</button>
             <div class="search-input-wrapper">
               <i class="fa-solid fa-magnifying-glass"></i>
-              <input type="text" id="caseSearchInput" class="search-input" placeholder="ค้นหา Case ID, อาการ, ผู้แจ้ง..."
+              <input type="text" id="caseSearchInput" class="search-input" placeholder="ค้นหา Case..."
                 onkeyup="filterCases()">
             </div>
-            <select id="caseDeptSelect" class="select-filter" onchange="filterCases()">
-              <option value="all">ทุกสำนักผู้แจ้ง</option>
-              <option value="สำนักบริหารงานกลาง">สำนักบริหารงานกลาง</option>
-              <option value="สำนักวิชาการและการพัฒนาบุคลากร">สำนักวิชาการฯ</option>
-              <option value="สำนักยุทธศาสตร์และการวางแผน">สำนักยุทธศาสตร์ฯ</option>
-              <option value="สำนักกำกับดูแลและส่งเสริมความปลอดภัยไซเบอร์">สำนักกำกับดูแลฯ</option>
-              <option value="สำนักปฏิบัติการทางไซเบอร์">สำนักปฏิบัติการทางไซเบอร์</option>
+            <select id="caseSeveritySelect" class="select-filter" onchange="filterCases()">
+              <option value="all">ทุกระดับความด่วน</option>
+              <option value="Critical">Critical</option>
+              <option value="High">High</option>
+              <option value="Medium">Medium</option>
+              <option value="Low">Low</option>
             </select>
           </div>
         </div>
@@ -438,10 +443,11 @@
               <thead>
                 <tr>
                   <th>Case ID</th>
-                  <th>วันที่/เวลาแจ้ง</th>
                   <th>หัวข้อคำขอรับบริการ</th>
-                  <th>ผู้แจ้งเรื่อง</th>
+                  <th>ความด่วน</th>
                   <th>สำนักที่ส่งเรื่อง</th>
+                  <th>ช่าง IT รับผิดชอบ</th>
+                  <th>สถานะ</th>
                   <th>รายละเอียด</th>
                 </tr>
               </thead>

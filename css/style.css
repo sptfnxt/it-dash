@@ -1717,4 +1717,111 @@ canvas {
   transform: translateY(-2px) scale(0.98) !important;
 }
 
+/* ===========================================================================
+   HARDWARE MODAL INTERACTIVE STATUS CARDS & CATEGORY PILLS
+   =========================================================================== */
+.hw-modal-status-card {
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+  position: relative;
+}
+
+.hw-modal-status-card:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+}
+
+.hw-modal-status-card:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
+.hw-modal-status-card.total-card {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+.hw-modal-status-card.total-card:hover, .hw-modal-status-card.total-card.active {
+  background: #dbeafe;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+}
+
+.hw-modal-status-card.normal-card {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+.hw-modal-status-card.normal-card:hover, .hw-modal-status-card.normal-card.active {
+  background: #dcfce7;
+  border-color: #16a34a;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.25);
+}
+
+.hw-modal-status-card.spare-card {
+  background: #fffbeb;
+  border-color: #fde68a;
+}
+.hw-modal-status-card.spare-card:hover, .hw-modal-status-card.spare-card.active {
+  background: #fef3c7;
+  border-color: #d97706;
+  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.25);
+}
+
+.hw-modal-status-card.maint-card {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+.hw-modal-status-card.maint-card:hover, .hw-modal-status-card.maint-card.active {
+  background: #fee2e2;
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.25);
+}
+
+.hw-modal-cat-pill {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.73rem;
+  font-weight: 600;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.hw-modal-cat-pill:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  color: #1e293b;
+}
+
+.hw-modal-cat-pill.active {
+  background: #1e3a8a;
+  color: #ffffff;
+  border-color: #1e3a8a;
+  box-shadow: 0 2px 8px rgba(30, 58, 138, 0.25);
+}
+
+.hw-cat-group-header {
+  background: linear-gradient(90deg, #f8fafc 0%, #edf2f7 100%);
+  border-left: 4px solid #1e3a8a;
+  padding: 6px 12px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  margin-bottom: 4px;
+  border-radius: 4px;
+}
+
+
 
