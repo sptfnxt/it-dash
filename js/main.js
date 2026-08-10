@@ -496,34 +496,35 @@ function renderLicenseCards() {
 // --------------------------------------------------------------------------
 // CASE TABLE RENDER
 // --------------------------------------------------------------------------
+// INCOMING CASE REPORT TABLE RENDER
+// --------------------------------------------------------------------------
 function renderCaseTable() {
   const tbody = document.getElementById('caseTableBody');
   if (!tbody) return;
 
   const search = document.getElementById('caseSearchInput')?.value.toLowerCase().trim() || '';
-  const sevF = document.getElementById('caseSeveritySelect')?.value || 'all';
+  const deptF = document.getElementById('caseDeptSelect')?.value || 'all';
 
   const filtered = NCSA_DATA.cases.filter(c => {
-    const matchS = [c.id, c.title, c.dept, c.assignee, c.reporter].some(v => v.toLowerCase().includes(search));
-    return matchS && (sevF === 'all' || c.severity === sevF);
+    const matchS = [c.id, c.title, c.dept, c.assignee, c.reporter, c.deptCode, c.reportedDate].some(v => v ? v.toLowerCase().includes(search) : false);
+    const matchDept = (deptF === 'all' || c.dept === deptF);
+    return matchS && matchDept;
   });
 
   tbody.innerHTML = '';
   if (!filtered.length) {
-    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:20px;color:#64748b;">ไม่พบข้อมูล</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:20px;color:#64748b;">ไม่พบข้อมูล Case ตามเงื่อนไขที่เลือก</td></tr>`;
     return;
   }
 
   filtered.forEach(c => {
-    const sevMap = { Critical: 'badge-red', High: 'badge-yellow', Medium: 'badge-blue', Low: 'badge-green' };
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td><strong>${c.id}</strong></td>
-      <td><div style="font-weight:600;color:#1e3a8a;">${c.title}</div><div style="font-size:0.74rem;color:#64748b;">ผู้แจ้ง: ${c.reporter} (${c.deptCode}) | ${c.reportedDate}</div></td>
-      <td><span class="badge ${sevMap[c.severity] || 'badge-blue'}">${c.severity}</span></td>
-      <td>${c.dept}</td>
-      <td><i class="fa-solid fa-headset" style="color:#1e3a8a;margin-right:4px;"></i>${c.assignee}</td>
-      <td><span class="badge ${c.status === 'กำลังดำเนินการ' ? 'badge-yellow' : 'badge-green'}">${c.status}</span></td>
+      <td><span style="font-size:0.8rem;color:#475569;"><i class="fa-regular fa-clock" style="margin-right:4px;color:#94a3b8;"></i>${c.reportedDate}</span></td>
+      <td><div style="font-weight:600;color:#1e3a8a;">${c.title}</div></td>
+      <td><div style="font-weight:500;color:#334155;">${c.reporter} (${c.deptCode})</div></td>
+      <td><span style="font-size:0.85rem;color:#475569;">${c.dept}</span></td>
       <td><button class="btn-action" style="padding:4px 10px;font-size:0.74rem;" onclick="openCaseModal('${c.id}')">รายละเอียด</button></td>
     `;
     tbody.appendChild(tr);

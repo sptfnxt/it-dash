@@ -415,25 +415,22 @@
       <div id="view-cases" class="page-view">
         <div class="view-header">
           <div class="view-title-group">
-            <h2><i class="fa-solid fa-headset"></i> รายการ Case คำขอรับบริการแจ้งซ่อมและสนับสนุน IT Support</h2>
-            <p>บันทึก Case แจ้งซ่อม อุปกรณ์ไอที และปัญหาระบบที่สำนักได้รับ (Helpdesk Tickets)</p>
+            <h2><i class="fa-solid fa-headset"></i> รายงาน Case คำขอรับบริการแจ้งซ่อมและสนับสนุน IT Support</h2>
+            <p>รายการ Case คำขอรับบริการแจ้งซ่อมอุปกรณ์ไอทีและปัญหาระบบที่ได้รับการแจ้งเข้ามา</p>
           </div>
           <div class="filter-bar">
-            <button class="btn-action" style="background: white; border: 1px solid #cbd5e1; color: #475569;"
-              onclick="downloadTemplate('cases')"><i class="fa-solid fa-download"></i> แม่แบบ</button>
-            <button class="btn-action btn-green" onclick="triggerExcelUpload()"><i class="fa-solid fa-file-excel"></i>
-              นำเข้า Excel</button>
             <div class="search-input-wrapper">
               <i class="fa-solid fa-magnifying-glass"></i>
-              <input type="text" id="caseSearchInput" class="search-input" placeholder="ค้นหา Case..."
+              <input type="text" id="caseSearchInput" class="search-input" placeholder="ค้นหา Case ID, อาการ, ผู้แจ้ง..."
                 onkeyup="filterCases()">
             </div>
-            <select id="caseSeveritySelect" class="select-filter" onchange="filterCases()">
-              <option value="all">ทุกระดับความด่วน</option>
-              <option value="Critical">Critical</option>
-              <option value="High">High</option>
-              <option value="Medium">Medium</option>
-              <option value="Low">Low</option>
+            <select id="caseDeptSelect" class="select-filter" onchange="filterCases()">
+              <option value="all">ทุกสำนักผู้แจ้ง</option>
+              <option value="สำนักบริหารงานกลาง">สำนักบริหารงานกลาง</option>
+              <option value="สำนักวิชาการและการพัฒนาบุคลากร">สำนักวิชาการฯ</option>
+              <option value="สำนักยุทธศาสตร์และการวางแผน">สำนักยุทธศาสตร์ฯ</option>
+              <option value="สำนักกำกับดูแลและส่งเสริมความปลอดภัยไซเบอร์">สำนักกำกับดูแลฯ</option>
+              <option value="สำนักปฏิบัติการทางไซเบอร์">สำนักปฏิบัติการทางไซเบอร์</option>
             </select>
           </div>
         </div>
@@ -443,11 +440,10 @@
               <thead>
                 <tr>
                   <th>Case ID</th>
+                  <th>วันที่/เวลาแจ้ง</th>
                   <th>หัวข้อคำขอรับบริการ</th>
-                  <th>ความด่วน</th>
+                  <th>ผู้แจ้งเรื่อง</th>
                   <th>สำนักที่ส่งเรื่อง</th>
-                  <th>ช่าง IT รับผิดชอบ</th>
-                  <th>สถานะ</th>
                   <th>รายละเอียด</th>
                 </tr>
               </thead>
