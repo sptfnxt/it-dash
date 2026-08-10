@@ -45,7 +45,7 @@ const NCSA_DATA = {
     overallProjectProgress: 83.3
   },
 
-  // 2. Hardware Assets List (คอมพิวเตอร์ printer เซิร์ฟเวอร์ ฯลฯ)
+  // 2. Hardware Assets List (คอมพิวเตอร์ เครื่องพิมพ์ เซิร์ฟเวอร์ ฯลฯ)
   hardware: [
     {
       id: "HW-PC-2026-001",
@@ -80,7 +80,7 @@ const NCSA_DATA = {
     {
       id: "HW-PR-2026-003",
       name: "HP LaserJet Enterprise MFP M635h",
-      type: "printer",
+      type: "เครื่องพิมพ์",
       holder: "สำนักปฏิบัติการทางไซเบอร์",
       recipient: "เจ้าหน้าที่ SOC ฝ่ายปฏิบัติการ",
       ip: "10.10.20.250",
@@ -140,7 +140,7 @@ const NCSA_DATA = {
     {
       id: "HW-PR-2026-007",
       name: "Canon imageRUNNER ADVANCE C5535i",
-      type: "printer",
+      type: "เครื่องพิมพ์",
       holder: "สำนักบริหารงานกลาง",
       recipient: "ฝ่ายงานสารบรรณ",
       ip: "10.10.10.200",
@@ -399,7 +399,7 @@ const NCSA_DATA = {
     },
     {
       id: "IT-CASE-2026-0510",
-      title: "printer ประจำสำนัก สยป. ไม่สามารถพิมพ์งานแบบไร้สายได้",
+      title: "เครื่องพิมพ์ประจำสำนัก สยป. ไม่สามารถพิมพ์งานแบบไร้สายได้",
       severity: "Medium",
       dept: "สำนักยุทธศาสตร์และการวางแผน",
       deptCode: "สยป.",
@@ -408,7 +408,7 @@ const NCSA_DATA = {
       status: "เสร็จสิ้น",
       reportedDate: "2026-07-26 11:20",
       slaStatus: "สำเร็จตาม SLA (1.5 ชม.)",
-      description: "ได้รับแจ้ง printer Canon iR C5535i หลุดจากวง LAN สสท. เข้าไปตรวจสอบพบสาย UTP ชำรุด ดำเนินการเข้าหัว RJ45 ใหม่และ Reset Print Spooler พิมพ์ได้ปกติ"
+      description: "ได้รับแจ้งเครื่องพิมพ์ Canon iR C5535i หลุดจากวง LAN สสท. เข้าไปตรวจสอบพบสาย UTP ชำรุด ดำเนินการเข้าหัว RJ45 ใหม่และ Reset Print Spooler พิมพ์ได้ปกติ"
     },
     {
       id: "IT-CASE-2026-0509",

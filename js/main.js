@@ -58,14 +58,6 @@ function switchToView(targetId, filterStatus = null, filterType = null) {
     }
     if (typeSelect && filterType !== null) {
       typeSelect.value = filterType;
-      if (typeSelect.value !== filterType) {
-        for (let i = 0; i < typeSelect.options.length; i++) {
-          if (typeSelect.options[i].value.toLowerCase() === filterType.toLowerCase()) {
-            typeSelect.selectedIndex = i;
-            break;
-          }
-        }
-      }
     }
     if (typeof filterHardware === 'function') {
       filterHardware();
@@ -420,17 +412,8 @@ function renderHardwareTable() {
   const filtered = NCSA_DATA.hardware.filter(item => {
     const matchSearch = [item.name, item.holder, item.recipient, item.ip, item.serial, item.mac]
       .some(v => v.toLowerCase().includes(search));
-
-    let matchType = (typeF === 'all');
-    if (!matchType) {
-      const itemType = (item.type || '').toLowerCase();
-      const targetType = typeF.toLowerCase();
-      matchType = (itemType === targetType) ||
-        ((targetType === 'printer' || targetType === 'เครื่องพิมพ์') && (itemType === 'printer' || itemType === 'เครื่องพิมพ์'));
-    }
-
     return matchSearch
-      && matchType
+      && (typeF === 'all' || item.type === typeF)
       && (statF === 'all' || item.status === statF);
   });
 
@@ -921,7 +904,7 @@ function openChartDetailModal(chartType, index, datasetIndex) {
 
     const pcCount = items.filter(h => h.type.includes('คอมพิวเตอร์')).length;
     const nbCount = items.filter(h => h.type.includes('โน๊ตบุ๊ค')).length;
-    const prCount = items.filter(h => h.type.includes('printer') || h.type.includes('เครื่องพิมพ์')).length;
+    const prCount = items.filter(h => h.type.includes('เครื่องพิมพ์')).length;
     const svCount = items.filter(h => h.type.includes('เซิร์ฟเวอร์') || h.type.includes('เครือข่าย')).length;
 
     modalTitle.innerHTML = `<i class="fa-solid fa-desktop" style="color:#1e3a8a;"></i> รายละเอียดอุปกรณ์ไอที — ${deptCode}`;
@@ -931,7 +914,7 @@ function openChartDetailModal(chartType, index, datasetIndex) {
         <div style="display:flex;gap:6px;flex-wrap:wrap;font-size:0.72rem;">
           <span class="badge badge-blue"><i class="fa-solid fa-desktop"></i> PC: ${pcCount}</span>
           <span class="badge badge-teal"><i class="fa-solid fa-laptop"></i> โน๊ตบุ๊ค: ${nbCount}</span>
-          <span class="badge badge-green"><i class="fa-solid fa-print"></i> printer: ${prCount}</span>
+          <span class="badge badge-green"><i class="fa-solid fa-print"></i> เครื่องพิมพ์: ${prCount}</span>
           <span class="badge badge-yellow"><i class="fa-solid fa-server"></i> Server/NW: ${svCount}</span>
         </div>
       </div>
@@ -1248,7 +1231,7 @@ function openChartDetailModal(chartType, index, datasetIndex) {
       </div>
 
       <div style="font-weight:700;font-size:0.8rem;color:#1e3a8a;margin-bottom:6px;">
-        <i class="fa-solid fa-print"></i> printer และสถิติในสังกัด ${deptObj.dept.split(' ')[0]}
+        <i class="fa-solid fa-print"></i> เครื่องพิมพ์และสถิติในสังกัด ${deptObj.dept.split(' ')[0]}
       </div>
       <div style="max-height:200px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;padding:10px;background:#f8fafc;font-size:0.75rem;color:#334155;">
         <div style="margin-bottom:6px;">• อัตราการประหยัดกระดาษ: <strong>${100 - deptObj.percent > 0 ? (100 - deptObj.percent).toFixed(1) : 0}%</strong> ของโควต้าคงเหลือ</div>
@@ -1303,13 +1286,13 @@ function openChartDetailModal(chartType, index, datasetIndex) {
       </div>
 
       <div style="font-weight:700;font-size:0.8rem;color:#1e3a8a;margin-bottom:6px;">
-        <i class="fa-solid fa-print"></i> printer ที่มีปริมาณการใช้งานสูงสุดในองค์กร
+        <i class="fa-solid fa-print"></i> เครื่องพิมพ์ที่มีปริมาณการใช้งานสูงสุดในองค์กร
       </div>
       <div style="max-height:200px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;">
         <table class="custom-table" style="font-size:0.74rem;">
           <thead>
             <tr>
-              <th>ชื่อ printer</th>
+              <th>ชื่อเครื่องพิมพ์</th>
               <th>สถานที่ติดตั้ง</th>
               <th>ปริมาณแผ่นเดือนนี้</th>
             </tr>
@@ -1580,7 +1563,7 @@ function renderHwModalContent() {
     { id: 'all', label: 'ทั้งหมด', icon: 'fa-cubes' },
     { id: 'คอมพิวเตอร์ตั้งโต๊ะ', label: 'คอมพิวเตอร์ตั้งโต๊ะ', icon: 'fa-desktop' },
     { id: 'โน๊ตบุ๊ค', label: 'โน๊ตบุ๊ค', icon: 'fa-laptop' },
-    { id: 'printer', label: 'printer', icon: 'fa-print' },
+    { id: 'เครื่องพิมพ์', label: 'เครื่องพิมพ์', icon: 'fa-print' },
     { id: 'เซิร์ฟเวอร์', label: 'เซิร์ฟเวอร์', icon: 'fa-server' },
     { id: 'อุปกรณ์เครือข่าย', label: 'อุปกรณ์เครือข่าย', icon: 'fa-network-wired' }
   ];
@@ -1592,7 +1575,7 @@ function renderHwModalContent() {
       ${categories.map(cat => {
     const count = cat.id === 'all'
       ? filteredByStatus.length
-      : filteredByStatus.filter(h => h.type === cat.id || (cat.id === 'printer' && h.type === 'เครื่องพิมพ์')).length;
+      : filteredByStatus.filter(h => h.type === cat.id).length;
     const isActive = currentHwModalCategory === cat.id;
     return `
           <button class="hw-modal-cat-pill ${isActive ? 'active' : ''}" onclick="filterHwModal(undefined, '${cat.id}')">
@@ -1606,13 +1589,12 @@ function renderHwModalContent() {
   // Display items filtered by status AND category
   let displayItems = filteredByStatus;
   if (currentHwModalCategory !== 'all') {
-    displayItems = displayItems.filter(h => h.type === currentHwModalCategory || (currentHwModalCategory === 'printer' && h.type === 'เครื่องพิมพ์'));
+    displayItems = displayItems.filter(h => h.type === currentHwModalCategory);
   }
 
   const catIcons = {
     'คอมพิวเตอร์ตั้งโต๊ะ': 'fa-desktop',
     'โน๊ตบุ๊ค': 'fa-laptop',
-    'printer': 'fa-print',
     'เครื่องพิมพ์': 'fa-print',
     'เซิร์ฟเวอร์': 'fa-server',
     'อุปกรณ์เครือข่าย': 'fa-network-wired'
@@ -1719,7 +1701,7 @@ function getCaseCategory(c) {
     return 'เครือข่าย/VPN/Wi-Fi';
   }
   if (text.includes('เครื่องพิมพ์') || text.includes('พิมพ์') || text.includes('printer') || text.includes('spooler')) {
-    return 'ระบบพิมพ์/printer';
+    return 'ระบบพิมพ์/เครื่องพิมพ์';
   }
   return 'ซอฟต์แวร์/ระบบ';
 }
@@ -1744,7 +1726,7 @@ function renderCaseModalContent() {
     { id: 'ซอฟต์แวร์/ระบบ', label: 'ซอฟต์แวร์/ระบบ', icon: 'fa-cubes-stacked' },
     { id: 'เครือข่าย/VPN/Wi-Fi', label: 'เครือข่าย/Wi-Fi', icon: 'fa-network-wired' },
     { id: 'บัญชีผู้ใช้/สิทธิ์', label: 'บัญชีผู้ใช้/สิทธิ์', icon: 'fa-user-shield' },
-    { id: 'ระบบพิมพ์/printer', label: 'printer', icon: 'fa-print' }
+    { id: 'ระบบพิมพ์/เครื่องพิมพ์', label: 'เครื่องพิมพ์', icon: 'fa-print' }
   ];
 
   const catPillsHtml = `
@@ -1776,7 +1758,6 @@ function renderCaseModalContent() {
     'ซอฟต์แวร์/ระบบ': 'fa-cubes-stacked',
     'เครือข่าย/VPN/Wi-Fi': 'fa-network-wired',
     'บัญชีผู้ใช้/สิทธิ์': 'fa-user-shield',
-    'ระบบพิมพ์/printer': 'fa-print',
     'ระบบพิมพ์/เครื่องพิมพ์': 'fa-print'
   };
 
