@@ -40,7 +40,7 @@ function initTabNavigation() {
   });
 }
 
-function switchToView(targetId, filterStatus = null, filterType = null) {
+function switchToView(targetId) {
   const pills = document.querySelectorAll('.nav-pill');
   const views = document.querySelectorAll('.page-view');
   const subTabs = document.querySelectorAll('.hardware-sub-tab');
@@ -49,20 +49,6 @@ function switchToView(targetId, filterStatus = null, filterType = null) {
   pills.forEach(p => p.classList.toggle('active', p.getAttribute('data-target') === topTargetId));
   views.forEach(v => v.classList.toggle('active', v.id === targetId));
   subTabs.forEach(tab => tab.classList.toggle('active', tab.getAttribute('data-target') === targetId));
-
-  if (targetId === 'view-hardware') {
-    const statusSelect = document.getElementById('hwStatusSelect');
-    const typeSelect = document.getElementById('hwTypeSelect');
-    if (statusSelect && filterStatus !== null) {
-      statusSelect.value = filterStatus;
-    }
-    if (typeSelect && filterType !== null) {
-      typeSelect.value = filterType;
-    }
-    if (typeof filterHardware === 'function') {
-      filterHardware();
-    }
-  }
 
   window.dispatchEvent(new Event('resize'));
 }
@@ -872,6 +858,8 @@ function openChartDetailModal(chartType, index, datasetIndex) {
             <tr>
               <th>ID</th>
               <th>หัวข้อปัญหา</th>
+              <th>ความด่วน</th>
+              <th>สถานะ</th>
               <th>จัดการ</th>
             </tr>
           </thead>
@@ -880,6 +868,8 @@ function openChartDetailModal(chartType, index, datasetIndex) {
               <tr>
                 <td><strong>${c.id}</strong></td>
                 <td><div style="font-weight:600;color:#1e3a8a;">${c.title}</div><div style="font-size:0.68rem;color:#64748b;">${c.deptCode} | ${c.reporter}</div></td>
+                <td><span class="badge ${c.severity === 'Critical' ? 'badge-red' : c.severity === 'High' ? 'badge-yellow' : 'badge-blue'}" style="font-size:0.65rem;">${c.severity}</span></td>
+                <td><span class="badge ${c.status === 'กำลังดำเนินการ' ? 'badge-yellow' : 'badge-green'}" style="font-size:0.65rem;">${c.status}</span></td>
                 <td><button class="btn-action" style="padding:2px 6px;font-size:0.68rem;" onclick="openCaseModal('${c.id}')">ดูเคส</button></td>
               </tr>
             `).join('')}
@@ -1345,21 +1335,77 @@ function openChartDetailModal(chartType, index, datasetIndex) {
 // --------------------------------------------------------------------------
 // KPI MINI-CARDS SUMMARY POPUP MODALS
 // --------------------------------------------------------------------------
-let currentHwModalStatus = 'all';
-let currentHwModalCategory = 'all';
-
-function openKpiDetailModal(kpiType, initialStatus = 'all', initialCategory = 'all') {
+function openKpiDetailModal(kpiType) {
   const modalTitle = document.getElementById('modalTitle');
   const modalBody = document.getElementById('modalBody');
   const modalOverlay = document.getElementById('modalOverlay');
   if (!modalTitle || !modalBody || !modalOverlay) return;
 
   if (kpiType === 'hardware') {
-    currentHwModalStatus = initialStatus;
-    currentHwModalCategory = initialCategory;
+    const total = NCSA_DATA.hardware.length;
+    const normal = NCSA_DATA.hardware.filter(h => h.status === 'ใช้งานปกติ').length;
+    const maint = NCSA_DATA.hardware.filter(h => h.status === 'ส่งซ่อม').length;
+    const spare = NCSA_DATA.hardware.filter(h => h.status === 'สำรอง').length;
+
     modalTitle.innerHTML = `<i class="fa-solid fa-desktop" style="color:#2d9d8f;"></i> สรุปภาพรวมอุปกรณ์ฮาร์ดแวร์ในดูแล`;
-    renderHwModalContent();
-    modalOverlay.classList.add('active');
+    modalBody.innerHTML = `
+      <div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:8px;margin-bottom:14px;text-align:center;">
+        <div style="background:#eff6ff;padding:10px;border-radius:10px;border:1px solid #bfdbfe;">
+          <div style="font-size:0.68rem;color:#1e40af;font-weight:600;">อุปกรณ์รวม</div>
+          <div style="font-size:1.3rem;font-weight:800;color:#1e3a8a;">${total} <span style="font-size:0.7rem;">เครื่อง</span></div>
+        </div>
+        <div style="background:#f0fdf4;padding:10px;border-radius:10px;border:1px solid #bbf7d0;">
+          <div style="font-size:0.68rem;color:#166534;font-weight:600;">ใช้งานปกติ</div>
+          <div style="font-size:1.3rem;font-weight:800;color:#15803d;">${normal} <span style="font-size:0.7rem;">เครื่อง</span></div>
+        </div>
+        <div style="background:#fffbebf1;padding:10px;border-radius:10px;border:1px solid #fde68a;">
+          <div style="font-size:0.68rem;color:#b45309;font-weight:600;">สำรอง</div>
+          <div style="font-size:1.3rem;font-weight:800;color:#d97706;">${spare} <span style="font-size:0.7rem;">เครื่อง</span></div>
+        </div>
+        <div style="background:#fef2f2;padding:10px;border-radius:10px;border:1px solid #fecaca;">
+          <div style="font-size:0.68rem;color:#991b1b;font-weight:600;">ส่งซ่อม</div>
+          <div style="font-size:1.3rem;font-weight:800;color:#dc2626;">${maint} <span style="font-size:0.7rem;">เครื่อง</span></div>
+        </div>
+      </div>
+
+      <div style="font-weight:700;font-size:0.82rem;color:#1e3a8a;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
+        <span><i class="fa-solid fa-list-check"></i> รายการอุปกรณ์ล่าสุด</span>
+        <button class="btn-action btn-green" style="padding:4px 10px;font-size:0.72rem;" onclick="closeModal();switchToView('view-hardware');">
+          <i class="fa-solid fa-arrow-right"></i> ไปหน้าฮาร์ดแวร์ทั้งหมด
+        </button>
+      </div>
+
+      <div style="max-height:220px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;">
+        <table class="custom-table" style="font-size:0.74rem;">
+          <thead>
+            <tr>
+              <th>รหัส / ชื่ออุปกรณ์</th>
+              <th>ประเภท</th>
+              <th>สังกัดสำนัก</th>
+              <th>สถานะ</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${NCSA_DATA.hardware.slice(0, 6).map(h => {
+      const logoSrc = getHardwareLogoSrc(h.name);
+      return `
+                <tr>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:6px;">
+                      <img src="${logoSrc}" alt="logo" style="width:24px;height:24px;object-fit:contain;border-radius:4px;border:1px solid #cbd5e1;background:#fff;padding:2px;">
+                      <strong>${h.id}</strong> (${h.name.slice(0, 24)}...)
+                    </div>
+                  </td>
+                  <td>${h.type}</td>
+                  <td><span class="badge badge-blue">${h.deptCode}</span></td>
+                  <td><span class="badge ${h.status === 'ส่งซ่อม' ? 'badge-red' : h.status === 'สำรอง' ? 'badge-yellow' : 'badge-green'}" style="font-size:0.65rem;">${h.status}</span></td>
+                </tr>
+              `;
+    }).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
 
   } else if (kpiType === 'paper') {
     const totalReams = NCSA_DATA.paperUsage.monthlyTrend.reduce((s, d) => s + d.reams, 0);
@@ -1483,11 +1529,67 @@ function openKpiDetailModal(kpiType, initialStatus = 'all', initialCategory = 'a
     `;
 
   } else if (kpiType === 'cases') {
-    currentCaseModalStatus = initialStatus;
-    currentCaseModalCategory = initialCategory;
+    const total = NCSA_DATA.cases.length;
+    const critical = NCSA_DATA.cases.filter(c => c.severity === 'Critical').length;
+    const high = NCSA_DATA.cases.filter(c => c.severity === 'High').length;
+    const active = NCSA_DATA.cases.filter(c => c.status === 'กำลังดำเนินการ').length;
+    const done = NCSA_DATA.cases.filter(c => c.status === 'เสร็จสิ้น').length;
+
     modalTitle.innerHTML = `<i class="fa-solid fa-headset" style="color:#d97706;"></i> สรุปรายการ Case IT Support รับใหม่`;
-    renderCaseModalContent();
-    modalOverlay.classList.add('active');
+    modalBody.innerHTML = `
+      <div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:8px;margin-bottom:14px;text-align:center;">
+        <div style="background:#eff6ff;padding:10px;border-radius:10px;border:1px solid #bfdbfe;">
+          <div style="font-size:0.68rem;color:#1e40af;font-weight:600;">Cases ทั้งหมด</div>
+          <div style="font-size:1.3rem;font-weight:800;color:#1e3a8a;">${total} <span style="font-size:0.7rem;">รายการ</span></div>
+        </div>
+        <div style="background:#fffbebf1;padding:10px;border-radius:10px;border:1px solid #fde68a;">
+          <div style="font-size:0.68rem;color:#b45309;font-weight:600;">กำลังดำเนินการ</div>
+          <div style="font-size:1.3rem;font-weight:800;color:#d97706;">${active} <span style="font-size:0.7rem;">รายการ</span></div>
+        </div>
+        <div style="background:#f0fdf4;padding:10px;border-radius:10px;border:1px solid #bbf7d0;">
+          <div style="font-size:0.68rem;color:#166534;font-weight:600;">เสร็จสิ้นแล้ว</div>
+          <div style="font-size:1.3rem;font-weight:800;color:#15803d;">${done} <span style="font-size:0.7rem;">รายการ</span></div>
+        </div>
+        <div style="background:#fef2f2;padding:10px;border-radius:10px;border:1px solid #fecaca;">
+          <div style="font-size:0.68rem;color:#991b1b;font-weight:600;">Critical / High</div>
+          <div style="font-size:1.3rem;font-weight:800;color:#dc2626;">${critical + high} <span style="font-size:0.7rem;">รายการ</span></div>
+        </div>
+      </div>
+
+      <div style="font-weight:700;font-size:0.82rem;color:#1e3a8a;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
+        <span><i class="fa-solid fa-list-check"></i> รายการ Case IT Support ล่าสุด</span>
+        <button class="btn-action btn-green" style="padding:4px 10px;font-size:0.72rem;" onclick="closeModal();switchToView('view-cases');">
+          <i class="fa-solid fa-arrow-right"></i> ไปหน้า Report Case ทั้งหมด
+        </button>
+      </div>
+
+      <div style="max-height:220px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;">
+        <table class="custom-table" style="font-size:0.74rem;">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>หัวข้อปัญหา</th>
+              <th>ผู้แจ้ง / สำนัก</th>
+              <th>ความด่วน</th>
+              <th>สถานะ</th>
+              <th>รายละเอียด</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${NCSA_DATA.cases.map(c => `
+              <tr>
+                <td><strong>${c.id}</strong></td>
+                <td><div style="font-weight:600;color:#1e3a8a;">${c.title.slice(0, 28)}...</div></td>
+                <td>${c.reporter} (${c.deptCode})</td>
+                <td><span class="badge ${c.severity === 'Critical' ? 'badge-red' : c.severity === 'High' ? 'badge-yellow' : 'badge-blue'}" style="font-size:0.65rem;">${c.severity}</span></td>
+                <td><span class="badge ${c.status === 'กำลังดำเนินการ' ? 'badge-yellow' : 'badge-green'}" style="font-size:0.65rem;">${c.status}</span></td>
+                <td><button class="btn-action" style="padding:2px 6px;font-size:0.68rem;" onclick="openCaseModal('${c.id}')">ดูเคส</button></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
 
   } else if (kpiType === 'projects') {
     switchToView('view-projects');
@@ -1512,341 +1614,4 @@ function scrollToProjDetails() {
 function openProjectDetailsModal() {
   scrollToProjDetails();
 }
-
-// --------------------------------------------------------------------------
-// HARDWARE MODAL INTERACTIVE FILTERING AND CATEGORY GROUPING
-// --------------------------------------------------------------------------
-function filterHwModal(statusFilter, catFilter) {
-  if (statusFilter !== undefined) currentHwModalStatus = statusFilter;
-  if (catFilter !== undefined) currentHwModalCategory = catFilter;
-  renderHwModalContent();
-}
-
-function renderHwModalContent() {
-  const modalBody = document.getElementById('modalBody');
-  if (!modalBody) return;
-
-  const total = NCSA_DATA.hardware.length;
-  const normal = NCSA_DATA.hardware.filter(h => h.status === 'ใช้งานปกติ').length;
-  const spare = NCSA_DATA.hardware.filter(h => h.status === 'สำรอง').length;
-  const maint = NCSA_DATA.hardware.filter(h => h.status === 'ส่งซ่อม').length;
-
-  const cardsHtml = `
-    <div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:8px;margin-bottom:12px;text-align:center;">
-      <div class="hw-modal-status-card total-card ${currentHwModalStatus === 'all' ? 'active' : ''}" onclick="filterHwModal('all')" title="คลิกดูอุปกรณ์ทั้งหมด">
-        <div style="font-size:0.68rem;color:#1e40af;font-weight:600;">อุปกรณ์รวม</div>
-        <div style="font-size:1.25rem;font-weight:800;color:#1e3a8a;">${total} <span style="font-size:0.7rem;">เครื่อง</span></div>
-      </div>
-      <div class="hw-modal-status-card normal-card ${currentHwModalStatus === 'ใช้งานปกติ' ? 'active' : ''}" onclick="filterHwModal('ใช้งานปกติ')" title="คลิกดูเฉพาะใช้งานปกติ">
-        <div style="font-size:0.68rem;color:#166534;font-weight:600;">ใช้งานปกติ</div>
-        <div style="font-size:1.25rem;font-weight:800;color:#15803d;">${normal} <span style="font-size:0.7rem;">เครื่อง</span></div>
-      </div>
-      <div class="hw-modal-status-card spare-card ${currentHwModalStatus === 'สำรอง' ? 'active' : ''}" onclick="filterHwModal('สำรอง')" title="คลิกดูเฉพาะสำรอง">
-        <div style="font-size:0.68rem;color:#b45309;font-weight:600;">สำรอง</div>
-        <div style="font-size:1.25rem;font-weight:800;color:#d97706;">${spare} <span style="font-size:0.7rem;">เครื่อง</span></div>
-      </div>
-      <div class="hw-modal-status-card maint-card ${currentHwModalStatus === 'ส่งซ่อม' ? 'active' : ''}" onclick="filterHwModal('ส่งซ่อม')" title="คลิกดูเฉพาะส่งซ่อม">
-        <div style="font-size:0.68rem;color:#991b1b;font-weight:600;">ส่งซ่อม</div>
-        <div style="font-size:1.25rem;font-weight:800;color:#dc2626;">${maint} <span style="font-size:0.7rem;">เครื่อง</span></div>
-      </div>
-    </div>
-  `;
-
-  // Filter hardware list by selected status
-  let filteredByStatus = NCSA_DATA.hardware;
-  if (currentHwModalStatus !== 'all') {
-    filteredByStatus = filteredByStatus.filter(h => h.status === currentHwModalStatus);
-  }
-
-  // Categories definition
-  const categories = [
-    { id: 'all', label: 'ทั้งหมด', icon: 'fa-cubes' },
-    { id: 'คอมพิวเตอร์ตั้งโต๊ะ', label: 'คอมพิวเตอร์ตั้งโต๊ะ', icon: 'fa-desktop' },
-    { id: 'โน๊ตบุ๊ค', label: 'โน๊ตบุ๊ค', icon: 'fa-laptop' },
-    { id: 'เครื่องพิมพ์', label: 'เครื่องพิมพ์', icon: 'fa-print' },
-    { id: 'เซิร์ฟเวอร์', label: 'เซิร์ฟเวอร์', icon: 'fa-server' },
-    { id: 'อุปกรณ์เครือข่าย', label: 'อุปกรณ์เครือข่าย', icon: 'fa-network-wired' }
-  ];
-
-  // Category Filter Pills HTML
-  const catPillsHtml = `
-    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;align-items:center;background:#f8fafc;padding:8px 10px;border-radius:10px;border:1px solid #e2e8f0;">
-      <span style="font-size:0.72rem;font-weight:700;color:#1e3a8a;margin-right:4px;"><i class="fa-solid fa-layer-group"></i> แยกหมวดหมู่ประเภท:</span>
-      ${categories.map(cat => {
-    const count = cat.id === 'all'
-      ? filteredByStatus.length
-      : filteredByStatus.filter(h => h.type === cat.id).length;
-    const isActive = currentHwModalCategory === cat.id;
-    return `
-          <button class="hw-modal-cat-pill ${isActive ? 'active' : ''}" onclick="filterHwModal(undefined, '${cat.id}')">
-            <i class="fa-solid ${cat.icon}"></i> ${cat.label} (${count})
-          </button>
-        `;
-  }).join('')}
-    </div>
-  `;
-
-  // Display items filtered by status AND category
-  let displayItems = filteredByStatus;
-  if (currentHwModalCategory !== 'all') {
-    displayItems = displayItems.filter(h => h.type === currentHwModalCategory);
-  }
-
-  const catIcons = {
-    'คอมพิวเตอร์ตั้งโต๊ะ': 'fa-desktop',
-    'โน๊ตบุ๊ค': 'fa-laptop',
-    'เครื่องพิมพ์': 'fa-print',
-    'เซิร์ฟเวอร์': 'fa-server',
-    'อุปกรณ์เครือข่าย': 'fa-network-wired'
-  };
-
-  // Group items by category
-  const grouped = {};
-  displayItems.forEach(item => {
-    const t = item.type || 'อุปกรณ์อื่นๆ';
-    if (!grouped[t]) grouped[t] = [];
-    grouped[t].push(item);
-  });
-
-  const activeStatusText = currentHwModalStatus === 'all' ? 'ทุกสถานะ' : `สถานะ: ${currentHwModalStatus}`;
-  const activeCatText = currentHwModalCategory === 'all' ? 'ทุกประเภท' : `ประเภท: ${currentHwModalCategory}`;
-
-  let listContentHtml = '';
-
-  if (displayItems.length === 0) {
-    listContentHtml = `
-      <div style="text-align:center;padding:24px;color:#64748b;font-size:0.8rem;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0;">
-        <i class="fa-solid fa-box-open" style="font-size:2rem;color:#cbd5e1;margin-bottom:8px;"></i>
-        <div>ไม่พบรายการอุปกรณ์ตามเงื่อนไขที่เลือก (${activeStatusText} | ${activeCatText})</div>
-      </div>
-    `;
-  } else {
-    listContentHtml = Object.keys(grouped).map(catName => {
-      const itemsInCat = grouped[catName];
-      const icon = catIcons[catName] || 'fa-cubes';
-      return `
-        <div class="hw-cat-group-header">
-          <span><i class="fa-solid ${icon}"></i> หมวดหมู่: ${catName}</span>
-          <span style="font-size:0.7rem;background:#1e3a8a15;color:#1e3a8a;padding:2px 8px;border-radius:12px;font-weight:700;">${itemsInCat.length} เครื่อง</span>
-        </div>
-        <table class="custom-table" style="font-size:0.74rem;margin-bottom:10px;">
-          <thead>
-            <tr>
-              <th>รหัส / ชื่ออุปกรณ์</th>
-              <th>ประเภท</th>
-              <th>สังกัดสำนัก</th>
-              <th>สถานะ</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${itemsInCat.map(h => {
-        const logoSrc = getHardwareLogoSrc(h.name);
-        const statusBadge = h.status === 'ส่งซ่อม' ? 'badge-red' : h.status === 'สำรอง' ? 'badge-yellow' : 'badge-green';
-        return `
-                <tr>
-                  <td>
-                    <div style="display:flex;align-items:center;gap:6px;">
-                      <img src="${logoSrc}" alt="logo" style="width:24px;height:24px;object-fit:contain;border-radius:4px;border:1px solid #cbd5e1;background:#fff;padding:2px;flex-shrink:0;">
-                      <div>
-                        <strong>${h.id}</strong>
-                        <div style="font-size:0.68rem;color:#64748b;">${h.name}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td>${h.type}</td>
-                  <td><span class="badge badge-blue">${h.deptCode}</span></td>
-                  <td><span class="badge ${statusBadge}" style="font-size:0.65rem;">${h.status}</span></td>
-                </tr>
-              `;
-      }).join('')}
-          </tbody>
-        </table>
-      `;
-    }).join('');
-  }
-
-  modalBody.innerHTML = `
-    ${cardsHtml}
-    ${catPillsHtml}
-
-    <div style="font-weight:700;font-size:0.82rem;color:#1e3a8a;margin-top:10px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;">
-      <span><i class="fa-solid fa-list-check"></i> รายการอุปกรณ์ (${activeStatusText} · ${displayItems.length} เครื่อง)</span>
-      <button class="btn-action btn-green" style="padding:4px 10px;font-size:0.72rem;" onclick="closeModal();switchToView('view-hardware', '${currentHwModalStatus}', '${currentHwModalCategory}');">
-        <i class="fa-solid fa-arrow-right"></i> ไปหน้าฮาร์ดแวร์ทั้งหมด
-      </button>
-    </div>
-
-    <div style="max-height:280px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;padding:4px 8px;background:#ffffff;">
-      ${listContentHtml}
-    </div>
-  `;
-}
-
-// --------------------------------------------------------------------------
-// CASE MODAL INTERACTIVE FILTERING AND CATEGORY GROUPING
-// --------------------------------------------------------------------------
-let currentCaseModalStatus = 'all';
-let currentCaseModalCategory = 'all';
-
-function getCaseCategory(c) {
-  if (c.category) return c.category;
-  const text = (c.title + ' ' + (c.description || '')).toLowerCase();
-  if (text.includes('เปิดไม่ติด') || text.includes('จอ') || text.includes('คอมพิวเตอร์') || text.includes('โน๊ตบุ๊ค') || text.includes('hardware') || text.includes('การ์ดจอ')) {
-    return 'ฮาร์ดแวร์/อุปกรณ์';
-  }
-  if (text.includes('สิทธิ์') || text.includes('บัญชี') || text.includes('vpn') || text.includes('รหัสผ่าน') || text.includes('account')) {
-    return 'บัญชีผู้ใช้/สิทธิ์';
-  }
-  if (text.includes('wi-fi') || text.includes('สัญญาณ') || text.includes('network') || text.includes('lan') || text.includes('access point')) {
-    return 'เครือข่าย/VPN/Wi-Fi';
-  }
-  if (text.includes('เครื่องพิมพ์') || text.includes('พิมพ์') || text.includes('printer') || text.includes('spooler')) {
-    return 'ระบบพิมพ์/เครื่องพิมพ์';
-  }
-  return 'ซอฟต์แวร์/ระบบ';
-}
-
-function filterCaseModal(statusFilter, catFilter) {
-  if (statusFilter !== undefined) currentCaseModalStatus = statusFilter;
-  if (catFilter !== undefined) currentCaseModalCategory = catFilter;
-  renderCaseModalContent();
-}
-
-function renderCaseModalContent() {
-  const modalBody = document.getElementById('modalBody');
-  if (!modalBody) return;
-
-  const total = NCSA_DATA.cases.length;
-  const active = NCSA_DATA.cases.filter(c => c.status === 'กำลังดำเนินการ').length;
-  const done = NCSA_DATA.cases.filter(c => c.status === 'เสร็จสิ้น').length;
-
-  const caseCategories = [
-    { id: 'all', label: 'ทั้งหมด', icon: 'fa-cubes' },
-    { id: 'ฮาร์ดแวร์/อุปกรณ์', label: 'ฮาร์ดแวร์/อุปกรณ์', icon: 'fa-desktop' },
-    { id: 'ซอฟต์แวร์/ระบบ', label: 'ซอฟต์แวร์/ระบบ', icon: 'fa-cubes-stacked' },
-    { id: 'เครือข่าย/VPN/Wi-Fi', label: 'เครือข่าย/Wi-Fi', icon: 'fa-network-wired' },
-    { id: 'บัญชีผู้ใช้/สิทธิ์', label: 'บัญชีผู้ใช้/สิทธิ์', icon: 'fa-user-shield' },
-    { id: 'ระบบพิมพ์/เครื่องพิมพ์', label: 'เครื่องพิมพ์', icon: 'fa-print' }
-  ];
-
-  const catPillsHtml = `
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center;background:linear-gradient(135deg, #f8fafc 0%, #edf2f7 100%);padding:10px 14px;border-radius:14px;border:1px solid #cbd5e1;box-shadow:inset 0 1px 2px rgba(255,255,255,0.8);">
-      <span style="font-size:0.75rem;font-weight:700;color:#1e3a8a;margin-right:4px;display:flex;align-items:center;gap:6px;">
-        <i class="fa-solid fa-layer-group" style="color:#2563eb;"></i> เลือกแยกหมวดหมู่ประเภท:
-      </span>
-      ${caseCategories.map(cat => {
-    const count = cat.id === 'all'
-      ? NCSA_DATA.cases.length
-      : NCSA_DATA.cases.filter(c => getCaseCategory(c) === cat.id).length;
-    const isActive = currentCaseModalCategory === cat.id;
-    return `
-          <button class="hw-modal-cat-pill ${isActive ? 'active' : ''}" onclick="filterCaseModal('all', '${cat.id}')">
-            <i class="fa-solid ${cat.icon}"></i> ${cat.label} <span style="font-size:0.68rem;opacity:0.85;margin-left:2px;">(${count})</span>
-          </button>
-        `;
-  }).join('')}
-    </div>
-  `;
-
-  let displayItems = NCSA_DATA.cases;
-  if (currentCaseModalCategory !== 'all') {
-    displayItems = displayItems.filter(c => getCaseCategory(c) === currentCaseModalCategory);
-  }
-
-  const catIcons = {
-    'ฮาร์ดแวร์/อุปกรณ์': 'fa-desktop',
-    'ซอฟต์แวร์/ระบบ': 'fa-cubes-stacked',
-    'เครือข่าย/VPN/Wi-Fi': 'fa-network-wired',
-    'บัญชีผู้ใช้/สิทธิ์': 'fa-user-shield',
-    'ระบบพิมพ์/เครื่องพิมพ์': 'fa-print'
-  };
-
-  const grouped = {};
-  displayItems.forEach(item => {
-    const t = getCaseCategory(item);
-    if (!grouped[t]) grouped[t] = [];
-    grouped[t].push(item);
-  });
-
-  const activeCatText = currentCaseModalCategory === 'all' ? 'ทุกประเภท' : `ประเภท: ${currentCaseModalCategory}`;
-
-  let listContentHtml = '';
-
-  if (displayItems.length === 0) {
-    listContentHtml = `
-      <div style="text-align:center;padding:30px 16px;color:#64748b;font-size:0.82rem;background:#f8fafc;border-radius:12px;border:1px solid #e2e8f0;">
-        <i class="fa-solid fa-folder-open" style="font-size:2.4rem;color:#cbd5e1;margin-bottom:10px;"></i>
-        <div>ไม่พบรายการ Case ในหมวดหมู่นี้ (${activeCatText})</div>
-      </div>
-    `;
-  } else {
-    listContentHtml = Object.keys(grouped).map(catName => {
-      const itemsInCat = grouped[catName];
-      const icon = catIcons[catName] || 'fa-cubes';
-      return `
-        <div class="hw-cat-group-header">
-          <span><i class="fa-solid ${icon}"></i> หมวดหมู่: ${catName}</span>
-          <span style="font-size:0.72rem;background:#1e3a8a15;color:#1e3a8a;padding:3px 10px;border-radius:12px;font-weight:700;">${itemsInCat.length} เคส</span>
-        </div>
-        <table class="custom-table" style="font-size:0.75rem;margin-bottom:12px;">
-          <thead>
-            <tr>
-              <th style="width:120px;">ID</th>
-              <th>หัวข้อปัญหา IT Support</th>
-              <th style="width:180px;">ผู้แจ้งเรื่อง / สังกัด</th>
-              <th style="width:75px;text-align:center;">จัดการ</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${itemsInCat.map(c => `
-              <tr>
-                <td><strong style="color:#1e3a8a;">${c.id}</strong></td>
-                <td>
-                  <div style="font-weight:600;color:#0f172a;line-height:1.3;">${c.title}</div>
-                </td>
-                <td>
-                  <div style="font-size:0.73rem;color:#334155;font-weight:500;">${c.reporter}</div>
-                  <span class="badge badge-blue" style="font-size:0.63rem;padding:1px 6px;margin-top:2px;">${c.deptCode}</span>
-                </td>
-                <td style="text-align:center;">
-                  <button class="btn-action btn-green" style="padding:3px 8px;font-size:0.68rem;" onclick="openCaseModal('${c.id}')">
-                    ดูเคส
-                  </button>
-                </td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-      `;
-    }).join('');
-  }
-
-  modalBody.innerHTML = `
-    <!-- Top Summary Banner -->
-    <div style="display:flex;align-items:center;justify-content:space-between;background:#eff6ff;padding:10px 14px;border-radius:12px;border:1px solid #bfdbfe;margin-bottom:12px;">
-      <div style="display:flex;align-items:center;gap:8px;">
-        <i class="fa-solid fa-headset" style="font-size:1.2rem;color:#1d4ed8;"></i>
-        <div>
-          <span style="font-weight:800;color:#1e3a8a;font-size:0.92rem;">สรุปรายการ Case IT Support</span>
-          <span style="font-size:0.75rem;color:#475569;margin-left:6px;">(รวม ${total} เคส)</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Category Filter Pills -->
-    ${catPillsHtml}
-
-    <div style="font-weight:700;font-size:0.82rem;color:#1e3a8a;margin-top:6px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
-      <span><i class="fa-solid fa-list-check"></i> รายการ Case แยกตามหมวดหมู่ประเภท (แสดง ${displayItems.length} เคส)</span>
-      <button class="btn-action btn-green" style="padding:4px 12px;font-size:0.72rem;" onclick="closeModal();switchToView('view-cases');">
-        <i class="fa-solid fa-arrow-right"></i> ไปหน้า Report Case ทั้งหมด
-      </button>
-    </div>
-
-    <div style="max-height:300px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:10px;padding:6px 10px;background:#ffffff;box-shadow:0 2px 8px rgba(0,0,0,0.03);">
-      ${listContentHtml}
-    </div>
-  `;
-}
-
 

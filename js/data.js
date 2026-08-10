@@ -17,7 +17,7 @@ const NCSA_DATA = {
     activeHardware: 1180,
     maintenanceHardware: 45,
     spareHardware: 23,
-
+    
     paperThisMonthReams: 342, // reams
     paperDiffPercent: -12.4, // lower than last month
     paperCostThisMonth: 41040, // THB
