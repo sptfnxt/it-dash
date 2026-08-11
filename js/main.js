@@ -1036,37 +1036,53 @@ function openChartDetailModal(chartType, index, datasetIndex) {
     const casesCount = [18, 24, 15, 29, 22, 19, 26][index] || 20;
     const paperInfo = NCSA_DATA.paperUsage.monthlyTrend[index] || { reams: 350, pages: 175000, cost: 42000 };
 
-    // Filter or show case samples relevant to clicked month
     const monthNums = ['01', '02', '03', '04', '05', '06', '07'];
     const mNum = monthNums[index] || '07';
     let monthCases = NCSA_DATA.cases.filter(c => c.reportedDate && c.reportedDate.includes(`2026-${mNum}`));
     if (monthCases.length === 0) {
-      // Pick a subset of cases matching month index for demonstration
       monthCases = NCSA_DATA.cases.slice(0, Math.min(NCSA_DATA.cases.length, 3));
     }
 
-    modalTitle.innerHTML = `<i class="fa-solid fa-chart-bar" style="color:#3b82f6;"></i> รายละเอียด Case IT Support — เดือน ${month}`;
+    modalTitle.innerHTML = `<i class="fa-solid fa-chart-line" style="color:#3b82f6;"></i> สรุปแนวโน้มบริการ IT Support — เดือน ${month}`;
     modalBody.innerHTML = `
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
-        <div style="background:#eff6ff;padding:10px;border-radius:10px;border:1px solid #bfdbfe;text-align:center;">
-          <div style="font-size:0.72rem;color:#1e40af;font-weight:600;">Case IT Support ที่รับเรื่อง</div>
-          <div style="font-size:1.4rem;font-weight:800;color:#1e3a8a;">${casesCount} <span style="font-size:0.75rem;">รายการ</span></div>
-          <div style="font-size:0.68rem;color:#059669;font-weight:600;"><i class="fa-solid fa-check"></i> SLA Resolution 98.2%</div>
+      <div style="background: linear-gradient(135deg, #0f1f5c, #1e3a8a); color: white; border-radius: 12px; padding: 14px 20px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; box-shadow: 0 4px 15px rgba(30, 58, 138, 0.15);">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div style="width: 44px; height: 44px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(4px); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; color: #60a5fa; border: 1px solid rgba(255, 255, 255, 0.2);">
+            <i class="fa-solid fa-headset"></i>
+          </div>
+          <div>
+            <div style="font-size: 0.72rem; opacity: 0.85; font-weight: 500; letter-spacing: 0.3px;">สรุปบริการ IT Support องค์กร</div>
+            <div style="font-size: 1.05rem; font-weight: 700; margin-top: 2px;">แนวโน้มประจำเดือน ${month} 2569</div>
+          </div>
         </div>
-        <div style="background:#f0fdf4;padding:10px;border-radius:10px;border:1px solid #bbf7d0;text-align:center;">
-          <div style="font-size:0.72rem;color:#166534;font-weight:600;">ปริมาณการใช้กระดาษ</div>
-          <div style="font-size:1.4rem;font-weight:800;color:#15803d;">${paperInfo.reams} <span style="font-size:0.75rem;">รีม</span></div>
-          <div style="font-size:0.68rem;color:#64748b;">(${paperInfo.pages.toLocaleString()} แผ่น | ฿${paperInfo.cost.toLocaleString()})</div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <div style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(6px); border: 1px solid rgba(255, 255, 255, 0.25); padding: 6px 14px; border-radius: 8px; text-align: center; min-width: 105px;">
+            <div style="font-size: 0.65rem; opacity: 0.9; font-weight: 600; color: #ffffff;">Case รับเรื่อง</div>
+            <div style="font-size: 1.15rem; font-weight: 800; color: #60a5fa; line-height: 1.1;">${casesCount} <span style="font-size: 0.7rem; font-weight: 500; color: #ffffff;">รายการ</span></div>
+            <div style="font-size: 0.62rem; opacity: 0.85;">(จากทั้งหมด ${NCSA_DATA.cases.length})</div>
+          </div>
+          <div style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(6px); border: 1px solid rgba(255, 255, 255, 0.25); padding: 6px 14px; border-radius: 8px; text-align: center; min-width: 105px;">
+            <div style="font-size: 0.65rem; opacity: 0.9; font-weight: 600; color: #ffffff;">SLA Resolution</div>
+            <div style="font-size: 1.15rem; font-weight: 800; color: #4ade80; line-height: 1.1;">98.2%</div>
+            <div style="font-size: 0.62rem; color: #86efac;">ตามเป้าหมาย</div>
+          </div>
+          <div style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(6px); border: 1px solid rgba(255, 255, 255, 0.25); padding: 6px 14px; border-radius: 8px; text-align: center; min-width: 105px;">
+            <div style="font-size: 0.65rem; opacity: 0.9; font-weight: 600; color: #ffffff;">ใช้กระดาษร่วม</div>
+            <div style="font-size: 1.15rem; font-weight: 800; color: #fb923c; line-height: 1.1;">${paperInfo.reams} <span style="font-size: 0.7rem; font-weight: 500; color: #ffffff;">รีม</span></div>
+            <div style="font-size: 0.62rem; color: #fdba74;">(฿${paperInfo.cost.toLocaleString()})</div>
+          </div>
         </div>
       </div>
 
-      <div style="margin-bottom:8px;font-weight:700;font-size:0.82rem;color:#1e3a8a;display:flex;align-items:center;justify-content:space-between;">
-        <span><i class="fa-solid fa-list-check"></i> รายการ Case IT Support — เดือน ${month}</span>
-        <span class="badge badge-blue" style="font-size:0.68rem;">รวม ${casesCount} Cases</span>
+      <div style="font-weight:700;font-size:0.82rem;color:#1e3a8a;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
+        <span><i class="fa-solid fa-list-check"></i> รายการ Case IT Support — เดือน ${month} (${casesCount} Cases)</span>
+        <button class="btn-action btn-green" style="padding:4px 10px;font-size:0.72rem;" onclick="closeModal();switchToView('view-cases');">
+          <i class="fa-solid fa-arrow-right"></i> ไปหน้า Report Case ทั้งหมด
+        </button>
       </div>
 
       <div style="max-height:220px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;">
-        <table class="custom-table" style="font-size:0.75rem;">
+        <table class="custom-table" style="font-size:0.74rem;">
           <thead>
             <tr>
               <th>ID</th>
@@ -1110,23 +1126,46 @@ function openChartDetailModal(chartType, index, datasetIndex) {
     const prCount = items.filter(h => h.type.includes('เครื่องพิมพ์')).length;
     const svCount = items.filter(h => h.type.includes('เซิร์ฟเวอร์') || h.type.includes('เครือข่าย')).length;
 
-    modalTitle.innerHTML = `<i class="fa-solid fa-desktop" style="color:#1e3a8a;"></i> รายละเอียดอุปกรณ์ไอที — ${deptCode}`;
+    modalTitle.innerHTML = `<i class="fa-solid fa-chart-pie" style="color:#3b82f6;"></i> สรุปสัดส่วนอุปกรณ์ไอที — ${deptCode}`;
     modalBody.innerHTML = `
-      <div style="background:#f8fafc;padding:10px;border-radius:10px;border:1px solid #e2e8f0;margin-bottom:12px;">
-        <h4 style="margin:0 0 6px 0;font-size:0.88rem;color:#1e3a8a;font-weight:700;">${deptName}</h4>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;font-size:0.72rem;">
-          <span class="badge badge-blue"><i class="fa-solid fa-desktop"></i> PC: ${pcCount}</span>
-          <span class="badge badge-teal"><i class="fa-solid fa-laptop"></i> โน๊ตบุ๊ค: ${nbCount}</span>
-          <span class="badge badge-green"><i class="fa-solid fa-print"></i> เครื่องพิมพ์: ${prCount}</span>
-          <span class="badge badge-yellow"><i class="fa-solid fa-server"></i> Server/NW: ${svCount}</span>
+      <div style="background: linear-gradient(135deg, #0f1f5c, #1e3a8a); color: white; border-radius: 12px; padding: 14px 20px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; box-shadow: 0 4px 15px rgba(30, 58, 138, 0.15);">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div style="width: 44px; height: 44px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(4px); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; color: #60a5fa; border: 1px solid rgba(255, 255, 255, 0.2);">
+            <i class="fa-solid fa-building"></i>
+          </div>
+          <div>
+            <div style="font-size: 0.72rem; opacity: 0.85; font-weight: 500; letter-spacing: 0.3px;">สรุปสถิติทรัพยากรไอทีประจำสำนัก</div>
+            <div style="font-size: 1.05rem; font-weight: 700; margin-top: 2px;">${deptName} (${deptCode})</div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <div style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(6px); border: 1px solid rgba(255, 255, 255, 0.25); padding: 6px 14px; border-radius: 8px; text-align: center; min-width: 95px;">
+            <div style="font-size: 0.65rem; opacity: 0.9; font-weight: 600; color: #ffffff;">อุปกรณ์รวม</div>
+            <div style="font-size: 1.15rem; font-weight: 800; color: #60a5fa; line-height: 1.1;">${items.length} <span style="font-size: 0.7rem; font-weight: 500; color: #ffffff;">เครื่อง</span></div>
+          </div>
+          <div style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(6px); border: 1px solid rgba(255, 255, 255, 0.25); padding: 6px 14px; border-radius: 8px; text-align: center; min-width: 95px;">
+            <div style="font-size: 0.65rem; opacity: 0.9; font-weight: 600; color: #ffffff;">PC Desktop</div>
+            <div style="font-size: 1.15rem; font-weight: 800; color: #38bdf8; line-height: 1.1;">${pcCount} <span style="font-size: 0.7rem; font-weight: 500; color: #ffffff;">เครื่อง</span></div>
+          </div>
+          <div style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(6px); border: 1px solid rgba(255, 255, 255, 0.25); padding: 6px 14px; border-radius: 8px; text-align: center; min-width: 95px;">
+            <div style="font-size: 0.65rem; opacity: 0.9; font-weight: 600; color: #ffffff;">Notebook</div>
+            <div style="font-size: 1.15rem; font-weight: 800; color: #2dd4bf; line-height: 1.1;">${nbCount} <span style="font-size: 0.7rem; font-weight: 500; color: #ffffff;">เครื่อง</span></div>
+          </div>
+          <div style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(6px); border: 1px solid rgba(255, 255, 255, 0.25); padding: 6px 14px; border-radius: 8px; text-align: center; min-width: 95px;">
+            <div style="font-size: 0.65rem; opacity: 0.9; font-weight: 600; color: #ffffff;">Printer / อื่นๆ</div>
+            <div style="font-size: 1.15rem; font-weight: 800; color: #4ade80; line-height: 1.1;">${prCount + svCount} <span style="font-size: 0.7rem; font-weight: 500; color: #ffffff;">เครื่อง</span></div>
+          </div>
         </div>
       </div>
 
-      <div style="margin-bottom:6px;font-weight:700;font-size:0.8rem;color:#1e3a8a;display:flex;justify-content:space-between;align-items:center;">
-        <span><i class="fa-solid fa-list"></i> รายชื่ออุปกรณ์ที่จัดสรรเฉพาะ ${deptCode} (${items.length} รายการ)</span>
+      <div style="font-weight:700;font-size:0.82rem;color:#1e3a8a;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
+        <span><i class="fa-solid fa-desktop"></i> รายชื่ออุปกรณ์ฮาร์ดแวร์สังกัด ${deptCode} (${items.length} รายการ)</span>
+        <button class="btn-action btn-green" style="padding:4px 10px;font-size:0.72rem;" onclick="closeModal();switchToView('view-hardware');">
+          <i class="fa-solid fa-arrow-right"></i> ไปหน้าฮาร์ดแวร์ทั้งหมด
+        </button>
       </div>
 
-      <div style="max-height:240px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;">
+      <div style="max-height:220px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;">
         <table class="custom-table" style="font-size:0.74rem;">
           <thead>
             <tr>
@@ -1166,9 +1205,9 @@ function openChartDetailModal(chartType, index, datasetIndex) {
 
   } else if (chartType === 'overviewHw') {
     const statuses = ['ใช้งานปกติ', 'ส่งซ่อม/บำรุง', 'สำรองพร้อมใช้'];
-    const colors = ['#10b981', '#f59e0b', '#3b82f6'];
+    const colors = ['#4ade80', '#facc15', '#60a5fa'];
     const statusLabel = statuses[index] || statuses[0];
-    const color = colors[index] || '#10b981';
+    const color = colors[index] || '#4ade80';
 
     let filterKey = 'ใช้งานปกติ';
     if (index === 1) filterKey = 'ส่งซ่อม';
@@ -1176,36 +1215,58 @@ function openChartDetailModal(chartType, index, datasetIndex) {
 
     const items = NCSA_DATA.hardware.filter(h => h.status === filterKey || (index === 1 && h.status.includes('ซ่อม')));
     const totalCount = [1180, 45, 23][index] || items.length;
+    const pctShare = ((totalCount / 1248) * 100).toFixed(1);
 
-    modalTitle.innerHTML = `<i class="fa-solid fa-boxes-stacked" style="color:${color};"></i> รายละเอียดอุปกรณ์ไอที — สถานะ: ${statusLabel}`;
+    modalTitle.innerHTML = `<i class="fa-solid fa-desktop" style="color:#2d9d8f;"></i> สรุปสถานะสินทรัพย์ Hardware — ${statusLabel}`;
     modalBody.innerHTML = `
-      <div style="background:#f8fafc;padding:12px;border-radius:10px;border:1px solid #e2e8f0;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;">
-        <div>
-          <div style="font-size:0.75rem;color:#475569;font-weight:600;">สถานะการใช้งาน</div>
-          <div style="font-size:1.3rem;font-weight:800;color:${color};">${statusLabel}</div>
+      <div style="background: linear-gradient(135deg, #0f1f5c, #1e3a8a); color: white; border-radius: 12px; padding: 14px 20px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; box-shadow: 0 4px 15px rgba(30, 58, 138, 0.15);">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div style="width: 44px; height: 44px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(4px); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; color: ${color}; border: 1px solid rgba(255, 255, 255, 0.2);">
+            <i class="fa-solid fa-boxes-stacked"></i>
+          </div>
+          <div>
+            <div style="font-size: 0.72rem; opacity: 0.85; font-weight: 500; letter-spacing: 0.3px;">สรุปสถิติสินทรัพย์องค์กร</div>
+            <div style="font-size: 1.05rem; font-weight: 700; margin-top: 2px;">สถานะ: ${statusLabel}</div>
+          </div>
         </div>
-        <div style="text-align:right;">
-          <div style="font-size:0.75rem;color:#475569;font-weight:600;">จำนวนอุปกรณ์ทั้งหมด</div>
-          <div style="font-size:1.5rem;font-weight:800;color:#1e3a8a;">${totalCount.toLocaleString()} <span style="font-size:0.75rem;">เครื่อง</span></div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <div style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(6px); border: 1px solid rgba(255, 255, 255, 0.25); padding: 6px 14px; border-radius: 8px; text-align: center; min-width: 105px;">
+            <div style="font-size: 0.65rem; opacity: 0.9; font-weight: 600; color: #ffffff;">จำนวนอุปกรณ์</div>
+            <div style="font-size: 1.15rem; font-weight: 800; color: ${color}; line-height: 1.1;">${totalCount.toLocaleString()} <span style="font-size: 0.7rem; font-weight: 500; color: #ffffff;">เครื่อง</span></div>
+            <div style="font-size: 0.62rem; opacity: 0.85;">(ในระบบ)</div>
+          </div>
+          <div style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(6px); border: 1px solid rgba(255, 255, 255, 0.25); padding: 6px 14px; border-radius: 8px; text-align: center; min-width: 105px;">
+            <div style="font-size: 0.65rem; opacity: 0.9; font-weight: 600; color: #ffffff;">สัดส่วนสินทรัพย์</div>
+            <div style="font-size: 1.15rem; font-weight: 800; color: #60a5fa; line-height: 1.1;">${pctShare}%</div>
+            <div style="font-size: 0.62rem; color: #93c5fd;">ของฮาร์ดแวร์ทั้งหมด</div>
+          </div>
+          <div style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(6px); border: 1px solid rgba(255, 255, 255, 0.25); padding: 6px 14px; border-radius: 8px; text-align: center; min-width: 105px;">
+            <div style="font-size: 0.65rem; opacity: 0.9; font-weight: 600; color: #ffffff;">ความพร้อมใช้งาน</div>
+            <div style="font-size: 1.15rem; font-weight: 800; color: #facc15; line-height: 1.1;">${index === 0 ? 'พร้อมใช้' : index === 1 ? 'ซ่อมแซม' : 'สแตนด์บาย'}</div>
+          </div>
         </div>
       </div>
 
-      <div style="margin-bottom:6px;font-weight:700;font-size:0.8rem;color:#1e3a8a;display:flex;justify-content:space-between;align-items:center;">
-        <span><i class="fa-solid fa-list"></i> รายการอุปกรณ์ที่มีสถานะ "${statusLabel}"</span>
+      <div style="font-weight:700;font-size:0.82rem;color:#1e3a8a;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
+        <span><i class="fa-solid fa-list-check"></i> รายการอุปกรณ์สถานะ "${statusLabel}"</span>
+        <button class="btn-action btn-green" style="padding:4px 10px;font-size:0.72rem;" onclick="closeModal();switchToView('view-hardware');">
+          <i class="fa-solid fa-arrow-right"></i> ไปหน้าฮาร์ดแวร์ทั้งหมด
+        </button>
       </div>
 
-      <div style="max-height:230px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;">
+      <div style="max-height:220px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;">
         <table class="custom-table" style="font-size:0.74rem;">
           <thead>
             <tr>
               <th>รหัส / อุปกรณ์</th>
-              <th>สำนัก</th>
+              <th>สังกัดสำนัก</th>
               <th>ผู้ถือครอง</th>
+              <th>สถานะ</th>
               <th>รายละเอียด</th>
             </tr>
           </thead>
           <tbody>
-            ${items.length === 0 ? `<tr><td colspan="4" style="text-align:center;padding:16px;color:#64748b;">มีอุปกรณ์ในระบบสถานะ ${statusLabel} ทั้งหมด ${totalCount} เครื่อง</td></tr>` :
+            ${items.length === 0 ? `<tr><td colspan="5" style="text-align:center;padding:16px;color:#64748b;">มีอุปกรณ์ในระบบสถานะ ${statusLabel} ทั้งหมด ${totalCount} เครื่อง</td></tr>` :
         items.map(hw => {
           const logoSrc = getHardwareLogoSrc(hw.name);
           return `
@@ -1221,6 +1282,7 @@ function openChartDetailModal(chartType, index, datasetIndex) {
                 </td>
                 <td><span class="badge badge-blue" style="font-size:0.65rem;">${hw.deptCode}</span></td>
                 <td>${hw.holder}</td>
+                <td><span class="badge ${hw.status === 'ส่งซ่อม' ? 'badge-red' : hw.status === 'สำรอง' ? 'badge-yellow' : 'badge-green'}" style="font-size:0.65rem;">${hw.status}</span></td>
                 <td><button class="btn-action" style="padding:2px 6px;font-size:0.68rem;" onclick="openHardwareModal('${hw.id}')">ดูข้อมูล</button></td>
               </tr>
             `;
@@ -1240,45 +1302,44 @@ function openChartDetailModal(chartType, index, datasetIndex) {
     }
 
     const logoSrc = getLicenseLogoSrc(lic.name);
+    const utilPct = Math.round((lic.usedSeats / lic.totalSeats) * 100);
 
-    modalTitle.innerHTML = `
-      <div style="display:flex;align-items:center;gap:8px;">
-        <img src="${logoSrc}" alt="${lic.name} logo" style="width:26px;height:26px;object-fit:contain;border-radius:6px;background:#fff;padding:2px;border:1px solid #cbd5e1;box-shadow:0 1px 3px rgba(0,0,0,0.1);flex-shrink:0;">
-        <span>รายละเอียด Software License — ${lic.name}</span>
-      </div>
-    `;
+    modalTitle.innerHTML = `<i class="fa-solid fa-key" style="color:#059669;"></i> สรุปการจัดสรร Software License — ${lic.name}`;
     modalBody.innerHTML = `
-      <div style="display:flex;align-items:center;gap:12px;background:#f8fafc;padding:10px 14px;border-radius:10px;border:1px solid #e2e8f0;margin-bottom:12px;">
-        <img src="${logoSrc}" alt="${lic.name} logo" style="width:42px;height:42px;object-fit:contain;border-radius:8px;border:1px solid #cbd5e1;background:#fff;padding:3px;box-shadow:0 2px 6px rgba(0,0,0,0.06);flex-shrink:0;">
-        <div>
-          <h4 style="margin:0;font-size:0.95rem;color:#1e3a8a;font-weight:700;line-height:1.2;">${lic.name}</h4>
-          <div style="font-size:0.73rem;color:#64748b;margin-top:3px;">
-            หมวดหมู่: <strong style="color:#1e3a8a;">${lic.category || 'Software License'}</strong> | ผู้พัฒนา: <strong>${lic.vendor || '-'}</strong>
+      <div style="background: linear-gradient(135deg, #0f1f5c, #1e3a8a); color: white; border-radius: 12px; padding: 14px 20px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; box-shadow: 0 4px 15px rgba(30, 58, 138, 0.15);">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div style="width: 44px; height: 44px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(4px); border-radius: 10px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255, 255, 255, 0.2);">
+            <img src="${logoSrc}" alt="${lic.name} logo" style="width:28px;height:28px;object-fit:contain;border-radius:4px;background:#fff;padding:2px;">
+          </div>
+          <div>
+            <div style="font-size: 0.72rem; opacity: 0.85; font-weight: 500; letter-spacing: 0.3px;">สรุปสถิติการจัดสรรไลเซนส์องค์กร</div>
+            <div style="font-size: 1.05rem; font-weight: 700; margin-top: 2px;">${lic.name} (${lic.category || 'License'})</div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <div style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(6px); border: 1px solid rgba(255, 255, 255, 0.25); padding: 6px 14px; border-radius: 8px; text-align: center; min-width: 95px;">
+            <div style="font-size: 0.65rem; opacity: 0.9; font-weight: 600; color: #ffffff;">สิทธิ์ทั้งหมด</div>
+            <div style="font-size: 1.15rem; font-weight: 800; color: #60a5fa; line-height: 1.1;">${lic.totalSeats.toLocaleString()} <span style="font-size: 0.7rem; font-weight: 500; color: #ffffff;">สิทธิ์</span></div>
+          </div>
+          <div style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(6px); border: 1px solid rgba(255, 255, 255, 0.25); padding: 6px 14px; border-radius: 8px; text-align: center; min-width: 95px;">
+            <div style="font-size: 0.65rem; opacity: 0.9; font-weight: 600; color: #ffffff;">เปิดใช้งานแล้ว</div>
+            <div style="font-size: 1.15rem; font-weight: 800; color: #4ade80; line-height: 1.1;">${lic.usedSeats.toLocaleString()} <span style="font-size: 0.68rem; font-weight: 500; color: #ffffff;">(${utilPct}%)</span></div>
+          </div>
+          <div style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(6px); border: 1px solid rgba(255, 255, 255, 0.25); padding: 6px 14px; border-radius: 8px; text-align: center; min-width: 95px;">
+            <div style="font-size: 0.65rem; opacity: 0.9; font-weight: 600; color: #ffffff;">คงเหลือว่าง</div>
+            <div style="font-size: 1.15rem; font-weight: 800; color: #fb923c; line-height: 1.1;">${lic.availableSeats.toLocaleString()} <span style="font-size: 0.7rem; font-weight: 500; color: #ffffff;">สิทธิ์</span></div>
           </div>
         </div>
       </div>
 
-      <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:8px;margin-bottom:12px;">
-        <div style="background:#eff6ff;padding:10px;border-radius:10px;border:1px solid #bfdbfe;text-align:center;">
-          <div style="font-size:0.7rem;color:#1e40af;font-weight:600;">สิทธิ์ทั้งหมด (Total)</div>
-          <div style="font-size:1.3rem;font-weight:800;color:#1e3a8a;">${lic.totalSeats.toLocaleString()} <span style="font-size:0.75rem;">Seats</span></div>
-        </div>
-        <div style="background:#f0fdf4;padding:10px;border-radius:10px;border:1px solid #bbf7d0;text-align:center;">
-          <div style="font-size:0.7rem;color:#166534;font-weight:600;">เปิดใช้งานแล้ว (Used)</div>
-          <div style="font-size:1.3rem;font-weight:800;color:#15803d;">${lic.usedSeats.toLocaleString()} <span style="font-size:0.75rem;">Seats</span></div>
-        </div>
-        <div style="background:#fff7ed;padding:10px;border-radius:10px;border:1px solid #ffedd5;text-align:center;">
-          <div style="font-size:0.7rem;color:#c2410c;font-weight:600;">คงเหลือว่าง (Available)</div>
-          <div style="font-size:1.3rem;font-weight:800;color:#ea580c;">${lic.availableSeats.toLocaleString()} <span style="font-size:0.75rem;">Seats</span></div>
-        </div>
-      </div>
-
-      <div style="margin-bottom:6px;font-weight:700;font-size:0.8rem;color:#1e3a8a;display:flex;justify-content:space-between;align-items:center;">
+      <div style="font-weight:700;font-size:0.82rem;color:#1e3a8a;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
         <span><i class="fa-solid fa-building"></i> การจัดสรรสิทธิ์ตามสำนัก (${lic.name})</span>
-        <button class="btn-action btn-blue" style="padding:2px 8px;font-size:0.7rem;" onclick="openLicenseModal('${lic.id}')">ดูรายละเอียดฉบับเต็ม</button>
+        <button class="btn-action btn-green" style="padding:4px 10px;font-size:0.72rem;" onclick="closeModal();switchToView('view-license');">
+          <i class="fa-solid fa-arrow-right"></i> ไปหน้าการจัดสรรไลเซนส์
+        </button>
       </div>
 
-      <div style="max-height:190px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;">
+      <div style="max-height:220px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;">
         <table class="custom-table" style="font-size:0.74rem;">
           <thead>
             <tr>
@@ -1312,24 +1373,44 @@ function openChartDetailModal(chartType, index, datasetIndex) {
 
   } else if (chartType === 'overviewPaperMini' || chartType === 'paperMonthly') {
     const item = NCSA_DATA.paperUsage.monthlyTrend[index] || NCSA_DATA.paperUsage.monthlyTrend[0];
-    modalTitle.innerHTML = `<i class="fa-solid fa-print" style="color:#0d9488;"></i> สถิติการใช้กระดาษ — เดือน ${item.month}`;
+    modalTitle.innerHTML = `<i class="fa-solid fa-leaf" style="color:#f97316;"></i> สรุปสถิติการใช้งานระบบพิมพ์ & กระดาษ — เดือน ${item.month}`;
     modalBody.innerHTML = `
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
-        <div style="background:#f0fdf4;padding:10px;border-radius:10px;border:1px solid #bbf7d0;">
-          <div style="font-size:0.72rem;color:#166534;font-weight:600;">ปริมาณพิมพ์กระดาษประจำเดือน ${item.month}</div>
-          <div style="font-size:1.3rem;font-weight:800;color:#15803d;">${item.reams} <span style="font-size:0.75rem;">รีม</span></div>
-          <div style="font-size:0.68rem;color:#64748b;">คิดเป็น ${item.pages.toLocaleString()} แผ่น</div>
+      <div style="background: linear-gradient(135deg, #0f1f5c, #1e3a8a); color: white; border-radius: 12px; padding: 14px 20px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; box-shadow: 0 4px 15px rgba(30, 58, 138, 0.15);">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div style="width: 44px; height: 44px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(4px); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; color: #f97316; border: 1px solid rgba(255, 255, 255, 0.2);">
+            <i class="fa-solid fa-leaf"></i>
+          </div>
+          <div>
+            <div style="font-size: 0.72rem; opacity: 0.85; font-weight: 500; letter-spacing: 0.3px;">สรุปสถิติทรัพยากรระบบพิมพ์องค์กร</div>
+            <div style="font-size: 1.05rem; font-weight: 700; margin-top: 2px;">ประจำเดือน ${item.month} 2569</div>
+          </div>
         </div>
-        <div style="background:#fff7ed;padding:10px;border-radius:10px;border:1px solid #ffedd5;">
-          <div style="font-size:0.72rem;color:#c2410c;font-weight:600;">ค่าใช้จ่ายรวมระบบพิมพ์ประจำเดือน ${item.month}</div>
-          <div style="font-size:1.3rem;font-weight:800;color:#ea580c;">฿${item.cost.toLocaleString()}</div>
-          <div style="font-size:0.68rem;color:#059669;font-weight:600;"><i class="fa-solid fa-leaf"></i> ลดลง 12.4% YoY</div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <div style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(6px); border: 1px solid rgba(255, 255, 255, 0.25); padding: 6px 14px; border-radius: 8px; text-align: center; min-width: 105px;">
+            <div style="font-size: 0.65rem; opacity: 0.9; font-weight: 600; color: #ffffff;">กระดาษที่ใช้</div>
+            <div style="font-size: 1.15rem; font-weight: 800; color: #fb923c; line-height: 1.1;">${item.reams} <span style="font-size: 0.7rem; font-weight: 500; color: #ffffff;">รีม</span></div>
+            <div style="font-size: 0.62rem; opacity: 0.85;">(${item.pages.toLocaleString()} แผ่น)</div>
+          </div>
+          <div style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(6px); border: 1px solid rgba(255, 255, 255, 0.25); padding: 6px 14px; border-radius: 8px; text-align: center; min-width: 105px;">
+            <div style="font-size: 0.65rem; opacity: 0.9; font-weight: 600; color: #ffffff;">ประหยัดต้นไม้</div>
+            <div style="font-size: 1.15rem; font-weight: 800; color: #4ade80; line-height: 1.1;">184 <span style="font-size: 0.7rem; font-weight: 500; color: #ffffff;">ต้น</span></div>
+            <div style="font-size: 0.62rem; color: #86efac;">ลด CO2 2.45t</div>
+          </div>
+          <div style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(6px); border: 1px solid rgba(255, 255, 255, 0.25); padding: 6px 14px; border-radius: 8px; text-align: center; min-width: 105px;">
+            <div style="font-size: 0.65rem; opacity: 0.9; font-weight: 600; color: #ffffff;">งบประมาณพิมพ์</div>
+            <div style="font-size: 1.15rem; font-weight: 800; color: #60a5fa; line-height: 1.1;">฿${item.cost.toLocaleString()}</div>
+            <div style="font-size: 0.62rem; color: #93c5fd;">-12.4% YoY</div>
+          </div>
         </div>
       </div>
 
-      <div style="font-weight:700;font-size:0.8rem;color:#1e3a8a;margin-bottom:6px;">
-        <i class="fa-solid fa-building-user"></i> โควต้าและการใช้งานกระดาษแยกสำนักประจำเดือน ${item.month}
+      <div style="font-weight:700;font-size:0.82rem;color:#1e3a8a;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
+        <span><i class="fa-solid fa-building-user"></i> โควต้าและการใช้งานกระดาษแยกสำนัก (เดือน ${item.month})</span>
+        <button class="btn-action btn-green" style="padding:4px 10px;font-size:0.72rem;" onclick="closeModal();switchToView('view-paper');">
+          <i class="fa-solid fa-arrow-right"></i> ไปหน้ารายงานกระดาษ
+        </button>
       </div>
+
       <div style="max-height:220px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;">
         <table class="custom-table" style="font-size:0.74rem;">
           <thead>
@@ -1356,18 +1437,12 @@ function openChartDetailModal(chartType, index, datasetIndex) {
 
   } else if (chartType === 'overviewProj') {
     const statuses = ['เป็นไปตามแผน', 'เร็วกว่าแผน', 'ล่าช้ากว่าแผน'];
-    const statusColors = ['#3b82f6', '#10b981', '#ef4444'];
+    const statusColors = ['#60a5fa', '#4ade80', '#f87171'];
     const badgeClasses = ['badge-blue', 'badge-green', 'badge-red'];
-    const bgColors = ['#eff6ff', '#f0fdf4', '#fef2f2'];
-    const borderColors = ['#bfdbfe', '#bbf7d0', '#fecaca'];
-    const textColors = ['#1d4ed8', '#15803d', '#dc2626'];
 
     const targetStatus = statuses[index] || statuses[0];
-    const color = statusColors[index] || '#3b82f6';
+    const color = statusColors[index] || '#60a5fa';
     const badgeClass = badgeClasses[index] || 'badge-blue';
-    const bgColor = bgColors[index] || '#eff6ff';
-    const borderColor = borderColors[index] || '#bfdbfe';
-    const textColor = textColors[index] || '#1d4ed8';
 
     const items = NCSA_DATA.projects.filter(p => {
       if (index === 0) return p.status === 'เป็นไปตามแผน' || p.status === 'ตามแผน';
@@ -1375,38 +1450,61 @@ function openChartDetailModal(chartType, index, datasetIndex) {
       return p.status === 'ล่าช้ากว่าแผน' || p.status === 'ล่าช้า';
     });
 
-    modalTitle.innerHTML = `<i class="fa-solid fa-diagram-project" style="color:${color};"></i> รายละเอียดโครงการพัฒนาไอที — สถานะ: ${targetStatus}`;
+    const avgProg = items.length > 0 ? Math.round(items.reduce((s, p) => s + p.progressPercent, 0) / items.length) : 85;
+
+    modalTitle.innerHTML = `<i class="fa-solid fa-diagram-project" style="color:#7c3aed;"></i> สรุปภาพรวมโครงการพัฒนาไอที — ${targetStatus}`;
     modalBody.innerHTML = `
-      <div style="background:${bgColor};padding:12px;border-radius:10px;border:1px solid ${borderColor};margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;">
-        <div>
-          <div style="font-size:0.75rem;color:#475569;font-weight:600;">สถานะโครงการ</div>
-          <div style="font-size:1.3rem;font-weight:800;color:${textColor};">${targetStatus}</div>
+      <div style="background: linear-gradient(135deg, #0f1f5c, #1e3a8a); color: white; border-radius: 12px; padding: 14px 20px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; box-shadow: 0 4px 15px rgba(30, 58, 138, 0.15);">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div style="width: 44px; height: 44px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(4px); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; color: #a78bfa; border: 1px solid rgba(255, 255, 255, 0.2);">
+            <i class="fa-solid fa-bars-progress"></i>
+          </div>
+          <div>
+            <div style="font-size: 0.72rem; opacity: 0.85; font-weight: 500; letter-spacing: 0.3px;">สรุปสถิติโครงการพัฒนาไอทีองค์กร</div>
+            <div style="font-size: 1.05rem; font-weight: 700; margin-top: 2px;">สถานะโครงการ: ${targetStatus}</div>
+          </div>
         </div>
-        <div style="text-align:right;">
-          <div style="font-size:0.75rem;color:#475569;font-weight:600;">จำนวนโครงการ</div>
-          <div style="font-size:1.5rem;font-weight:800;color:${textColor};">${items.length} <span style="font-size:0.75rem;">โครงการ</span></div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <div style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(6px); border: 1px solid rgba(255, 255, 255, 0.25); padding: 6px 14px; border-radius: 8px; text-align: center; min-width: 105px;">
+            <div style="font-size: 0.65rem; opacity: 0.9; font-weight: 600; color: #ffffff;">จำนวนโครงการ</div>
+            <div style="font-size: 1.15rem; font-weight: 800; color: #a78bfa; line-height: 1.1;">${items.length} <span style="font-size: 0.7rem; font-weight: 500; color: #ffffff;">โครงการ</span></div>
+          </div>
+          <div style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(6px); border: 1px solid rgba(255, 255, 255, 0.25); padding: 6px 14px; border-radius: 8px; text-align: center; min-width: 105px;">
+            <div style="font-size: 0.65rem; opacity: 0.9; font-weight: 600; color: #ffffff;">ความคืบหน้าเฉลี่ย</div>
+            <div style="font-size: 1.15rem; font-weight: 800; color: #60a5fa; line-height: 1.1;">${avgProg}%</div>
+          </div>
+          <div style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(6px); border: 1px solid rgba(255, 255, 255, 0.25); padding: 6px 14px; border-radius: 8px; text-align: center; min-width: 105px;">
+            <div style="font-size: 0.65rem; opacity: 0.9; font-weight: 600; color: #ffffff;">สถานะแผนงาน</div>
+            <div style="font-size: 1.15rem; font-weight: 800; color: ${color}; line-height: 1.1;">${targetStatus}</div>
+          </div>
         </div>
       </div>
 
-      <div style="font-weight:700;font-size:0.8rem;color:#1e3a8a;margin-bottom:6px;">
-        <i class="fa-solid fa-list-check"></i> รายการโครงการที่มีสถานะ "${targetStatus}"
+      <div style="font-weight:700;font-size:0.82rem;color:#1e3a8a;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
+        <span><i class="fa-solid fa-list-check"></i> รายการโครงการพัฒนาไอที (${targetStatus})</span>
+        <button class="btn-action btn-green" style="padding:4px 10px;font-size:0.72rem;" onclick="closeModal();switchToView('view-projects');">
+          <i class="fa-solid fa-arrow-right"></i> ไปหน้าโครงการพัฒนาไอทีทั้งหมด
+        </button>
       </div>
+
       <div style="max-height:220px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;">
         <table class="custom-table" style="font-size:0.74rem;">
           <thead>
             <tr>
               <th>รหัส</th>
               <th>ชื่อโครงการ / กิจกรรม</th>
+              <th>ผู้รับผิดชอบ</th>
               <th>ความคืบหน้า</th>
               <th>สถานะ</th>
             </tr>
           </thead>
           <tbody>
-            ${items.length === 0 ? `<tr><td colspan="4" style="text-align:center;padding:16px;color:#94a3b8;">ไม่มีโครงการในสถานะ ${targetStatus}</td></tr>` :
+            ${items.length === 0 ? `<tr><td colspan="5" style="text-align:center;padding:16px;color:#94a3b8;">ไม่มีโครงการในสถานะ ${targetStatus}</td></tr>` :
         items.map(p => `
               <tr>
                 <td><strong>${p.id}</strong></td>
-                <td><div style="font-weight:600;color:#1e3a8a;">${p.name}</div><div style="font-size:0.68rem;color:#64748b;">${p.dept}</div></td>
+                <td><div style="font-weight:600;color:#1e3a8a;">${p.name}</div></td>
+                <td><span style="font-size:0.7rem;color:#64748b;">${p.dept}</span></td>
                 <td><span style="font-weight:700;color:${color};">${p.progressPercent}%</span></td>
                 <td><span class="badge ${badgeClass}" style="font-size:0.65rem;">${p.status}</span></td>
               </tr>
@@ -1807,8 +1905,73 @@ function openKpiDetailModal(kpiType) {
     filterModalCaseStatus('all');
     return;
   } else if (kpiType === 'projects') {
-    switchToView('view-projects');
-    scrollToProjDetails();
+    const totalProj = NCSA_DATA.projects.length;
+    const avgProg = Math.round(NCSA_DATA.projects.reduce((s, p) => s + p.progressPercent, 0) / totalProj);
+    const onTrack = NCSA_DATA.projects.filter(p => p.status === 'เป็นไปตามแผน' || p.status === 'ตามแผน').length;
+    const ahead = NCSA_DATA.projects.filter(p => p.status === 'เร็วกว่าแผน').length;
+
+    modalTitle.innerHTML = `<i class="fa-solid fa-bars-progress" style="color:#7c3aed;"></i> สรุปภาพรวมโครงการพัฒนาไอทีองค์กร`;
+    modalBody.innerHTML = `
+      <div style="background: linear-gradient(135deg, #0f1f5c, #1e3a8a); color: white; border-radius: 12px; padding: 14px 20px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; box-shadow: 0 4px 15px rgba(30, 58, 138, 0.15);">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div style="width: 44px; height: 44px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(4px); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; color: #a78bfa; border: 1px solid rgba(255, 255, 255, 0.2);">
+            <i class="fa-solid fa-bars-progress"></i>
+          </div>
+          <div>
+            <div style="font-size: 0.72rem; opacity: 0.85; font-weight: 500; letter-spacing: 0.3px;">สรุปสถิติยุทธศาสตร์ไอทีองค์กร</div>
+            <div style="font-size: 1.05rem; font-weight: 700; margin-top: 2px;">โครงการพัฒนาไอทีทั้งหมด</div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <div style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(6px); border: 1px solid rgba(255, 255, 255, 0.25); padding: 6px 14px; border-radius: 8px; text-align: center; min-width: 95px;">
+            <div style="font-size: 0.65rem; opacity: 0.9; font-weight: 600; color: #ffffff;">โครงการรวม</div>
+            <div style="font-size: 1.15rem; font-weight: 800; color: #a78bfa; line-height: 1.1;">${totalProj} <span style="font-size: 0.7rem; font-weight: 500; color: #ffffff;">โครงการ</span></div>
+          </div>
+          <div style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(6px); border: 1px solid rgba(255, 255, 255, 0.25); padding: 6px 14px; border-radius: 8px; text-align: center; min-width: 95px;">
+            <div style="font-size: 0.65rem; opacity: 0.9; font-weight: 600; color: #ffffff;">คืบหน้าเฉลี่ย</div>
+            <div style="font-size: 1.15rem; font-weight: 800; color: #60a5fa; line-height: 1.1;">${avgProg}%</div>
+          </div>
+          <div style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(6px); border: 1px solid rgba(255, 255, 255, 0.25); padding: 6px 14px; border-radius: 8px; text-align: center; min-width: 95px;">
+            <div style="font-size: 0.65rem; opacity: 0.9; font-weight: 600; color: #ffffff;">ตามแผน/เร็วกว่า</div>
+            <div style="font-size: 1.15rem; font-weight: 800; color: #4ade80; line-height: 1.1;">${onTrack + ahead} <span style="font-size: 0.7rem; font-weight: 500; color: #ffffff;">โครงการ</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="font-weight:700;font-size:0.82rem;color:#1e3a8a;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">
+        <span><i class="fa-solid fa-diagram-project"></i> รายการโครงการพัฒนาไอทีทั้งหมด (${totalProj} โครงการ)</span>
+        <button class="btn-action btn-green" style="padding:4px 10px;font-size:0.72rem;" onclick="closeModal();switchToView('view-projects');">
+          <i class="fa-solid fa-arrow-right"></i> ไปหน้าโครงการพัฒนาไอทีทั้งหมด
+        </button>
+      </div>
+
+      <div style="max-height:220px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;">
+        <table class="custom-table" style="font-size:0.74rem;">
+          <thead>
+            <tr>
+              <th>รหัส</th>
+              <th>ชื่อโครงการ / กิจกรรม</th>
+              <th>ผู้รับผิดชอบ</th>
+              <th>ความคืบหน้า</th>
+              <th>สถานะ</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${NCSA_DATA.projects.map(p => `
+              <tr>
+                <td><strong>${p.id}</strong></td>
+                <td><div style="font-weight:600;color:#1e3a8a;">${p.name}</div></td>
+                <td><span style="font-size:0.7rem;color:#64748b;">${p.dept}</span></td>
+                <td><span style="font-weight:700;color:#3b82f6;">${p.progressPercent}%</span></td>
+                <td><span class="badge ${p.status === 'เร็วกว่าแผน' ? 'badge-green' : 'badge-blue'}" style="font-size:0.65rem;">${p.status}</span></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+
+    modalOverlay.classList.add('active');
     return;
   }
 
