@@ -752,101 +752,46 @@ function initProjectCharts() {
 // REPORT CASE STATISTICAL CHARTS (5 Excel Sheets)
 // ============================================================
 function initCaseOverviewCharts() {
-  const ctxBar = document.getElementById('caseYearlyTrendChart');
-  if (ctxBar && NCSA_DATA.caseStatistics) {
-    if (chartInstances.caseYearlyTrend) chartInstances.caseYearlyTrend.destroy();
-    const ctx2d = ctxBar.getContext('2d');
-    const data = NCSA_DATA.caseStatistics.total_by_year;
-    const totalSum = data.counts.reduce((a, b) => a + b, 0) || 1;
+  const ctxPie = document.getElementById('caseYearlyPieChart');
+  if (!ctxPie || !NCSA_DATA.caseStatistics) return;
 
-    const createGradH = (colorStart, colorEnd) => {
-      const g = ctx2d.createLinearGradient(0, 0, 350, 0);
-      g.addColorStop(0, colorStart);
-      g.addColorStop(1, colorEnd);
-      return g;
-    };
+  if (chartInstances.caseYearlyPie) chartInstances.caseYearlyPie.destroy();
 
-    chartInstances.caseYearlyTrend = new Chart(ctxBar, {
-      type: 'bar',
-      data: {
-        labels: data.years.map(y => 'พ.ศ. ' + y),
-        datasets: [{
-          label: 'การขอรับบริการ (ครั้ง)',
-          data: data.counts,
-          backgroundColor: [
-            createGradH('#1d4ed8', '#60a5fa'),
-            createGradH('#059669', '#34d399'),
-            createGradH('#d97706', '#fbbf24'),
-            createGradH('#64748b', '#cbd5e1')
-          ],
-          borderRadius: 6,
-          borderWidth: 0,
-          barPercentage: 0.55,
-          categoryPercentage: 0.75
-        }]
-      },
-      options: {
-        indexAxis: 'y',
-        responsive: true,
-        maintainAspectRatio: false,
-        animation: { duration: 1000, easing: 'easeOutQuart' },
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            backgroundColor: '#0f172a',
+  const data = NCSA_DATA.caseStatistics.total_by_year;
+  chartInstances.caseYearlyPie = new Chart(ctxPie, {
+    type: 'doughnut',
+    data: {
+      labels: data.years.map(y => 'พ.ศ. ' + y),
+      datasets: [{
+        data: data.counts,
+        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#94a3b8'],
+        borderWidth: 2,
+        borderColor: '#ffffff',
+        hoverOffset: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { animateScale: true, duration: 900 },
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            boxWidth: 10,
             padding: 10,
-            cornerRadius: 8,
-            callbacks: {
-              label: (ctx) => {
-                const val = ctx.raw;
-                const pct = ((val / totalSum) * 100).toFixed(1);
-                return ` ปริมาณการขอรับบริการ: ${val.toLocaleString()} ครั้ง (${pct}%)`;
-              }
-            }
+            font: { size: 10, weight: '600' }
           }
         },
-        scales: {
-          x: {
-            beginAtZero: true,
-            grid: { color: '#f1f5f9' },
-            ticks: { font: { size: 10, weight: '600' } }
-          },
-          y: {
-            grid: { display: false },
-            ticks: { font: { size: 11, weight: '700' }, color: '#1e3a8a' }
+        tooltip: {
+          callbacks: {
+            label: (ctx) => `${ctx.label}: ${ctx.raw.toLocaleString()} ครั้ง`
           }
         }
-      }
-    });
-  }
-
-  const ctxPie = document.getElementById('caseYearlyPieChart');
-  if (ctxPie && NCSA_DATA.caseStatistics) {
-    if (chartInstances.caseYearlyPie) chartInstances.caseYearlyPie.destroy();
-    const data = NCSA_DATA.caseStatistics.total_by_year;
-    chartInstances.caseYearlyPie = new Chart(ctxPie, {
-      type: 'doughnut',
-      data: {
-        labels: data.years.map(y => 'พ.ศ. ' + y),
-        datasets: [{
-          data: data.counts,
-          backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#94a3b8'],
-          borderWidth: 2,
-          borderColor: '#ffffff',
-          hoverOffset: 6
-        }]
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        animation: { animateScale: true, duration: 1000 },
-        plugins: {
-          legend: { position: 'bottom', labels: { boxWidth: 10, padding: 8, font: { size: 10, weight: '600' } } }
-        },
-        cutout: '66%'
-      }
-    });
-  }
+      cutout: '68%'
+    }
+  });
 }
 
 function initCaseCategoryChart() {

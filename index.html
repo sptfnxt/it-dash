@@ -393,15 +393,17 @@
          ===================================================== -->
       <div id="view-license" class="page-view">
         <div class="view-header">
-          <div class="view-title-group">
-            <h2><i class="fa-solid fa-key"></i> การจัดสรรสิทธิ์ซอฟต์แวร์ลิขสิทธิ์องค์กร</h2>
-            <p>ซอฟต์แวร์ที่สำนักจัดหาและบริหารสิทธิ์แจกจ่ายให้หน่วยงานต่างๆ ภายใน สกมช.</p>
-          </div>
-          <div class="view-header-actions">
-            <button class="btn-action" style="background: white; border: 1px solid #cbd5e1; color: #475569;"
-              onclick="downloadTemplate('license')"><i class="fa-solid fa-download"></i> แม่แบบ</button>
-            <button class="btn-action btn-green" onclick="triggerExcelUpload()"><i class="fa-solid fa-file-excel"></i>
-              นำเข้า Excel</button>
+          <div class="view-header-top">
+            <div class="view-title-group">
+              <h2><i class="fa-solid fa-key"></i> การจัดสรรสิทธิ์ซอฟต์แวร์ลิขสิทธิ์องค์กร</h2>
+              <p>ซอฟต์แวร์ที่สำนักจัดหาและบริหารสิทธิ์แจกจ่ายให้หน่วยงานต่างๆ ภายใน สกมช.</p>
+            </div>
+            <div class="view-header-actions">
+              <button class="btn-action" style="background: white; border: 1px solid #cbd5e1; color: #475569;"
+                onclick="downloadTemplate('license')"><i class="fa-solid fa-download"></i> แม่แบบ</button>
+              <button class="btn-action btn-green" onclick="triggerExcelUpload()"><i class="fa-solid fa-file-excel"></i>
+                นำเข้า Excel</button>
+            </div>
           </div>
         </div>
         <div class="licenses-grid" id="licensesContainer"></div>
@@ -412,15 +414,17 @@
          ===================================================== -->
       <div id="view-cases" class="page-view">
         <div class="view-header" style="margin-bottom: 14px;">
-          <div class="view-title-group">
-            <h2><i class="fa-solid fa-headset"></i> รายงานสถิติการขอรับบริการ IT Support (ประจำปี พ.ศ. 2566 - 2569)</h2>
-            <p>รายงานสถิติการขอรับบริการ 5 หมวดจำแนกตามประเภทปัญหา หน่วยงาน ระดับ และตำแหน่งผู้ได้รับมอบหมาย (ข้อมูลจาก สกมช.)</p>
-          </div>
-          <div class="view-header-actions">
-            <button class="btn-action" style="background: white; border: 1px solid #cbd5e1; color: #475569;"
-              onclick="downloadTemplate('cases')"><i class="fa-solid fa-download"></i> แม่แบบ</button>
-            <button class="btn-action btn-green" onclick="triggerExcelUpload()"><i class="fa-solid fa-file-excel"></i>
-              นำเข้า Excel</button>
+          <div class="view-header-top">
+            <div class="view-title-group">
+              <h2><i class="fa-solid fa-headset"></i> รายงานสถิติการขอรับบริการ IT Support (ประจำปี พ.ศ. 2566 - 2569)</h2>
+              <p>รายงานสถิติการขอรับบริการ 5 หมวดจำแนกตามประเภทปัญหา หน่วยงาน ระดับ และตำแหน่งผู้ได้รับมอบหมาย (ข้อมูลจาก สกมช.)</p>
+            </div>
+            <div class="view-header-actions">
+              <button class="btn-action" style="background: white; border: 1px solid #cbd5e1; color: #475569;"
+                onclick="downloadTemplate('cases')"><i class="fa-solid fa-download"></i> แม่แบบ</button>
+              <button class="btn-action btn-green" onclick="triggerExcelUpload()"><i class="fa-solid fa-file-excel"></i>
+                นำเข้า Excel</button>
+            </div>
           </div>
         </div>
 
@@ -545,47 +549,48 @@
               </div>
             </div>
 
-            <!-- Charts Row -->
-            <div style="display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 16px; margin-top: 14px;">
-              <div class="card card-pad">
-                <div class="card-header">
-                  <span class="card-title"><i class="fa-solid fa-chart-bar" style="color:#3b82f6;"></i> แนวโน้มสถิติการขอรับบริการแยกตามปี พ.ศ. (2566 - 2569)</span>
-                  <span class="card-badge"><i class="fa-regular fa-calendar"></i> 4 ปีสะสม</span>
+            <!-- Summary Section -->
+            <div class="case-summary-layout">
+              <div class="card case-summary-card">
+                <div class="case-summary-header">
+                  <div>
+                    <div class="case-summary-title">
+                      <i class="fa-solid fa-table"></i>
+                      ตารางสรุปสถิติการขอรับบริการทั้งหมด
+                    </div>
+                    <div class="case-summary-subtitle">ข้อมูลสถิติตามระบบ · หน้า 1 ใน Excel</div>
+                  </div>
+                  <span class="badge badge-blue case-summary-badge"><i class="fa-solid fa-file-excel"></i> สรุปข้อมูล 4 ปี</span>
                 </div>
-                <div class="chart-wrap" style="height: 200px;">
-                  <canvas id="caseYearlyTrendChart"></canvas>
+                <div class="table-responsive case-summary-table-wrap">
+                  <table class="custom-table case-summary-table">
+                    <thead>
+                      <tr>
+                        <th><i class="fa-regular fa-calendar-days"></i> ปี พ.ศ.</th>
+                        <th><i class="fa-solid fa-headset"></i> ปริมาณการขอรับบริการทั้งหมด (ครั้ง)</th>
+                        <th><i class="fa-solid fa-chart-pie"></i> สัดส่วนภาพรวม (%)</th>
+                        <th><i class="fa-solid fa-arrow-trend-up"></i> แนวโน้ม YoY & สถานะ</th>
+                      </tr>
+                    </thead>
+                    <tbody id="caseOverviewTableBody"></tbody>
+                  </table>
                 </div>
               </div>
-              <div class="card card-pad">
-                <div class="card-header">
-                  <span class="card-title"><i class="fa-solid fa-chart-pie" style="color:#059669;"></i> สัดส่วนการขอรับบริการรายปี</span>
-                  <span class="card-badge"><i class="fa-solid fa-percent"></i> Proportion</span>
+
+              <div class="card case-summary-pie-card">
+                <div class="case-summary-header">
+                  <div>
+                    <div class="case-summary-title">
+                      <i class="fa-solid fa-chart-pie"></i>
+                      สัดส่วนการขอรับบริการรายปี
+                    </div>
+                    <div class="case-summary-subtitle">ภาพรวมสัดส่วนตามปี พ.ศ. 2566 - 2569</div>
+                  </div>
+                  <span class="badge badge-green case-summary-badge"><i class="fa-solid fa-percent"></i> Proportion</span>
                 </div>
-                <div class="chart-wrap" style="height: 200px;">
+                <div class="case-summary-chart-wrap">
                   <canvas id="caseYearlyPieChart"></canvas>
                 </div>
-              </div>
-            </div>
-
-            <!-- Table Card -->
-            <div class="table-card" style="margin-top: 14px;">
-              <div class="card-header" style="padding: 14px 18px; border-bottom: 1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
-                <span class="card-title"><i class="fa-solid fa-table" style="color:#1e3a8a;"></i> ตารางสรุปสถิติการขอรับบริการทั้งหมด (ข้อมูลสถิติตามระบบ)</span>
-                <span class="badge badge-blue" style="font-size:0.7rem;"><i class="fa-solid fa-file-excel"></i> หน้า 1 ใน Excel</span>
-              </div>
-              <div class="table-responsive">
-                <table class="custom-table">
-                  <thead>
-                    <tr>
-                      <th><i class="fa-regular fa-calendar-days"></i> ปี พ.ศ.</th>
-                      <th><i class="fa-solid fa-headset"></i> ปริมาณการขอรับบริการทั้งหมด (ครั้ง)</th>
-                      <th><i class="fa-solid fa-chart-pie"></i> สัดส่วนภาพรวม (%)</th>
-                      <th><i class="fa-solid fa-arrow-trend-up"></i> แนวโน้ม YoY & สถานะ</th>
-                    </tr>
-                  </thead>
-                  <tbody id="caseOverviewTableBody">
-                  </tbody>
-                </table>
               </div>
             </div>
           </div>

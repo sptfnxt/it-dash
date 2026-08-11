@@ -545,6 +545,118 @@ canvas {
 .chart-wrap.tall { height: 200px; }
 .chart-wrap.short { height: 120px; }
 
+.case-summary-layout {
+  display: grid;
+  grid-template-columns: 1.3fr 0.7fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.case-summary-card,
+.case-summary-pie-card {
+  padding: 0;
+  overflow: hidden;
+  background: linear-gradient(135deg, #ffffff 0%, #f9fbff 100%);
+  border: 1px solid #dbe7f7;
+  box-shadow: 0 12px 30px rgba(30, 58, 138, 0.08);
+}
+
+.case-summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid #dbe7f7;
+  background: linear-gradient(90deg, rgba(30, 58, 138, 0.06) 0%, rgba(59, 130, 246, 0.08) 100%);
+}
+
+.case-summary-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #1e3a8a;
+  letter-spacing: -0.01em;
+}
+
+.case-summary-title i {
+  color: #2563eb;
+}
+
+.case-summary-subtitle {
+  margin-top: 2px;
+  font-size: 0.72rem;
+  color: #64748b;
+}
+
+.case-summary-badge {
+  font-size: 0.68rem;
+  padding: 5px 9px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.case-summary-table-wrap {
+  padding: 8px 12px 12px;
+}
+
+.case-summary-table thead th {
+  background: linear-gradient(90deg, #eff6ff 0%, #f8fbff 100%);
+  color: #1e3a8a;
+  font-size: 0.74rem;
+  font-weight: 800;
+  padding: 11px 12px;
+  border-bottom: 1px solid #dbe7f7;
+}
+
+.case-summary-table tbody td {
+  padding: 10px 12px;
+  font-size: 0.78rem;
+  color: #334155;
+  vertical-align: middle;
+}
+
+.case-summary-table tbody tr:nth-child(even) {
+  background: #f8fbff;
+}
+
+.case-summary-table tbody tr:nth-child(odd) {
+  background: #ffffff;
+}
+
+.case-summary-table tbody tr:hover {
+  background: #eef6ff;
+}
+
+.case-summary-pie-card .case-summary-chart-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 16px 18px;
+  min-height: 270px;
+  background: radial-gradient(circle at top, rgba(59, 130, 246, 0.04) 0%, rgba(255,255,255,0) 60%);
+}
+
+.case-summary-pie-card canvas {
+  width: 100% !important;
+  max-width: 290px;
+  max-height: 290px;
+  height: 100% !important;
+}
+
+@media (max-width: 1180px) {
+  .case-summary-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .case-summary-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
 /* ===========================================================================
    DONUT CARD (reference image right-top panel)
    =========================================================================== */
