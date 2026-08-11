@@ -757,33 +757,64 @@ function initCaseOverviewCharts() {
     if (chartInstances.caseYearlyTrend) chartInstances.caseYearlyTrend.destroy();
     const ctx2d = ctxBar.getContext('2d');
     const data = NCSA_DATA.caseStatistics.total_by_year;
+    const totalSum = data.counts.reduce((a, b) => a + b, 0) || 1;
+
+    const createGradH = (colorStart, colorEnd) => {
+      const g = ctx2d.createLinearGradient(0, 0, 350, 0);
+      g.addColorStop(0, colorStart);
+      g.addColorStop(1, colorEnd);
+      return g;
+    };
+
     chartInstances.caseYearlyTrend = new Chart(ctxBar, {
       type: 'bar',
       data: {
         labels: data.years.map(y => 'พ.ศ. ' + y),
         datasets: [{
-          label: 'จำนวนการขอรับบริการ (ครั้ง)',
+          label: 'การขอรับบริการ (ครั้ง)',
           data: data.counts,
           backgroundColor: [
-            createGradient(ctx2d, '#1d4ed8', '#60a5fa', 260),
-            createGradient(ctx2d, '#059669', '#34d399', 260),
-            createGradient(ctx2d, '#d97706', '#fbbf24', 260),
-            '#94a3b8'
+            createGradH('#1d4ed8', '#60a5fa'),
+            createGradH('#059669', '#34d399'),
+            createGradH('#d97706', '#fbbf24'),
+            createGradH('#64748b', '#cbd5e1')
           ],
-          borderRadius: 8,
-          borderWidth: 0
+          borderRadius: 6,
+          borderWidth: 0,
+          barPercentage: 0.55,
+          categoryPercentage: 0.75
         }]
       },
       options: {
+        indexAxis: 'y',
         responsive: true,
         maintainAspectRatio: false,
+        animation: { duration: 1000, easing: 'easeOutQuart' },
         plugins: {
           legend: { display: false },
-          tooltip: { backgroundColor: '#0f172a', padding: 10, cornerRadius: 8 }
+          tooltip: {
+            backgroundColor: '#0f172a',
+            padding: 10,
+            cornerRadius: 8,
+            callbacks: {
+              label: (ctx) => {
+                const val = ctx.raw;
+                const pct = ((val / totalSum) * 100).toFixed(1);
+                return ` ปริมาณการขอรับบริการ: ${val.toLocaleString()} ครั้ง (${pct}%)`;
+              }
+            }
+          }
         },
         scales: {
-          y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
-          x: { grid: { display: false } }
+          x: {
+            beginAtZero: true,
+            grid: { color: '#f1f5f9' },
+            ticks: { font: { size: 10, weight: '600' } }
+          },
+          y: {
+            grid: { display: false },
+            ticks: { font: { size: 11, weight: '700' }, color: '#1e3a8a' }
+          }
         }
       }
     });
@@ -801,16 +832,18 @@ function initCaseOverviewCharts() {
           data: data.counts,
           backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#94a3b8'],
           borderWidth: 2,
-          borderColor: '#ffffff'
+          borderColor: '#ffffff',
+          hoverOffset: 6
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        animation: { animateScale: true, duration: 1000 },
         plugins: {
-          legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } }
+          legend: { position: 'bottom', labels: { boxWidth: 10, padding: 8, font: { size: 10, weight: '600' } } }
         },
-        cutout: '65%'
+        cutout: '66%'
       }
     });
   }

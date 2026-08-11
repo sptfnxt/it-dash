@@ -569,24 +569,33 @@ function renderCaseOverviewTab() {
   const data = NCSA_DATA.caseStatistics.total_by_year;
   const totalSum = data.counts.reduce((a, b) => a + b, 0) || 1;
 
+  const yearColors = [
+    'linear-gradient(90deg, #1d4ed8, #60a5fa)',
+    'linear-gradient(90deg, #059669, #34d399)',
+    'linear-gradient(90deg, #d97706, #fbbf24)',
+    'linear-gradient(90deg, #64748b, #94a3b8)'
+  ];
+
   tbody.innerHTML = data.years.map((y, i) => {
     const count = data.counts[i];
     const pct = ((count / totalSum) * 100).toFixed(1);
+    const grad = yearColors[i] || 'linear-gradient(90deg, #3b82f6, #60a5fa)';
+
     let trendBadge = '<span class="badge badge-blue">ปานกลาง</span>';
-    if (i === 0) trendBadge = '<span class="badge badge-green"><i class="fa-solid fa-arrow-trend-up"></i> ล่าสุด (+17.6%)</span>';
-    else if (i === 1) trendBadge = '<span class="badge badge-teal"><i class="fa-solid fa-arrow-trend-up"></i> สูงขึ้นมาก</span>';
-    else if (i === 2) trendBadge = '<span class="badge badge-yellow">เริ่มต้น</span>';
-    else trendBadge = '<span class="badge badge-gray">ไม่มีข้อมูล</span>';
+    if (i === 0) trendBadge = '<span class="badge badge-blue" style="font-weight:700;font-size:0.68rem;"><i class="fa-solid fa-arrow-trend-up"></i> +17.6% (ปีพ.ศ. ล่าสุด)</span>';
+    else if (i === 1) trendBadge = '<span class="badge badge-green" style="font-weight:700;font-size:0.68rem;"><i class="fa-solid fa-arrow-trend-up"></i> +5,460.0% (เติบโตก้าวกระโดด)</span>';
+    else if (i === 2) trendBadge = '<span class="badge badge-yellow" style="font-weight:700;font-size:0.68rem;"><i class="fa-solid fa-flag"></i> เริ่มต้นบันทึกข้อมูล</span>';
+    else trendBadge = '<span class="badge badge-gray" style="font-weight:600;font-size:0.68rem;"><i class="fa-solid fa-database"></i> ฐานข้อมูล 0</span>';
 
     return `
       <tr>
-        <td><strong>พ.ศ. ${y}</strong></td>
-        <td><span style="font-weight:700;color:#1e3a8a;font-size:1rem;">${count.toLocaleString()}</span> ครั้ง</td>
+        <td><strong style="color:#1e3a8a;font-size:0.82rem;">พ.ศ. ${y} ${i === 0 ? '<span class="badge badge-blue" style="font-size:0.6rem;padding:1px 6px;margin-left:4px;">ปีล่าสุด</span>' : ''}</strong></td>
+        <td><span style="font-weight:800;color:#0f172a;font-size:1.05rem;">${count.toLocaleString()}</span> <span style="font-size:0.75rem;color:#64748b;font-weight:500;">ครั้ง</span></td>
         <td>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <span style="font-weight:600;">${pct}%</span>
-            <div style="flex:1;background:#e2e8f0;height:6px;border-radius:3px;overflow:hidden;max-width:100px;">
-              <div style="height:100%;width:${pct}%;background:#3b82f6;"></div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-weight:700;color:#1e3a8a;min-width:40px;">${pct}%</span>
+            <div style="flex:1;background:#e2e8f0;height:8px;border-radius:4px;overflow:hidden;max-width:140px;box-shadow:inset 0 1px 2px rgba(0,0,0,0.05);">
+              <div style="height:100%;width:${pct}%;background:${grad};border-radius:4px;transition:width 0.8s ease;"></div>
             </div>
           </div>
         </td>
@@ -594,11 +603,18 @@ function renderCaseOverviewTab() {
       </tr>
     `;
   }).join('') + `
-    <tr style="background:#f8fafc;font-weight:700;">
-      <td>รวมทั้งหมด (4 ปี)</td>
-      <td style="color:#0f172a;font-size:1.05rem;">${totalSum.toLocaleString()} ครั้ง</td>
-      <td>100.0%</td>
-      <td><span class="badge badge-purple"><i class="fa-solid fa-check-double"></i> ครบถ้วน</span></td>
+    <tr style="background:#f8fafc;font-weight:700;border-top:2px solid #cbd5e1;">
+      <td><strong style="color:#0f172a;font-size:0.85rem;"><i class="fa-solid fa-layer-group" style="color:#7c3aed;"></i> รวมทั้งหมด (สะสม 4 ปี)</strong></td>
+      <td style="color:#1e3a8a;font-size:1.1rem;font-weight:800;">${totalSum.toLocaleString()} <span style="font-size:0.75rem;font-weight:500;color:#64748b;">ครั้ง</span></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-weight:800;color:#059669;">100.0%</span>
+          <div style="flex:1;background:#bbf7d0;height:8px;border-radius:4px;max-width:140px;">
+            <div style="height:100%;width:100%;background:linear-gradient(90deg, #10b981, #059669);border-radius:4px;"></div>
+          </div>
+        </div>
+      </td>
+      <td><span class="badge badge-purple" style="font-size:0.7rem;font-weight:700;"><i class="fa-solid fa-check-double"></i> ครบถ้วน 100%</span></td>
     </tr>
   `;
 
