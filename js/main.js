@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderHardwareTable();
   renderLicenseCards();
   renderCaseTable();
+  renderAllCaseTabs();
   renderProjectCards();
   initAllCharts();
   initOverviewWidgets();
@@ -530,6 +531,218 @@ function renderCaseTable() {
 }
 
 function filterCases() { renderCaseTable(); }
+
+// --------------------------------------------------------------------------
+// REPORT CASE SUB-TABS ENGINE (5 Excel Sheets)
+// --------------------------------------------------------------------------
+function switchCaseSubTab(tabId) {
+  const tabs = document.querySelectorAll('.cases-sub-tab');
+  const panels = document.querySelectorAll('.casetab-panel');
+
+  tabs.forEach(t => t.classList.toggle('active', t.getAttribute('data-casetab') === tabId));
+  panels.forEach(p => p.classList.toggle('active', p.id === `casetab-${tabId}`));
+
+  if (tabId === 'overview') renderCaseOverviewTab();
+  else if (tabId === 'category') renderCaseCategoryTab();
+  else if (tabId === 'dept') renderCaseDeptTab();
+  else if (tabId === 'level') renderCaseLevelTab();
+  else if (tabId === 'position') renderCasePositionTab();
+  else if (tabId === 'logs') renderCaseTable();
+
+  window.dispatchEvent(new Event('resize'));
+}
+
+function renderAllCaseTabs() {
+  renderCaseOverviewTab();
+  renderCaseCategoryTab();
+  renderCaseDeptTab();
+  renderCaseLevelTab();
+  renderCasePositionTab();
+  renderCaseTable();
+}
+
+// 1. Overview Tab (Sheet 1: ทั้งหมด)
+function renderCaseOverviewTab() {
+  const tbody = document.getElementById('caseOverviewTableBody');
+  if (!tbody || !NCSA_DATA.caseStatistics) return;
+
+  const data = NCSA_DATA.caseStatistics.total_by_year;
+  const totalSum = data.counts.reduce((a, b) => a + b, 0) || 1;
+
+  tbody.innerHTML = data.years.map((y, i) => {
+    const count = data.counts[i];
+    const pct = ((count / totalSum) * 100).toFixed(1);
+    let trendBadge = '<span class="badge badge-blue">ปานกลาง</span>';
+    if (i === 0) trendBadge = '<span class="badge badge-green"><i class="fa-solid fa-arrow-trend-up"></i> ล่าสุด (+17.6%)</span>';
+    else if (i === 1) trendBadge = '<span class="badge badge-teal"><i class="fa-solid fa-arrow-trend-up"></i> สูงขึ้นมาก</span>';
+    else if (i === 2) trendBadge = '<span class="badge badge-yellow">เริ่มต้น</span>';
+    else trendBadge = '<span class="badge badge-gray">ไม่มีข้อมูล</span>';
+
+    return `
+      <tr>
+        <td><strong>พ.ศ. ${y}</strong></td>
+        <td><span style="font-weight:700;color:#1e3a8a;font-size:1rem;">${count.toLocaleString()}</span> ครั้ง</td>
+        <td>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-weight:600;">${pct}%</span>
+            <div style="flex:1;background:#e2e8f0;height:6px;border-radius:3px;overflow:hidden;max-width:100px;">
+              <div style="height:100%;width:${pct}%;background:#3b82f6;"></div>
+            </div>
+          </div>
+        </td>
+        <td>${trendBadge}</td>
+      </tr>
+    `;
+  }).join('') + `
+    <tr style="background:#f8fafc;font-weight:700;">
+      <td>รวมทั้งหมด (4 ปี)</td>
+      <td style="color:#0f172a;font-size:1.05rem;">${totalSum.toLocaleString()} ครั้ง</td>
+      <td>100.0%</td>
+      <td><span class="badge badge-purple"><i class="fa-solid fa-check-double"></i> ครบถ้วน</span></td>
+    </tr>
+  `;
+
+  if (typeof initCaseOverviewCharts === 'function') {
+    initCaseOverviewCharts();
+  }
+}
+
+// 2. Category Tab (Sheet 2: ประเภทปัญหา)
+function renderCaseCategoryTab() {
+  const tbody = document.getElementById('caseCategoryTableBody');
+  if (!tbody || !NCSA_DATA.caseStatistics) return;
+
+  const items = NCSA_DATA.caseStatistics.by_category;
+  tbody.innerHTML = items.map((item, idx) => {
+    const total = item.y2569 + item.y2568 + item.y2567 + item.y2566;
+    return `
+      <tr>
+        <td>${idx + 1}</td>
+        <td><strong>${item.name}</strong></td>
+        <td><span style="font-weight:700;color:#1e3a8a;">${item.y2569}</span></td>
+        <td>${item.y2568}</td>
+        <td>${item.y2567}</td>
+        <td>${item.y2566}</td>
+        <td><span class="badge badge-blue">${total}</span></td>
+      </tr>
+    `;
+  }).join('');
+
+  if (typeof initCaseCategoryChart === 'function') {
+    initCaseCategoryChart();
+  }
+}
+
+// 3. Dept Tab (Sheet 3: หน่วยงานที่พบปัญหา)
+function renderCaseDeptTab() {
+  const tbody = document.getElementById('caseDeptTableBody');
+  if (!tbody || !NCSA_DATA.caseStatistics) return;
+
+  const filterNonZero = document.getElementById('caseDeptFilterNonZero')?.checked;
+  let items = NCSA_DATA.caseStatistics.by_dept;
+
+  if (filterNonZero) {
+    items = items.filter(item => (item.y2569 + item.y2568 + item.y2567 + item.y2566) > 0);
+  }
+
+  tbody.innerHTML = items.map((item, idx) => {
+    const total = item.y2569 + item.y2568 + item.y2567 + item.y2566;
+    return `
+      <tr>
+        <td>${idx + 1}</td>
+        <td><strong>${item.name}</strong></td>
+        <td><span style="font-weight:700;color:#1e3a8a;">${item.y2569}</span></td>
+        <td>${item.y2568}</td>
+        <td>${item.y2567}</td>
+        <td>${item.y2566}</td>
+        <td><span class="badge badge-green">${total}</span></td>
+      </tr>
+    `;
+  }).join('');
+
+  if (typeof initCaseDeptChart === 'function') {
+    initCaseDeptChart();
+  }
+}
+
+// 4. Level Tab (Sheet 4: ระดับที่พบปัญหา)
+function renderCaseLevelTab() {
+  const tbody = document.getElementById('caseLevelTableBody');
+  if (!tbody || !NCSA_DATA.caseStatistics) return;
+
+  const filterNonZero = document.getElementById('caseLevelFilterNonZero')?.checked;
+  let items = NCSA_DATA.caseStatistics.by_level;
+
+  if (filterNonZero) {
+    items = items.filter(item => (item.y2569 + item.y2568 + item.y2567 + item.y2566) > 0);
+  }
+
+  tbody.innerHTML = items.map((item, idx) => {
+    const total = item.y2569 + item.y2568 + item.y2567 + item.y2566;
+    return `
+      <tr>
+        <td>${idx + 1}</td>
+        <td><strong>${item.name}</strong></td>
+        <td><span style="font-weight:700;color:#1e3a8a;">${item.y2569}</span></td>
+        <td>${item.y2568}</td>
+        <td>${item.y2567}</td>
+        <td>${item.y2566}</td>
+        <td><span class="badge badge-teal">${total}</span></td>
+      </tr>
+    `;
+  }).join('');
+
+  if (typeof initCaseLevelChart === 'function') {
+    initCaseLevelChart();
+  }
+}
+
+// 5. Position Tab (Sheet 5: ตำแหน่งที่พบปัญหา)
+function renderCasePositionTab() {
+  const tbody = document.getElementById('casePositionTableBody');
+  if (!tbody || !NCSA_DATA.caseStatistics) return;
+
+  const search = document.getElementById('casePositionSearchInput')?.value.toLowerCase().trim() || '';
+  const filterNonZero = document.getElementById('casePosFilterNonZero')?.checked;
+  let items = NCSA_DATA.caseStatistics.by_position;
+
+  if (filterNonZero) {
+    items = items.filter(item => (item.y2569 + item.y2568 + item.y2567 + item.y2566) > 0);
+  }
+
+  if (search) {
+    items = items.filter(item => item.name.toLowerCase().includes(search));
+  }
+
+  if (items.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:20px;color:#64748b;">ไม่พบข้อมูลตำแหน่งที่ตรงกับคำค้นหา</td></tr>`;
+  } else {
+    tbody.innerHTML = items.map((item, idx) => {
+      const total = item.y2569 + item.y2568 + item.y2567 + item.y2566;
+      return `
+        <tr>
+          <td>${idx + 1}</td>
+          <td><strong>${item.name}</strong></td>
+          <td><span style="font-weight:700;color:#1e3a8a;">${item.y2569}</span></td>
+          <td>${item.y2568}</td>
+          <td>${item.y2567}</td>
+          <td>${item.y2566}</td>
+          <td><span class="badge badge-blue">${total}</span></td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  if (typeof initCasePositionChart === 'function') {
+    initCasePositionChart();
+  }
+}
+
+window.switchCaseSubTab = switchCaseSubTab;
+window.renderCaseDeptTab = renderCaseDeptTab;
+window.renderCaseLevelTab = renderCaseLevelTab;
+window.renderCasePositionTab = renderCasePositionTab;
+
 
 // --------------------------------------------------------------------------
 // PROJECT CARDS RENDER

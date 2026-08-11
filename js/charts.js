@@ -12,6 +12,11 @@ function initAllCharts() {
   initPaperCharts();
   initLicenseCharts();
   initProjectCharts();
+  initCaseOverviewCharts();
+  initCaseCategoryChart();
+  initCaseDeptChart();
+  initCaseLevelChart();
+  initCasePositionChart();
 }
 
 // Helper: linear gradient top→bottom
@@ -742,3 +747,232 @@ function initProjectCharts() {
     });
   }
 }
+
+// ============================================================
+// REPORT CASE STATISTICAL CHARTS (5 Excel Sheets)
+// ============================================================
+function initCaseOverviewCharts() {
+  const ctxBar = document.getElementById('caseYearlyTrendChart');
+  if (ctxBar && NCSA_DATA.caseStatistics) {
+    if (chartInstances.caseYearlyTrend) chartInstances.caseYearlyTrend.destroy();
+    const ctx2d = ctxBar.getContext('2d');
+    const data = NCSA_DATA.caseStatistics.total_by_year;
+    chartInstances.caseYearlyTrend = new Chart(ctxBar, {
+      type: 'bar',
+      data: {
+        labels: data.years.map(y => 'พ.ศ. ' + y),
+        datasets: [{
+          label: 'จำนวนการขอรับบริการ (ครั้ง)',
+          data: data.counts,
+          backgroundColor: [
+            createGradient(ctx2d, '#1d4ed8', '#60a5fa', 260),
+            createGradient(ctx2d, '#059669', '#34d399', 260),
+            createGradient(ctx2d, '#d97706', '#fbbf24', 260),
+            '#94a3b8'
+          ],
+          borderRadius: 8,
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { backgroundColor: '#0f172a', padding: 10, cornerRadius: 8 }
+        },
+        scales: {
+          y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  const ctxPie = document.getElementById('caseYearlyPieChart');
+  if (ctxPie && NCSA_DATA.caseStatistics) {
+    if (chartInstances.caseYearlyPie) chartInstances.caseYearlyPie.destroy();
+    const data = NCSA_DATA.caseStatistics.total_by_year;
+    chartInstances.caseYearlyPie = new Chart(ctxPie, {
+      type: 'doughnut',
+      data: {
+        labels: data.years.map(y => 'พ.ศ. ' + y),
+        datasets: [{
+          data: data.counts,
+          backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#94a3b8'],
+          borderWidth: 2,
+          borderColor: '#ffffff'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } }
+        },
+        cutout: '65%'
+      }
+    });
+  }
+}
+
+function initCaseCategoryChart() {
+  const ctx = document.getElementById('caseCategoryChart');
+  if (!ctx || !NCSA_DATA.caseStatistics) return;
+  if (chartInstances.caseCategory) chartInstances.caseCategory.destroy();
+
+  const items = NCSA_DATA.caseStatistics.by_category.filter(c => (c.y2569 + c.y2568) > 0);
+  const labels = items.map(i => i.name.length > 25 ? i.name.slice(0, 25) + '...' : i.name);
+
+  chartInstances.caseCategory = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: 'ปี 2569',
+          data: items.map(i => i.y2569),
+          backgroundColor: '#3b82f6',
+          borderRadius: 6
+        },
+        {
+          label: 'ปี 2568',
+          data: items.map(i => i.y2568),
+          backgroundColor: '#93c5fd',
+          borderRadius: 6
+        }
+      ]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top', labels: { boxWidth: 12 } },
+        tooltip: { backgroundColor: '#0f172a', padding: 10, cornerRadius: 8 }
+      },
+      scales: {
+        x: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+        y: { grid: { display: false }, ticks: { font: { size: 10 } } }
+      }
+    }
+  });
+}
+
+function initCaseDeptChart() {
+  const ctx = document.getElementById('caseDeptChart');
+  if (!ctx || !NCSA_DATA.caseStatistics) return;
+  if (chartInstances.caseDept) chartInstances.caseDept.destroy();
+
+  const items = NCSA_DATA.caseStatistics.by_dept.filter(d => (d.y2569 + d.y2568 + d.y2567 + d.y2566) > 0);
+  const labels = items.map(i => i.name);
+  const data2569 = items.map(i => i.y2569);
+
+  chartInstances.caseDept = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: data2569,
+        backgroundColor: ['#3b82f6', '#1e3a8a', '#dc2626', '#10b981', '#f59e0b'],
+        borderWidth: 2,
+        borderColor: '#ffffff'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } }
+      },
+      cutout: '60%'
+    }
+  });
+}
+
+function initCaseLevelChart() {
+  const ctx = document.getElementById('caseLevelChart');
+  if (!ctx || !NCSA_DATA.caseStatistics) return;
+  if (chartInstances.caseLevel) chartInstances.caseLevel.destroy();
+
+  const items = NCSA_DATA.caseStatistics.by_level.filter(l => (l.y2569 + l.y2568) > 0);
+
+  chartInstances.caseLevel = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: items.map(i => i.name),
+      datasets: [
+        {
+          label: 'ปี 2569',
+          data: items.map(i => i.y2569),
+          backgroundColor: '#1d4ed8',
+          borderRadius: 6
+        },
+        {
+          label: 'ปี 2568',
+          data: items.map(i => i.y2568),
+          backgroundColor: '#60a5fa',
+          borderRadius: 6
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top', labels: { boxWidth: 12 } },
+        tooltip: { backgroundColor: '#0f172a', padding: 10, cornerRadius: 8 }
+      },
+      scales: {
+        y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+function initCasePositionChart() {
+  const ctx = document.getElementById('casePositionChart');
+  if (!ctx || !NCSA_DATA.caseStatistics) return;
+  if (chartInstances.casePosition) chartInstances.casePosition.destroy();
+
+  const items = [...NCSA_DATA.caseStatistics.by_position]
+    .filter(p => p.y2569 > 0)
+    .sort((a, b) => b.y2569 - a.y2569)
+    .slice(0, 8);
+
+  const labels = items.map(i => i.name.length > 25 ? i.name.slice(0, 25) + '...' : i.name);
+
+  chartInstances.casePosition = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'จำนวนคำขอปี 2569 (ครั้ง)',
+        data: items.map(i => i.y2569),
+        backgroundColor: '#7c3aed',
+        borderRadius: 6
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { backgroundColor: '#0f172a', padding: 10, cornerRadius: 8 }
+      },
+      scales: {
+        x: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+        y: { grid: { display: false }, ticks: { font: { size: 9 } } }
+      }
+    }
+  });
+}
+
+window.initCaseOverviewCharts = initCaseOverviewCharts;
+window.initCaseCategoryChart = initCaseCategoryChart;
+window.initCaseDeptChart = initCaseDeptChart;
+window.initCaseLevelChart = initCaseLevelChart;
+window.initCasePositionChart = initCasePositionChart;
+
